@@ -18,7 +18,7 @@ NAMESPACE_BEGIN(bc)
 	typedef __int32          s32;
 	typedef unsigned __int32 u32;
 
-#if BE_COMPILER == BE_COMPILER_GNU
+#if BC_COMPILER == BC_COMPILER_GNU
 	typedef long long          s64;
 	typedef unsigned long long u64;
 #else
