@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="dep">
+      <UniqueIdentifier>{0f2cf354-010b-4f6a-b2a6-f9f7ffbee668}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{d1199b70-0943-42be-a637-bb682c20c5df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\inc">
+      <UniqueIdentifier>{c4373afa-e95a-4cd7-b839-18a47d05f8cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\cpp">
+      <UniqueIdentifier>{91b29643-8480-4e3e-9d2a-bfa77414d86a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\inc\Message.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+  </ItemGroup>
+</Project>
