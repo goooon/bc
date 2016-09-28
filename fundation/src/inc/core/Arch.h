@@ -51,7 +51,7 @@ static_assert(sizeof(void *) == 4, "void*_should_be_4");
 # define BE_PACK_BYTE2(c, d)   ( (c)<<8 | (d) )
 #else
 # define BE_PACK_BYTE4(a,b,c,d) ( (int)(d)<<24 | (int)(c)<<16 | (b)<<8 | (a) )
-# define BE_PACK_BYTE4(c, d)    ( (d)<<8 | (c) )
+# define BE_PACK_BYTE2(c, d)    ( (d)<<8 | (c) )
 #endif
 
 //compiler def

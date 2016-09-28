@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-NAMESPACE_BEGIN(bee)
+NAMESPACE_BEGIN(bc)
 
 	typedef signed int      sint;
 	typedef unsigned int    uint;

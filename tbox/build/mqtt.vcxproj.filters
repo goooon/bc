@@ -22,4 +22,9 @@
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\cpp\main.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>

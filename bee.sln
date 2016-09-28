@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "paho-mqtt3cs", "dep\paho\Wi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "paho-mqtt3c", "dep\paho\Windows Build\paho-mqtt3c\paho-mqtt3c.vcxproj", "{172F8995-C780-44A1-996C-C7949B4DB35A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tbox", "tbox", "{97785D9E-3D1F-4BFF-A031-745579B30809}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|win32 = Debug|win32
@@ -58,6 +60,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{A0138B76-5EFE-41DD-9941-2DE724A03109} = {97785D9E-3D1F-4BFF-A031-745579B30809}
 		{17F07F98-AA5F-4373-9877-992A341D650A} = {7F171EE8-1EA4-4101-9A79-5DF0781FA154}
 		{172F8995-C780-44A1-996C-C7949B4DB35A} = {7F171EE8-1EA4-4101-9A79-5DF0781FA154}
 	EndGlobalSection

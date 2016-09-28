@@ -16,8 +16,6 @@
 
 #elif BE_TARGET == BE_TARGET_LINUX
 
-#endif
-
 
 #endif
 
