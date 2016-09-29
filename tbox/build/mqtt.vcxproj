@@ -19,12 +19,25 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\cpp\CmdParser.h" />
+    <ClInclude Include="..\src\cpp\Config.h" />
+    <ClInclude Include="..\src\inc\Application.h" />
+    <ClInclude Include="..\src\inc\BCPReceiver.h" />
+    <ClInclude Include="..\src\inc\BCPSender.h" />
+    <ClInclude Include="..\src\inc\CycleQueue.h" />
+    <ClInclude Include="..\src\inc\dep.h" />
     <ClInclude Include="..\src\inc\Message.h" />
+    <ClInclude Include="..\src\inc\RemoteUnlockTask.h" />
+    <ClInclude Include="..\src\inc\Task.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\cpp\Application.cpp" />
+    <ClCompile Include="..\src\cpp\CmdParser.cpp" />
+    <ClCompile Include="..\src\cpp\Config.cpp" />
+    <ClCompile Include="..\src\cpp\dep.cpp" />
     <ClCompile Include="..\src\cpp\main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -35,7 +48,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -88,7 +101,9 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\goooon\svn\lib\win32\Con Debug;$(SolutionDir)lib\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>foundation.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

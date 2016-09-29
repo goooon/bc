@@ -25,6 +25,12 @@
     <Filter Include="src\cpp\core">
       <UniqueIdentifier>{580a9527-8b34-4dfb-a252-feac2e1c43b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\inc\util">
+      <UniqueIdentifier>{99608df7-84b8-41a4-b33e-fea1d509f4c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\cpp\util">
+      <UniqueIdentifier>{1e157bf8-491d-4846-bd31-988b6b06f9b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -45,5 +51,43 @@
     <ClInclude Include="..\src\inc\fundation.h">
       <Filter>src\inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\util\StackTrace.h">
+      <Filter>src\inc\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\util\Thread.h">
+      <Filter>src\inc\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\util\Log.h">
+      <Filter>src\inc\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\util\LinkedList.h">
+      <Filter>src\inc\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\util\Heap.h">
+      <Filter>src\inc\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\util\Tree.h">
+      <Filter>src\inc\util</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\cpp\util\Heap.cpp">
+      <Filter>src\cpp\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\util\LinkedList.cpp">
+      <Filter>src\cpp\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\util\Log.cpp">
+      <Filter>src\cpp\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\util\StackTrace.cpp">
+      <Filter>src\cpp\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\util\Thread.cpp">
+      <Filter>src\cpp\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\util\Tree.cpp">
+      <Filter>src\cpp\util</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

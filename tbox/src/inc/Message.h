@@ -1,6 +1,6 @@
 #ifndef MQTT_GUARD_Message_h__
 #define MQTT_GUARD_Message_h__
-#include "../../../fundation/src/inc/fundation.h"
+#include "./dep.h"
 struct DatagramHeader
 {
 	u8  sof[4];  //0x3f,0x6c,0x81,0x29

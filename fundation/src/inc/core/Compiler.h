@@ -87,4 +87,16 @@
 #define DECL_GNU_ALIGN(n)
 #endif
 
+#if BC_COMPILER == BC_COMPILER_GNU
+#if BC_TARGET == BC_TARGET_APPLE_IOS
+#define bc_size unsigned long
+#else
+#define bc_size size_t
+#endif
+#else
+#define bc_size size_t
+#endif
+
+
+#define ARRAY_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
 #endif // GUARD_Compiler_h__

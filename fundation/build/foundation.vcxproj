@@ -69,18 +69,23 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)lib\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <Lib>
+      <OutputFile>$(SolutionDir)lib\$(Platform)\$(Configuration)\$(ProjectName).lib</OutputFile>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -135,6 +140,20 @@
     <ClInclude Include="..\src\inc\core\Make.h" />
     <ClInclude Include="..\src\inc\core\Types.h" />
     <ClInclude Include="..\src\inc\fundation.h" />
+    <ClInclude Include="..\src\inc\util\Heap.h" />
+    <ClInclude Include="..\src\inc\util\LinkedList.h" />
+    <ClInclude Include="..\src\inc\util\Log.h" />
+    <ClInclude Include="..\src\inc\util\StackTrace.h" />
+    <ClInclude Include="..\src\inc\util\Thread.h" />
+    <ClInclude Include="..\src\inc\util\Tree.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\cpp\util\Heap.cpp" />
+    <ClCompile Include="..\src\cpp\util\LinkedList.cpp" />
+    <ClCompile Include="..\src\cpp\util\Log.cpp" />
+    <ClCompile Include="..\src\cpp\util\StackTrace.cpp" />
+    <ClCompile Include="..\src\cpp\util\Thread.cpp" />
+    <ClCompile Include="..\src\cpp\util\Tree.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

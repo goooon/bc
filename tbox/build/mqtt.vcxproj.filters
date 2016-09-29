@@ -18,12 +18,51 @@
     <ClInclude Include="..\src\inc\Message.h">
       <Filter>src\inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\cpp\CmdParser.h">
+      <Filter>src\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cpp\Config.h">
+      <Filter>src\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\BCPSender.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\BCPReceiver.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\Application.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\Task.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\RemoteUnlockTask.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\dep.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\CycleQueue.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cpp\main.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\CmdParser.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\Config.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\dep.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\Application.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
   </ItemGroup>
