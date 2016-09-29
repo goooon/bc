@@ -8,3 +8,10 @@ void Application::init(int argc, char** argv)
 	})
 	config.parse(argc, argv);
 }
+
+void Application::run()
+{
+	while (1) {
+		e.wait(-1);
+	}
+}

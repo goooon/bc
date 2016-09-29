@@ -8,7 +8,7 @@ int main(int argc, char* argv[]) {
 
 	Application app;
 	app.init(argc, argv);
-
+	app.run();
 	uninitMeLib(lib);
 	return 0;
 }

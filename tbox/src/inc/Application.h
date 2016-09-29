@@ -4,13 +4,16 @@
 #include "./Message.h"
 #include "./Config.h"
 #include "./TaskQueue.h"
+#include "./State.h"
 class Application
 {
 public:
 	void init(int argc, char** argv);
+	void run();
 public:
 	Config config;
 	TaskQueue taskQueue;
+	ThreadEvent e;
 };
 
 

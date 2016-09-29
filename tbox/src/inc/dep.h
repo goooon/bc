@@ -5,7 +5,7 @@
 
 void* initMeLib();
 void uninitMeLib(void* lib);
-#if 1
+#if 0
 #define ME_STDIO
 #define WIN
 #define _WIN32

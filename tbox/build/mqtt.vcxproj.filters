@@ -24,12 +24,6 @@
     <ClInclude Include="..\src\cpp\Config.h">
       <Filter>src\cpp</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\inc\BCPSender.h">
-      <Filter>src\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\inc\BCPReceiver.h">
-      <Filter>src\inc</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\inc\Application.h">
       <Filter>src\inc</Filter>
     </ClInclude>
@@ -43,6 +37,12 @@
       <Filter>src\inc</Filter>
     </ClInclude>
     <ClInclude Include="..\src\inc\CycleQueue.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\State.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\Mqtt.h">
       <Filter>src\inc</Filter>
     </ClInclude>
   </ItemGroup>
@@ -63,6 +63,9 @@
       <Filter>src\cpp</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cpp\Application.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\Mqtt.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
   </ItemGroup>
