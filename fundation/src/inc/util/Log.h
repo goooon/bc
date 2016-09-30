@@ -15,8 +15,8 @@
 *    Ian Craggs - updates for the async client
 *******************************************************************************/
 
-#if !defined(LOG_H)
-#define LOG_H
+#if !defined(BC_LOG_H)
+#define BC_LOG_H
 
 /*BE
 map LOG_LEVELS
@@ -40,7 +40,7 @@ enum LOG_LEVELS {
 	LOG_ERROR,
 	LOG_SEVERE,
 	LOG_FATAL,
-} Log_levels;
+} ;
 
 
 /*BE

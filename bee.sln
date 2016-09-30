@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foundation", "fundation\build\foundation.vcxproj", "{F42BD6D4-491A-4333-9990-A5FEAAB3B0BA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mqtt", "tbox\build\mqtt.vcxproj", "{A0138B76-5EFE-41DD-9941-2DE724A03109}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F42BD6D4-491A-4333-9990-A5FEAAB3B0BA} = {F42BD6D4-491A-4333-9990-A5FEAAB3B0BA}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dep", "dep", "{7F171EE8-1EA4-4101-9A79-5DF0781FA154}"
 EndProject

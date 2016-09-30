@@ -9,6 +9,7 @@ class Application
 {
 public:
 	void init(int argc, char** argv);
+	bool startTask(Task* task);
 	void run();
 public:
 	Config config;

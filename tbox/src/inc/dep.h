@@ -14,10 +14,10 @@ void uninitMeLib(void* lib);
 
 #else
 #include <stdio.h>
-#define LOG_I printf
-#define LOG_W printf
-#define LOG_E printf
-#define LOG_F printf
+#define LOG_I(fmt,...) do {printf(fmt, ##__VA_ARGS__);printf("\n");} while (0);
+#define LOG_W(fmt,...) do {printf(fmt, ##__VA_ARGS__);printf("\n");} while (0);
+#define LOG_E(fmt,...) do {printf(fmt, ##__VA_ARGS__);printf("\n");} while (0);
+#define LOG_F(fmt,...) do {printf(fmt, ##__VA_ARGS__);printf("\n");} while (0);
 #define DebugCode(c)
 #endif
 #endif // GUARD_dep_h__

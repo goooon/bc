@@ -4,9 +4,12 @@
 #include "./Task.h"
 class RemoteUnlockTask : public Task {
 public:
+	RemoteUnlockTask(u16 appId, u8 sessionId):Task(appId,sessionId){}
 	virtual void run()override
 	{
-		e.wait(1000);
+		LOG_I("RemoteUnlockTask(%d,%d) run...",applicationId,sessionId);
+		e.wait(5000);
+		LOG_I("RemoteUnlockTask(%d,%d) finished", applicationId, sessionId);
 	}
 	virtual bool handlePackage(void* data, int len) {
 		e.post();

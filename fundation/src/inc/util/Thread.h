@@ -56,16 +56,40 @@ void Thread_destroy_mutex(mutex_type);
 class ThreadMutex
 {
 public:
+	enum Result
+	{
+		Succed = 0
+	};
+public:
 	ThreadMutex() {
-		mutex = Thread_create_mutex;
+		mutex = Thread_create_mutex();
 	}
 	~ThreadMutex() {
 		Thread_destroy_mutex(mutex);
 	}
-	int lock() { Thread_lock_mutex(mutex); }
-	int unlock() { Thread_unlock_mutex(mutex); }
+	/**
+	* Lock a mutex which has already been created, block until ready
+	* @param mutex the mutex
+	* @return completion code, 0 is success
+	*/
+	Result lock() { int r = Thread_lock_mutex(mutex); return (Result)r; }
+	/**
+	* Unlock a mutex which has already been locked
+	* @param mutex the mutex
+	* @return completion code, 0 is success
+	*/
+	Result unlock() { int r = Thread_unlock_mutex(mutex); return (Result)r; }
 private:
 	mutex_type mutex;
+};
+
+class MutexLocker
+{
+public:
+	MutexLocker(ThreadMutex& mutex):m(mutex){ mutex.lock(); }
+	~MutexLocker() { m.unlock(); }
+private:
+	ThreadMutex& m;
 };
 
 thread_id_type Thread_getid();
@@ -79,14 +103,24 @@ int Thread_destroy_sem(sem_type sem);
 class ThreadEvent
 {
 public:
+	enum WaitResult
+	{
+		EventOk,
+		TimeOut
+	};
+	enum PostResult
+	{
+		PostOk = 0
+	};
+public:
 	ThreadEvent() {
 		event = Thread_create_sem();
 	}
-	int wait(int timeout) {
-		return Thread_wait_sem(event, timeout);
+	WaitResult wait(int timeout) {
+		return (WaitResult)Thread_wait_sem(event, timeout);
 	}
-	int post() {
-		return Thread_post_sem(event);
+	PostResult post() {
+		return (PostResult)Thread_post_sem(event);
 	}
 	bool isPosted() {
 		return Thread_check_sem(event);

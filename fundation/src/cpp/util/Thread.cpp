@@ -263,6 +263,12 @@ int Thread_wait_sem(sem_type sem, int timeout)
 	FUNC_ENTRY;
 	#if defined(WIN32) || defined(WIN64)
 		rc = WaitForSingleObject(sem, timeout);
+		if (rc == WAIT_OBJECT_0){
+			rc = 0;
+		}
+		else if (rc == WAIT_TIMEOUT){
+			rc = 1;
+		}
 	#elif defined(USE_TRYWAIT)
 		while (++i < count && (rc = sem_trywait(sem)) != 0)
 		{
@@ -278,6 +284,11 @@ int Thread_wait_sem(sem_type sem, int timeout)
 		{
 			ts.tv_sec += timeout;
 			rc = sem_timedwait(sem, &ts);
+			if (rc == -1) {
+				if (errno == ETIMEDOUT) {
+					rc = 1;
+				}
+			}
 		}
 	#endif
 

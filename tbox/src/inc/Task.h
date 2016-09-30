@@ -15,7 +15,7 @@ public:
 	};
 	u16 getApplicationId() { return applicationId; }
 	u16 getSessionId() { return sessionId; }
-private:
+protected:
 	u16 applicationId;
 	u16 sessionId;
 };

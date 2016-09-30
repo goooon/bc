@@ -17,6 +17,7 @@ void MqttHandler::reqDisconnect()
 
 bool MqttHandler::changeSubstate(SubState next)
 {
+	LOG_I("Mqtt:%d->%d", subState, next);
 	switch (next)
 	{
 	case MqttHandler::Unsubscribed:
@@ -44,6 +45,7 @@ bool MqttHandler::changeSubstate(SubState next)
 
 bool MqttHandler::changeState(State next)
 {
+	LOG_I("Mqtt:%d->%d", state, next);
 	switch (next)
 	{
 	case MqttHandler::Connected:
