@@ -10,6 +10,7 @@ public:
 		LOG_I("RemoteUnlockTask(%d,%d) run...",applicationId,sessionId);
 		e.wait(5000);
 		LOG_I("RemoteUnlockTask(%d,%d) finished", applicationId, sessionId);
+		bc_del this;
 	}
 	virtual bool handlePackage(void* data, int len) {
 		e.post();

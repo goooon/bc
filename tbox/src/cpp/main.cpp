@@ -8,7 +8,7 @@ int main(int argc, char* argv[]) {
 
 	Application app;
 	app.init(argc, argv);
-	app.startTask(new RemoteUnlockTask(0,1));
+	app.startTask(bc_new RemoteUnlockTask(0,1));
 	app.run();
 
 	uninitMeLib(lib);

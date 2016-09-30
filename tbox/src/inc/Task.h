@@ -3,7 +3,7 @@
 
 #include "./Message.h"
 
-class Task
+class Task : public Memory
 {
 public:
 	Task(u16 appId,u8 sessionId):applicationId(appId),sessionId(sessionId){}
