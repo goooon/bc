@@ -3,20 +3,37 @@
 
 #include "./Message.h"
 
-class Task : public Memory
+class Task : public Thread
 {
+	friend class Application;
+	friend class TaskList;
 public:
-	Task(u16 appId,u8 sessionId):applicationId(appId),sessionId(sessionId){}
+	Task(u16 appId,u8 sessionId,bool async):
+		prev(nullptr),
+		next(nullptr),
+		applicationId(appId),
+		sessionId(sessionId),
+		isAsync(async)
+	{}
 	virtual bool handlePackage(void* data, int len) {
 		return false;
 	}
-	virtual void run() {
-		return;
-	};
-	u16 getApplicationId() { return applicationId; }
-	u16 getSessionId() { return sessionId; }
+	u16  getApplicationId() { return applicationId; }
+	u16  getSessionId() { return sessionId; }
 protected:
-	u16 applicationId;
-	u16 sessionId;
+	virtual void doTask(){
+		return;
+	}
+private:
+	//called by Application
+	virtual void run()override;
+private:
+	Task* prev;
+	Task* next;
+	TaskList* refList;
+protected:
+	u16  applicationId;
+	u16  sessionId;
+	bool isAsync;
 };
 #endif // GUARD_Task_h__

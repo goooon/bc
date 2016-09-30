@@ -79,7 +79,7 @@ void MqttHandler::onConnected()
 
 void MqttHandler::onError(u32 ecode,char* emsg)
 {
-
+	LOG_E("Error:%d,%s", ecode, emsg);
 }
 
 void MqttHandler::onRecvPackage(void* data, int len)

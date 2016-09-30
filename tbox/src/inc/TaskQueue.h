@@ -7,7 +7,7 @@ class TaskQueue
 {
 public:
 	TaskQueue():tasks(100){}
-	bool push(Task* t)
+	bool in(Task* t)
 	{
 		if (mutex.lock() == ThreadMutex::Succed)
 		{
@@ -22,7 +22,7 @@ public:
 			return false;
 		}
 	}
-	Task* pop()
+	Task* out()
 	{ 
 		if (mutex.lock() == ThreadMutex::Succed)
 		{
@@ -69,6 +69,5 @@ public:
 private:
 	CycleQueue<Task*> tasks;
 	ThreadMutex       mutex;
-
 };
 #endif // GUARD_TaskFifo_h__

@@ -24,11 +24,15 @@
     <ClInclude Include="..\src\inc\Application.h" />
     <ClInclude Include="..\src\inc\CycleQueue.h" />
     <ClInclude Include="..\src\inc\dep.h" />
+    <ClInclude Include="..\src\inc\Event.h" />
+    <ClInclude Include="..\src\inc\List.h" />
     <ClInclude Include="..\src\inc\Message.h" />
     <ClInclude Include="..\src\inc\Mqtt.h" />
     <ClInclude Include="..\src\inc\RemoteUnlockTask.h" />
     <ClInclude Include="..\src\inc\State.h" />
     <ClInclude Include="..\src\inc\Task.h" />
+    <ClInclude Include="..\src\inc\TaskList.h" />
+    <ClInclude Include="..\src\inc\TaskQueue.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -40,6 +44,7 @@
     <ClCompile Include="..\src\cpp\dep.cpp" />
     <ClCompile Include="..\src\cpp\main.cpp" />
     <ClCompile Include="..\src\cpp\Mqtt.cpp" />
+    <ClCompile Include="..\src\cpp\Task.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A0138B76-5EFE-41DD-9941-2DE724A03109}</ProjectGuid>

@@ -15,6 +15,9 @@ public:
 		return true;
 	}
 private:
-
+public:
+	u32 ip;
+	u16 port;
+	char subscription[32];
 };
 #endif // GUARD_Config_h__

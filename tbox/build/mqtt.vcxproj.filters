@@ -45,6 +45,18 @@
     <ClInclude Include="..\src\inc\Mqtt.h">
       <Filter>src\inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\Event.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\TaskList.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\TaskQueue.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\List.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -66,6 +78,9 @@
       <Filter>src\cpp</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cpp\Mqtt.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\Task.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
   </ItemGroup>

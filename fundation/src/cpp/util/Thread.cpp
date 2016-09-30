@@ -47,6 +47,27 @@
 #include <memory.h>
 #include <stdlib.h>
 
+#if defined(WIN32) || defined(WIN64)
+DWORD WINAPI  PTHREAD_START_ROUTINE_IMP(LPVOID lpThreadParameter)
+{
+	Runnable* t = (Runnable*)lpThreadParameter;
+	t->run();
+	return 0;
+}
+#else
+thread_return_type PTHREAD_START_ROUTINE_IMP(void* lpThreadParameter)
+{
+	Runnable* t = (Runnable*)lpThreadParameter;
+	t->run();
+	return 0;
+}
+#endif
+
+void Thread::startThread(Runnable* fn)
+{
+	Thread_start(&PTHREAD_START_ROUTINE_IMP, fn);
+}
+
 /**
  * Start a new thread
  * @param fn the function to run, must be of the correct signature

@@ -47,6 +47,23 @@
 #endif
 
 thread_type Thread_start(thread_fn, void*);
+class Runnable
+{
+public:
+	virtual void run() = 0;
+};
+class Thread : public Runnable
+{
+public:
+	static void startThread(Runnable* fn);
+	void start()
+	{
+		startThread(this);
+	}
+	virtual void run()override{}
+private:
+	thread_type thread;
+};
 
 mutex_type Thread_create_mutex();
 int Thread_lock_mutex(mutex_type);
@@ -123,7 +140,7 @@ public:
 		return (PostResult)Thread_post_sem(event);
 	}
 	bool isPosted() {
-		return Thread_check_sem(event);
+		return Thread_check_sem(event) == 1;
 	}
 	~ThreadEvent() { Thread_destroy_sem(event); }
 private:

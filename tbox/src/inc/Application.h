@@ -4,17 +4,33 @@
 #include "./Message.h"
 #include "./Config.h"
 #include "./TaskQueue.h"
+#include "./TaskList.h"
 #include "./State.h"
-class Application
+#include "./Mqtt.h"
+#include "./Event.h"
+
+class Application : public Thread
 {
 public:
 	void init(int argc, char** argv);
-	bool startTask(Task* task);
-	void run();
+	bool startTask(Task* task,bool runAsThread);
+	//main loop process for event
+	void loop();
+protected:
+	//thread running for tasks
+	virtual void run()override;
+private:
+	void onEvent(AppEvent type,void* data,int len);
+protected:
+	void onNetConnected();
+	void onNetDisconnected();
 public:
-	Config config;
-	TaskQueue taskQueue;
-	ThreadEvent e;
+	Config      config;
+	TaskQueue   tasksWaiting;
+	TaskList    tasksWorking;
+	ThreadEvent taskEvent;
+	ThreadEvent appEvent;
+	MqttHandler mqtt;
 };
 
 

@@ -62,12 +62,22 @@ static threadEntry threads[MAX_THREADS];
 static threadEntry *cur_thread = NULL;
 
 #if defined(WIN32) || defined(WIN64)
-mutex_type stack_mutex;
+static mutex_type stack_mutex;
 #else
 static pthread_mutex_t stack_mutex_store = PTHREAD_MUTEX_INITIALIZER;
-static mutex_type stack_mutex = &stack_mutex_store;
+static mutex_type stack_mutex;// = &stack_mutex_store;
 #endif
 
+struct MutexGuard{
+	MutexGuard(){
+		stack_mutex = Thread_create_mutex();
+	}
+	~MutexGuard() {
+		Thread_destroy_mutex(stack_mutex);
+	}
+};
+
+static MutexGuard guard;
 
 int setStack(int create)
 {

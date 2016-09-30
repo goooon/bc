@@ -7,12 +7,19 @@ void Application::init(int argc, char** argv)
 		LOG_I("    %s", argv[i]);
 	})
 	config.parse(argc, argv);
+	Thread::startThread(this);
 }
 
-bool Application::startTask(Task* task)
+bool Application::startTask(Task* task,bool runAsThread)
 {
-	if (taskQueue.push(task)) {
-		ThreadEvent::PostResult pr = e.post();
+	if (runAsThread) {
+		tasksWorking.in(task);
+		task->refList = &tasksWorking;
+		Thread::startThread(task);
+		return true;
+	}
+	if (tasksWaiting.in(task)) {
+		auto pr = taskEvent.post();
 		if (ThreadEvent::PostOk == pr) {
 			LOG_I("startTask(%d,%d)", task->getApplicationId(), task->getSessionId());
 			return true;
@@ -28,28 +35,75 @@ bool Application::startTask(Task* task)
 	}
 }
 
+void Application::loop()
+{
+	while (true) {
+		LOG_I("Application loop...");
+		auto wr = appEvent.wait(500);
+		if (wr == ThreadEvent::EventOk) {
+			LOG_I("app event");
+		}
+		else if(wr == ThreadEvent::TimeOut){
+		}
+		else {
+			LOG_E("wrong wait result %d", wr);
+		}
+	}
+}
+
 void Application::run()
 {
 	while (true) {
-		LOG_I("Application run loop...");
-		ThreadEvent::WaitResult wr = e.wait(5000);
+		LOG_I("Application run...");
+		auto wr = taskEvent.wait(500);
 		if (wr == ThreadEvent::EventOk) {
-			if (!taskQueue.isEmpty())
-			{
-				Task* task = taskQueue.pop();
+			while (!tasksWaiting.isEmpty()) {
+				Task* task = tasksWaiting.out();
 				if (task != nullptr) {
-					task->run();
+					task->refList = &tasksWorking;
+					tasksWorking.in(task);
+					if (task->isAsync) {
+						task->run();
+					}
+					else {
+						Thread::startThread(task);
+					}
 				}
 				else {
 					LOG_W("task should no be null,something wrong");
 				}
 			}
 		}
-		else if(wr == ThreadEvent::TimeOut){
+		else if (wr == ThreadEvent::TimeOut) {
 
 		}
 		else {
 			LOG_E("wrong wait result %d", wr);
 		}
 	}
+}
+
+void Application::onEvent(AppEvent type, void* data, int len)
+{
+	switch (type)
+	{
+	case NetConnected:
+		onNetConnected();
+		break;
+	case NetDisconnected:
+		onNetDisconnected();
+		break;
+	default:
+		break;
+	}
+}
+
+void Application::onNetConnected()
+{
+	mqtt.reqConnect(config.ip, config.port, config.subscription);
+}
+
+void Application::onNetDisconnected()
+{
+	mqtt.reqDisconnect();
 }

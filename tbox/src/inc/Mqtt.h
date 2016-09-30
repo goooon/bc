@@ -23,7 +23,7 @@ class MqttHandler : public IMqttHandler
 	};
 public:
 	MqttHandler():state(Disconnected),subState(Unsubscribed){}
-	bool reqConnect(u32 ip, u32 port, char* subscript);;
+	bool reqConnect(u32 ip, u32 port, char* subscription);;
 	bool reqSendPackage(void* data, int len);
 	void reqDisconnect();;
 private:

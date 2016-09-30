@@ -4,13 +4,13 @@
 #include "./Task.h"
 class RemoteUnlockTask : public Task {
 public:
-	RemoteUnlockTask(u16 appId, u8 sessionId):Task(appId,sessionId){}
-	virtual void run()override
+	RemoteUnlockTask(u16 appId, u8 sessionId,bool async):Task(appId,sessionId,async){}
+	virtual void doTask()override
 	{
-		LOG_I("RemoteUnlockTask(%d,%d) run...",applicationId,sessionId);
+		LOG_I("Task(%d,%d) run...",applicationId,sessionId);
 		e.wait(5000);
-		LOG_I("RemoteUnlockTask(%d,%d) finished", applicationId, sessionId);
-		bc_del this;
+		LOG_I("Task(%d,%d) done", applicationId, sessionId);
+		return;
 	}
 	virtual bool handlePackage(void* data, int len) {
 		e.post();
