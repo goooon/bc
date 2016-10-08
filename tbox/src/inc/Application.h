@@ -15,7 +15,8 @@ public:
 	void init(int argc, char** argv);
 	bool startTask(Task* task,bool runAsThread);
 	//main loop process for event
-	void loop();
+	void loop(LoopBack lb);
+	void onCommand(char* cmd);
 protected:
 	//thread running for tasks
 	virtual void run()override;

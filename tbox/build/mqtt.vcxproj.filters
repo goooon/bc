@@ -13,6 +13,9 @@
     <Filter Include="src\cpp">
       <UniqueIdentifier>{91b29643-8480-4e3e-9d2a-bfa77414d86a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="bcp">
+      <UniqueIdentifier>{19a6d001-f0b6-4886-b24f-ae715ce3708a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\inc\Message.h">

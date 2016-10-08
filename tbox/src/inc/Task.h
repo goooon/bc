@@ -13,14 +13,15 @@ public:
 		next(nullptr),
 		applicationId(appId),
 		sessionId(sessionId),
-		isAsync(async)
-	{}
+		isAsync(async){}
+	u16  getApplicationId() { return applicationId; }
+	u16  getSessionId() { return sessionId; }
+public:
 	virtual bool handlePackage(void* data, int len) {
 		return false;
 	}
-	u16  getApplicationId() { return applicationId; }
-	u16  getSessionId() { return sessionId; }
 protected:
+	//the function should be override by its subclass
 	virtual void doTask(){
 		return;
 	}
@@ -28,12 +29,13 @@ private:
 	//called by Application
 	virtual void run()override;
 private:
+	////list node in refList//////////////////////////////////////////////////////////////////////
 	Task* prev;
 	Task* next;
 	TaskList* refList;
 protected:
-	u16  applicationId;
-	u16  sessionId;
+	u16  applicationId;	//ref in bcp
+	u16  sessionId;     //ref in bcp
 	bool isAsync;
 };
 #endif // GUARD_Task_h__
