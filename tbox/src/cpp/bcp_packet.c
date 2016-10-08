@@ -400,9 +400,6 @@ static u32 datagram_messages_unserialize(bcp_packet_t *p, u8 *buf, u32 i, u32 le
 	if (len < i + p->hdr.packet_len) {
 		return i;
 	}
-
-	
-
 	return i;
 }
 

@@ -30,25 +30,41 @@ bool Application::startTask(Task* task,bool runAsThread)
 		}
 	}
 	else {
-		LOG_E("Application::startTask() taskQueue.push() failed ");
+		LOG_E("Application::startTask() taskQueue.in() failed ");
 		return false;
 	}
 }
 
-void Application::loop()
+static Application* g_papp;
+void onCommand(char* cmd) {
+	g_papp->onCommand(cmd);
+}
+void Application::loop(LoopBack lb)
 {
-	while (true) {
-		LOG_I("Application loop...");
-		auto wr = appEvent.wait(500);
-		if (wr == ThreadEvent::EventOk) {
-			LOG_I("app event");
-		}
-		else if(wr == ThreadEvent::TimeOut){
-		}
-		else {
-			LOG_E("wrong wait result %d", wr);
+	if (lb == NULL) {
+		while (true) {
+			LOG_I("Application loop...");
+			auto wr = appEvent.wait(500);
+			if (wr == ThreadEvent::EventOk) {
+				LOG_I("app event");
+			}
+			else if (wr == ThreadEvent::TimeOut) {
+			}
+			else {
+				LOG_E("wrong wait result %d", wr);
+				break;
+			}
 		}
 	}
+	else {
+		g_papp = this;
+		lb(::onCommand);
+	}
+}
+
+void Application::onCommand(char* cmd)
+{
+	LOG_P(cmd);
 }
 
 void Application::run()
@@ -70,7 +86,8 @@ void Application::run()
 					}
 				}
 				else {
-					LOG_W("task should no be null,something wrong");
+					LOG_E("task should no be null,something wrong");
+					break;
 				}
 			}
 		}
@@ -79,6 +96,7 @@ void Application::run()
 		}
 		else {
 			LOG_E("wrong wait result %d", wr);
+			break;
 		}
 	}
 }
