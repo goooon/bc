@@ -35,30 +35,21 @@ bool Application::startTask(Task* task,bool runAsThread)
 	}
 }
 
-static Application* g_papp;
-void onCommand(char* cmd) {
-	g_papp->onCommand(cmd);
-}
-void Application::loop(LoopBack lb)
+
+void Application::loop()
 {
-	if (lb == NULL) {
-		while (true) {
-			LOG_I("Application loop...");
-			auto wr = appEvent.wait(500);
-			if (wr == ThreadEvent::EventOk) {
-				LOG_I("app event");
-			}
-			else if (wr == ThreadEvent::TimeOut) {
-			}
-			else {
-				LOG_E("wrong wait result %d", wr);
-				break;
-			}
+	while (true) {
+		LOG_I("Application loop...");
+		auto wr = appEvent.wait(500);
+		if (wr == ThreadEvent::EventOk) {
+			LOG_I("app event");
 		}
-	}
-	else {
-		g_papp = this;
-		lb(::onCommand);
+		else if (wr == ThreadEvent::TimeOut) {
+		}
+		else {
+			LOG_E("wrong wait result %d", wr);
+			break;
+		}
 	}
 }
 
@@ -78,7 +69,7 @@ void Application::run()
 				if (task != nullptr) {
 					task->refList = &tasksWorking;
 					tasksWorking.in(task);
-					if (task->isAsync) {
+					if (!task->isAsync) {
 						task->run();
 					}
 					else {

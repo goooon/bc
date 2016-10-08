@@ -5,19 +5,23 @@
 
 void* initDebugLib();
 void uninitDebugLib(void* lib);
-typedef void (*OnCommand)(char* cmd);
-typedef void (*LoopBack)(OnCommand onCommand);
+typedef void (*CmdCallback)(char* cmd);
+typedef void (*LoopCallback)(CmdCallback onCommand);
 #ifdef ME_DEBUGUI
 #define ME_STDIO
+#define ME_HASLUA
 #define WIN
 #define _WIN32
 #include "../../../../../../goooon/svn/Project/meLib/public/UILib.h"
+#include "../../../../../../goooon/svn/Project/external/lua-5.2.3/src/lua.hpp"
+//http://vinniefalco.com/LuaBridge/Manual.html
+#include "../../../../../../goooon/svn/Project/external/LuaBridge/LuaBridge.h"
 #pragma commit(lib,"meLib.lib")
 #define bc_new new
 #define bc_del delete
-#define bc_alloc alloc
+#define bc_alloc malloc
 #define bc_free  free
-LoopBack debugMain(int argc, char* argv[]);
+LoopCallback debugMain(int argc, char* argv[]);
 #else
 #include <stdio.h>
 #define LOG_P(fmt,...) do {printf(fmt, ##__VA_ARGS__);}while(0);
@@ -32,8 +36,8 @@ struct Memory
 };
 #define bc_new new
 #define bc_del delete
-#define bc_alloc alloc
+#define bc_alloc malloc
 #define bc_free  free
-LoopBack debugMain(int argc, char* argv[]);;
+LoopCallback debugMain(int argc, char* argv[]);;
 #endif
 #endif // GUARD_dep_h__

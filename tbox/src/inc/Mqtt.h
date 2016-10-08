@@ -25,7 +25,7 @@ public:
 	MqttHandler():state(Disconnected),subState(Unsubscribed){}
 	bool reqConnect(u32 ip, u32 port, char* subscription);;
 	bool reqSendPackage(void* data, int len);
-	void reqDisconnect();;
+	void reqDisconnect();
 private:
 	bool changeSubstate(SubState next);
 	bool changeState(State next);
