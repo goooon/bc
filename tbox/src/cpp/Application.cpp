@@ -109,7 +109,7 @@ void Application::onEvent(AppEvent type, void* data, int len)
 
 void Application::onNetConnected()
 {
-	mqtt.reqConnect(config.ip, config.port, config.subscription);
+	mqtt.reqConnect("tcp://m2m.eclipse.org:1883", config.topics,0);
 }
 
 void Application::onNetDisconnected()
