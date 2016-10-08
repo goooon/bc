@@ -75,6 +75,9 @@
     <ClInclude Include="..\src\inc\crc32.h">
       <Filter>src\inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\dep.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cpp\util\Heap.cpp">

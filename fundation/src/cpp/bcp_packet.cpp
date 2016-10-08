@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <memory.h>
+#include "../inc/dep.h"
 #include "../inc/bcp_packet.h"
 #include "../inc/crc32.h"
 #include "../inc/util/Thread.h"
@@ -387,7 +388,7 @@ s32 bcp_packet_serialize(bcp_packet_t *p, u8 **buf, u32 *len)
 
 	if (i != bytes) {
 		free(ibuf);
-		printf("bcp_packet_serialize failed\n");
+		LOG_W("bcp_packet_serialize failed\n");
 		return -1;
 	}
 
@@ -531,7 +532,7 @@ static u32 message_unserialize(bcp_packet_t *p,
 	}
 
 	if (message_len != m->hdr.message_len) {
-		printf("message_unserialize message len failed\n");
+		LOG_W("message_unserialize message len failed\n");
 		bcp_message_destroy(m);
 		*ret = -1;
 		return i;
@@ -564,7 +565,7 @@ static u32 messages_unserialize(bcp_packet_t *p,
 	}
 
 	if (packet_len != p->hdr.packet_len) {
-		printf("messages_unserialize packet len failed\n");
+		LOG_W("messages_unserialize packet len failed\n");
 		bcp_messages_destroy(&p->messages);
 		return i;
 	}
@@ -615,7 +616,7 @@ s32 bcp_packet_unserialize(u8 *buf, u32 len, bcp_packet_t **p)
 
 	if (len < sof_size + eof_size) {
 		bcp_packet_destroy(pk);
-		printf("bcp_packet_unserialize buf size failed.\n");
+		LOG_W("bcp_packet_unserialize buf size failed.\n");
 		return -1;
 	}
 
@@ -623,7 +624,7 @@ s32 bcp_packet_unserialize(u8 *buf, u32 len, bcp_packet_t **p)
 	if (!memcmp(&buf[0], &pk->hdr.sof[0], sof_size) ||
 		!memcmp(&buf[len - eof_size], &pk->end.eof[0], eof_size)) {
 		bcp_packet_destroy(pk);
-		printf("bcp_packet_unserialize sof or eof failed.\n");
+		LOG_W("bcp_packet_unserialize sof or eof failed.\n");
 		return -2;
 	}
 
@@ -634,14 +635,14 @@ s32 bcp_packet_unserialize(u8 *buf, u32 len, bcp_packet_t **p)
 
 	if (i != bcp_serialize_size(pk)) {
 		bcp_packet_destroy(pk);
-		printf("bcp_packet_unserialize decode failed.\n");
+		LOG_W("bcp_packet_unserialize decode failed.\n");
 		return -3;
 	}
 
 	crc32 = bcp_crc32(pk, buf, len);
 	if (crc32 != pk->end.crc32) {
 		bcp_packet_destroy(pk);
-		printf("bcp_packet_unserialize crc32 failed.\n");
+		LOG_W("bcp_packet_unserialize crc32 failed.\n");
 		return -4;
 	}
 
