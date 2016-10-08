@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../inc/dep.h"
+#include <memory.h>
 #include "../inc/bcp_packet.h"
-#include "../inc/Thread.h"
 #include "../inc/crc32.h"
+#include "../inc/util/Thread.h"
 
 static u64 seq_id = 0;
 static mutex_type mutex = NULL;
@@ -78,7 +78,7 @@ void bcp_elements_destroy(List *list)
 	ListElement* current = NULL;
 
 	while (ListNextElement(list, &current) != NULL) {
-		e = current->content;
+		e = (bcp_element_t*)current->content;
 		if (e) {
 			bcp_element_destroy(e);
 			current->content = NULL;
@@ -103,7 +103,7 @@ void bcp_messages_destroy(List *list)
 	ListElement* current = NULL;
 
 	while (ListNextElement(list, &current) != NULL) {
-		m = current->content;
+		m = (bcp_message_t*)current->content;
 		if (m) {
 			bcp_message_destroy(m);
 			current->content = NULL;
@@ -116,7 +116,7 @@ void bcp_messages_destroy(List *list)
 void bcp_packet_destroy(bcp_packet_t *p)
 {
 	if (!p) {
-		return NULL;
+		return;
 	}
 
 	bcp_messages_destroy(&p->messages);
@@ -193,7 +193,7 @@ bcp_message_t *bcp_message_create(u16 application_id,
 void bcp_message_append(bcp_packet_t *p, bcp_message_t *m)
 {
 	if (!p || !m) {
-		return NULL;
+		return;
 	}
 
 	if (!m->hdr.sequence_id) {
@@ -249,7 +249,7 @@ u32 bcp_crc32(bcp_packet_t *p, u8 *buf, u32 len)
 	hdrlen = datagram_crc_size(p);
 	start = buf + datagram_sof_size(p); /* step sof */
 	buflen = hdrlen + p->hdr.packet_len;
-	if (start + buflen > len) {
+	if (buflen > len - datagram_sof_size(p) - datagram_end_size(p)) {
 		return DEF_CRC32;
 	}
 	return calc_crc32(start, buflen);
@@ -277,7 +277,7 @@ static u32 message_hdr_serialize(bcp_application_header_t *hdr, u8 *buf, u32 i)
 	/* application id */
 	buf[i++] = (hdr->id >> 8) & 0xff;
 	buf[i++] = (hdr->id >> 0) & 0xff;
-	buf[i++] = ((hdr->stepid & 0xf) << 4) | (hdr->version & 0xf);
+	buf[i++] = ((hdr->step_id & 0xf) << 4) | (hdr->version & 0xf);
 	buf[i++] = (hdr->session_id) & 0xff;
 
 	/* seq id */
@@ -309,7 +309,7 @@ static u32 elements_serialize(bcp_message_t *m, u8 *buf, u32 i)
 	ListElement* current = NULL;
 
 	while (ListNextElement(&m->elements, &current) != NULL) {
-		e = current->content;
+		e = (bcp_element_t*)current->content;
 		if (e) {
 			i = element_serialize(e, buf, i);
 		}
@@ -324,7 +324,7 @@ static u32 messages_serialize(bcp_packet_t *p, u8 *buf, u32 i)
 	ListElement* current = NULL;
 
 	while (ListNextElement(&p->messages, &current) != NULL) {
-		m = current->content;
+		m = (bcp_message_t*)current->content;
 		if (m) {
 			i = message_hdr_serialize(&m->hdr, buf, i);
 			i = elements_serialize(m, buf, i);
@@ -387,7 +387,7 @@ s32 bcp_packet_serialize(bcp_packet_t *p, u8 **buf, u32 *len)
 
 	if (i != bytes) {
 		free(ibuf);
-		LOG_W("bcp_packet_serialize failed\n");
+		printf("bcp_packet_serialize failed\n");
 		return -1;
 	}
 
@@ -450,7 +450,7 @@ static u32 message_hdr_unserialize(bcp_message_t **m,
 	hdr.message_len |= buf[i++] << 8;
 	hdr.message_len |= buf[i++] << 0;
 
-	nm = bcp_message_create(hdr.id, hdr.setp_id, 
+	nm = bcp_message_create(hdr.id, hdr.step_id,
 		hdr.version, hdr.session_id);
 	if (!nm) {
 		return i;
@@ -531,7 +531,7 @@ static u32 message_unserialize(bcp_packet_t *p,
 	}
 
 	if (message_len != m->hdr.message_len) {
-		LOG_W("message_unserialize message len failed\n");
+		printf("message_unserialize message len failed\n");
 		bcp_message_destroy(m);
 		*ret = -1;
 		return i;
@@ -564,7 +564,7 @@ static u32 messages_unserialize(bcp_packet_t *p,
 	}
 
 	if (packet_len != p->hdr.packet_len) {
-		LOG_W("messages_unserialize packet len failed\n");
+		printf("messages_unserialize packet len failed\n");
 		bcp_messages_destroy(&p->messages);
 		return i;
 	}
@@ -585,7 +585,7 @@ static u32 datagram_end_unserialize(bcp_packet_t *p, u8 *buf, u32 i, u32 len)
 	crc32 |= buf[i++] << 8;
 	crc32 |= buf[i++] << 0;
 
-	p->crc32 = crc32;
+	p->end.crc32 = crc32;
 	
 	p->end.eof[0] = buf[i++];
 	p->end.eof[1] = buf[i++];
@@ -610,20 +610,20 @@ s32 bcp_packet_unserialize(u8 *buf, u32 len, bcp_packet_t **p)
 		return -1;
 	}
 
-	sof_size = datagram_hdr_size(p);
-	eof_size = datagram_end_size(p);
+	sof_size = datagram_hdr_size(pk);
+	eof_size = datagram_end_size(pk);
 
 	if (len < sof_size + eof_size) {
-		bcp_packet_destroy(p);
-		LOG_W("bcp_packet_unserialize buf size failed.\n");
+		bcp_packet_destroy(pk);
+		printf("bcp_packet_unserialize buf size failed.\n");
 		return -1;
 	}
 
 	/* validation sof & eof */
-	if (!bcmp(&buf[0], &pk->hdr.sof[0], sof_size) ||
-		!bcmp(&buf[len - eof_size], &pk->end.eof[0], eof_size) {
-		bcp_packet_destroy(p);
-		LOG_W("bcp_packet_unserialize sof or eof failed.\n");
+	if (!memcmp(&buf[0], &pk->hdr.sof[0], sof_size) ||
+		!memcmp(&buf[len - eof_size], &pk->end.eof[0], eof_size)) {
+		bcp_packet_destroy(pk);
+		printf("bcp_packet_unserialize sof or eof failed.\n");
 		return -2;
 	}
 
@@ -632,16 +632,16 @@ s32 bcp_packet_unserialize(u8 *buf, u32 len, bcp_packet_t **p)
 	i = messages_unserialize(pk, buf, i, len);
 	i = datagram_end_unserialize(pk, buf, i, len);
 
-	if (i != bcp_serialize_size(p)) {
-		bcp_packet_destroy(p);
-		LOG_W("bcp_packet_unserialize decode failed.\n");
+	if (i != bcp_serialize_size(pk)) {
+		bcp_packet_destroy(pk);
+		printf("bcp_packet_unserialize decode failed.\n");
 		return -3;
 	}
 
-	crc32 = bcp_crc32(p, buf, len);
+	crc32 = bcp_crc32(pk, buf, len);
 	if (crc32 != pk->end.crc32) {
-		bcp_packet_destroy(p);
-		LOG_W("bcp_packet_unserialize crc32 failed.\n");
+		bcp_packet_destroy(pk);
+		printf("bcp_packet_unserialize crc32 failed.\n");
 		return -4;
 	}
 
@@ -649,4 +649,3 @@ s32 bcp_packet_unserialize(u8 *buf, u32 len, bcp_packet_t **p)
 
 	return 0;
 }
-

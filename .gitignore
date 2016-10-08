@@ -1,0 +1,13 @@
+Debug/*
+debug/*
+*.tlog
+*.log
+*.obj
+*.db
+*.idb
+*.pdb
+*.lib
+*.ilk
+*.dll
+*.exp
+*.exe

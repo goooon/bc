@@ -69,6 +69,12 @@
     <ClInclude Include="..\src\inc\util\Tree.h">
       <Filter>src\inc\util</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\bcp_packet.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\crc32.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cpp\util\Heap.cpp">
@@ -88,6 +94,12 @@
     </ClCompile>
     <ClCompile Include="..\src\cpp\util\Tree.cpp">
       <Filter>src\cpp\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\crc32.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\bcp_packet.cpp">
+      <Filter>src\cpp</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
