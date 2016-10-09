@@ -4,6 +4,7 @@
 #include "../fundation/src/inc/dep.h"
 #include "../fundation/src/inc/bcp_packet.h"
 #include "../fundation/src/inc/bcp_comm.h"
+#include "../fundation/src/inc/bcp.h"
 
 #define ADDRESS "tcp://iot.eclipse.org:1883"
 #define PUB_CLIENTID "BCP_CLIENT_PUB"
@@ -160,12 +161,16 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
+	bcp_init();
+
 	ispub = atoi(argv[1]);
 	if (ispub) {
 		publish();
 	} else {
 		subscribe();
 	}
+
+	bcp_uninit();
 
 	return 0;
 }

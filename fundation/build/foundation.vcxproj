@@ -191,6 +191,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\inc\bcp.h" />
     <ClInclude Include="..\src\inc\bcp_comm.h" />
     <ClInclude Include="..\src\inc\bcp_packet.h" />
     <ClInclude Include="..\src\inc\core\Arch.h" />
@@ -210,6 +211,7 @@
     <ClInclude Include="..\src\inc\util\Tree.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\cpp\bcp.cpp" />
     <ClCompile Include="..\src\cpp\bcp_comm.cpp" />
     <ClCompile Include="..\src\cpp\bcp_packet.cpp" />
     <ClCompile Include="..\src\cpp\crc32.cpp" />
