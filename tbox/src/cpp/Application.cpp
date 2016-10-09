@@ -60,9 +60,11 @@ void Application::loop()
 	}
 }
 
-void Application::onCommand(char* cmd)
+bool Application::onCommand(char* cmd)
 {
-	LOG_P(cmd);
+	LOG_P(cmd);LOG_P("\r\n");
+	if (mqtt.onDebugCommand(cmd))return true;
+	return false;
 }
 
 bool Application::connectServer()
@@ -143,10 +145,12 @@ void Application::onServerDisconnected()
 
 void Application::onNetConnected()
 {
+	LOG_I("onNetConnected");
 	mqtt.reqConnect("tcp://m2m.eclipse.org:1883", config.topics,0);
 }
 
 void Application::onNetDisconnected()
 {
+	LOG_I("onNetDisconnected");
 	mqtt.reqDisconnect();
 }
