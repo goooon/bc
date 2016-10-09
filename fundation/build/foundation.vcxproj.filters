@@ -78,6 +78,15 @@
     <ClInclude Include="..\src\inc\dep.h">
       <Filter>src\inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\bcp_comm.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\MQTTAsync.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\MQTTClientPersistence.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cpp\util\Heap.cpp">
@@ -102,6 +111,9 @@
       <Filter>src\cpp</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cpp\bcp_packet.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\bcp_comm.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
   </ItemGroup>

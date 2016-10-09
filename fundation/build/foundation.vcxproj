@@ -191,6 +191,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\inc\bcp_comm.h" />
     <ClInclude Include="..\src\inc\bcp_packet.h" />
     <ClInclude Include="..\src\inc\core\Arch.h" />
     <ClInclude Include="..\src\inc\core\Compiler.h" />
@@ -199,6 +200,8 @@
     <ClInclude Include="..\src\inc\crc32.h" />
     <ClInclude Include="..\src\inc\dep.h" />
     <ClInclude Include="..\src\inc\fundation.h" />
+    <ClInclude Include="..\src\inc\MQTTAsync.h" />
+    <ClInclude Include="..\src\inc\MQTTClientPersistence.h" />
     <ClInclude Include="..\src\inc\util\Heap.h" />
     <ClInclude Include="..\src\inc\util\LinkedList.h" />
     <ClInclude Include="..\src\inc\util\Log.h" />
@@ -207,6 +210,7 @@
     <ClInclude Include="..\src\inc\util\Tree.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\cpp\bcp_comm.cpp" />
     <ClCompile Include="..\src\cpp\bcp_packet.cpp" />
     <ClCompile Include="..\src\cpp\crc32.cpp" />
     <ClCompile Include="..\src\cpp\util\Heap.cpp" />

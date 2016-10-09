@@ -1,12 +1,12 @@
 #ifndef __BCP_PACKET_H__
 #define __BCP_PACKET_H__
 
-//#ifdef __cplusplus
-//extern "C" {
-//#endif
-
 #include "./fundation.h"
 #include "./util/LinkedList.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef List list_t;
 struct bcp_packet_s;
@@ -50,6 +50,9 @@ typedef struct bcp_packet_s {
 	bcp_datagram_end_t end;
 } bcp_packet_t;
 
+typedef void bcp_element_foreach_callback_t(bcp_element_t *e, void *context);
+typedef void bcp_message_foreach_callback_t(bcp_message_t *m, void *context);
+
 void bcp_packet_init(void);
 void bcp_packet_uninit(void);
 
@@ -65,6 +68,8 @@ bcp_element_t *bcp_element_create(u8 *data, u32 len);
 void bcp_element_append(bcp_message_t *m, bcp_element_t *e);
 void bcp_element_destroy(bcp_element_t *e);
 
+void bcp_messages_foreach(bcp_packet_t *p, bcp_message_foreach_callback_t *cb, void *context);
+void bcp_elements_foreach(bcp_message_t *m, bcp_element_foreach_callback_t *cb, void *context);
 
 /*
  * serialize packet
@@ -88,8 +93,8 @@ s32 bcp_packet_serialize(bcp_packet_t *p, u8 **buf, u32 *len);
 */
 s32 bcp_packet_unserialize(u8 *buf, u32 len, bcp_packet_t **p);
 
-//#ifdef __cplusplus
-//}
-//#endif
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __BCP_PACKET_H__

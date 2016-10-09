@@ -62,16 +62,8 @@ bcp_packet_t *bcp_packet_create(u8 version)
 	return p;
 }
 
-void bcp_element_destroy(bcp_element_t *e)
-{
-	if (!e) {
-		return;
-	}
-	if (e->len > 0 && e->data) {
-		free(e->data);
-	}
-	free(e);
-}
+void bcp_element_destroy(bcp_element_t *e);
+void bcp_message_destroy(bcp_message_t *m);
 
 void bcp_elements_destroy(List *list)
 {
@@ -87,15 +79,6 @@ void bcp_elements_destroy(List *list)
 	}
 
 	ListEmpty(list);
-}
-
-void bcp_message_destroy(bcp_message_t *m)
-{
-	if (!m) {
-		return;
-	}
-	bcp_elements_destroy(&m->elements);
-	free(m);
 }
 
 void bcp_messages_destroy(List *list)
@@ -206,17 +189,51 @@ void bcp_message_append(bcp_packet_t *p, bcp_message_t *m)
 	m->p = p;
 }
 
+void bcp_messages_foreach(bcp_packet_t *p, bcp_message_foreach_callback_t *cb, void *context)
+{
+	bcp_message_t *m;
+	ListElement* current = NULL;
+
+	while (ListNextElement(&p->messages, &current) != NULL) {
+		m = (bcp_message_t*)current->content;
+		if (m) {
+			cb(m, context);
+		}
+	}
+}
+
+void bcp_message_destroy(bcp_message_t *m)
+{
+	if (!m) {
+		return;
+	}
+	bcp_elements_destroy(&m->elements);
+	if (m->p) {
+		m->p->hdr.packet_len -= message_hdr_size(m);
+	}
+	free(m);
+}
+
 bcp_element_t *bcp_element_create(u8 *data, u32 len)
 {
 	bcp_element_t *e;
+	u8 *pload;
 
 	e = (bcp_element_t*)malloc(sizeof(*e));
 	if (!e) {
 		return NULL;
 	}
 
+	pload = (u8*)malloc(len);
+	if (!pload) {
+		free(e);
+		return NULL;
+	}
+
+	memcpy(pload, data, len);
+
 	e->len = len;
-	e->data = data;
+	e->data = pload;
 
 	return e;
 }
@@ -233,8 +250,42 @@ void bcp_element_append(bcp_message_t *m, bcp_element_t *e)
 
 	sz = element_size(e);
 	m->hdr.message_len += sz;
-	m->p->hdr.packet_len += sz;
+	if (m->p) {
+		m->p->hdr.packet_len += sz;
+	} else {
+		LOG_W("message muste add to packet first.");
+	}
 	e->m = m;
+}
+
+void bcp_elements_foreach(bcp_message_t *m, bcp_element_foreach_callback_t *cb, void *context)
+{
+	bcp_element_t *e;
+	ListElement* current = NULL;
+
+	while (ListNextElement(&m->elements, &current) != NULL) {
+		e = (bcp_element_t*)current->content;
+		if (e) {
+			cb(e, context);
+		}
+	}
+}
+
+void bcp_element_destroy(bcp_element_t *e)
+{
+	if (!e) {
+		return;
+	}
+	if (e->len > 0 && e->data) {
+		free(e->data);
+	}
+	if (e->m) {
+		e->m->hdr.message_len -= element_size(e);
+		if (e->m->p) {
+			e->m->p->hdr.packet_len -= message_hdr_size(e->m);
+		}
+	}
+	free(e);
 }
 
 #define DEF_CRC32 0xaabbccdd
@@ -250,9 +301,6 @@ u32 bcp_crc32(bcp_packet_t *p, u8 *buf, u32 len)
 	hdrlen = datagram_crc_size(p);
 	start = buf + datagram_sof_size(p); /* step sof */
 	buflen = hdrlen + p->hdr.packet_len;
-	if (buflen > len - datagram_sof_size(p) - datagram_end_size(p)) {
-		return DEF_CRC32;
-	}
 	return calc_crc32(start, buflen);
 }
 
@@ -457,6 +505,7 @@ static u32 message_hdr_unserialize(bcp_message_t **m,
 		return i;
 	}
 
+	nm->hdr.message_len = hdr.message_len;
 	*m = nm;
 	
 	return i;
@@ -492,7 +541,7 @@ static u32 element_unserialize(bcp_message_t *m,
 		return i;
 	}
 
-	memcpy(data, buf, data_len);
+	memcpy(data, &buf[i], data_len);
 	i += data_len;
 
 	e = bcp_element_create(data, data_len);
@@ -523,6 +572,8 @@ static u32 message_unserialize(bcp_packet_t *p,
 		return i;
 	}
 
+	bcp_message_append(p, m);
+
 	message_len = m->hdr.message_len;
 	end = i + message_len;
 	m->hdr.message_len = 0; /* rebuild by element append */
@@ -538,7 +589,6 @@ static u32 message_unserialize(bcp_packet_t *p,
 		return i;
 	}
 
-	bcp_message_append(p, m);
 	*ret = 0;
 
 	return i;
