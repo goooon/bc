@@ -1,7 +1,14 @@
 #include "../inc/Application.h"
 
+static Application* g_inst;
+Application& Application::getInstance()
+{
+	return *g_inst;
+}
+
 void Application::init(int argc, char** argv)
 {
+	g_inst = this;
 	LOG_I("Application::init(%d)", argc);
 	DebugCode( for (int i = 0; i < argc; ++i) {
 		LOG_I("    %s", argv[i]);
@@ -35,42 +42,46 @@ bool Application::startTask(Task* task,bool runAsThread)
 	}
 }
 
-static Application* g_papp;
-void onCommand(char* cmd) {
-	g_papp->onCommand(cmd);
-}
-void Application::loop(LoopBack lb)
+
+void Application::loop()
 {
-	if (lb == NULL) {
-		while (true) {
-			LOG_I("Application loop...");
-			auto wr = appEvent.wait(500);
-			if (wr == ThreadEvent::EventOk) {
-				LOG_I("app event");
-			}
-			else if (wr == ThreadEvent::TimeOut) {
-			}
-			else {
-				LOG_E("wrong wait result %d", wr);
-				break;
-			}
+	while (true) {
+		LOG_I("Application loop...");
+		auto wr = appEvent.wait(500);
+		if (wr == ThreadEvent::EventOk) {
+			LOG_I("app event");
 		}
-	}
-	else {
-		g_papp = this;
-		lb(::onCommand);
+		else if (wr == ThreadEvent::TimeOut) {
+		}
+		else {
+			LOG_E("wrong wait result %d", wr);
+			break;
+		}
 	}
 }
 
-void Application::onCommand(char* cmd)
+bool Application::onCommand(char* cmd)
 {
-	LOG_P(cmd);
+	LOG_P(cmd);LOG_P("\r\n");
+	if (mqtt.onDebugCommand(cmd))return true;
+	return false;
+}
+
+bool Application::connectServer()
+{
+	onEvent(NetConnected, 0, 0);
+	return true;
+}
+
+void Application::disconnectServer()
+{
+	onEvent(NetDisconnected, 0, 0);
 }
 
 void Application::run()
 {
 	while (true) {
-		LOG_I("Application run...");
+		LOG_V("Application run...");
 		auto wr = taskEvent.wait(500);
 		if (wr == ThreadEvent::EventOk) {
 			while (!tasksWaiting.isEmpty()) {
@@ -78,7 +89,7 @@ void Application::run()
 				if (task != nullptr) {
 					task->refList = &tasksWorking;
 					tasksWorking.in(task);
-					if (task->isAsync) {
+					if (!task->isAsync) {
 						task->run();
 					}
 					else {
@@ -111,17 +122,35 @@ void Application::onEvent(AppEvent type, void* data, int len)
 	case NetDisconnected:
 		onNetDisconnected();
 		break;
+	case ServerConnected:
+		onServerConnected();
+		break;
+	case ServerDisconnected:
+		onServerDisconnected();
+		break;
 	default:
 		break;
 	}
 }
 
+void Application::onServerConnected()
+{
+	LOG_I("onServerConnected");
+}
+
+void Application::onServerDisconnected()
+{
+	LOG_I("onServerDisconnected");
+}
+
 void Application::onNetConnected()
 {
-	mqtt.reqConnect(config.ip, config.port, config.subscription);
+	LOG_I("onNetConnected");
+	mqtt.reqConnect("tcp://m2m.eclipse.org:1883", config.topics,0);
 }
 
 void Application::onNetDisconnected()
 {
+	LOG_I("onNetDisconnected");
 	mqtt.reqDisconnect();
 }

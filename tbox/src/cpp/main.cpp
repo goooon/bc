@@ -7,15 +7,21 @@
 int main(int argc, char* argv[]) {
 	void* lib = initDebugLib();
 
-	LoopBack lb = debugMain(argc, argv);
+	LoopCallback lc = debugMain(argc, argv);
 
 	Application app;
 	app.init(argc, argv);
-	app.startTask(bc_new RemoteUnlockTask(1, 2, true), true);
-	app.startTask(bc_new RemoteUnlockTask(2, 1, false), true);
-	app.startTask(bc_new RemoteUnlockTask(3, 2, true), false);
-	app.startTask(bc_new RemoteUnlockTask(4, 1, false), false);
-	app.loop(lb);
+	//app.startTask(bc_new RemoteUnlockTask(1, 2, false), false);
+	//app.startTask(bc_new RemoteUnlockTask(2, 1, false), true);
+	//app.startTask(bc_new RemoteUnlockTask(3, 2, true), false);
+	//app.startTask(bc_new RemoteUnlockTask(4, 1, false), false);
+
+	if (lc) {
+		lc(onCommand);
+	}
+	else {
+		app.loop();
+	}
 
 	uninitDebugLib(lib);
 	return 0;

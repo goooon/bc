@@ -12,17 +12,23 @@
 class Application : public Thread
 {
 public:
+	static Application& getInstance();
 	void init(int argc, char** argv);
 	bool startTask(Task* task,bool runAsThread);
 	//main loop process for event
-	void loop(LoopBack lb);
-	void onCommand(char* cmd);
+	void loop();
+	bool onCommand(char* cmd);
+public:
+	bool connectServer();
+	void disconnectServer();
 protected:
 	//thread running for tasks
 	virtual void run()override;
 private:
 	void onEvent(AppEvent type,void* data,int len);
 protected:
+	void onServerConnected();
+	void onServerDisconnected();
 	void onNetConnected();
 	void onNetDisconnected();
 public:
