@@ -31,7 +31,7 @@ public:
 	MqttHandler();
 	~MqttHandler();
 	bool reqConnect(char* url, char* topic,int qos);;
-	ThreadEvent::WaitResult reqSendPackage(void* payload, int payloadlen, int qos);
+	ThreadEvent::WaitResult reqSendPackage(void* payload, int payloadlen, int qos,int millSec);
 	bool reqSendPackageAsync(void* payload, int payloadlen, int qos);
 	void reqDisconnect();
 	bool isConnected();

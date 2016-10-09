@@ -29,7 +29,7 @@ public:
 		if (bcp_packet_serialize(pkg, &buf, &len) >= 0)
 		{
 			MqttHandler handler;
-			handler.reqSendPackage(buf, len,0);
+			handler.reqSendPackage(buf, len,0,5000);
 		}
 		bcp_packet_destroy(pkg);
 	}

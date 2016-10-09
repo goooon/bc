@@ -130,10 +130,10 @@ void Application::onEvent(AppEvent type, void* data, int len)
 	case NetDisconnected:
 		onNetDisconnected();
 		break;
-	case ServerConnected:
+	case MqttConnected:
 		onServerConnected();
 		break;
-	case ServerDisconnected:
+	case MqttDisconnected:
 		onServerDisconnected();
 		break;
 	default:

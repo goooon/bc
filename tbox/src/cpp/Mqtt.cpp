@@ -169,7 +169,7 @@ bool MqttHandler::reqConnect(char* url, char* topic,int qos)
 	return true;
 }
 
-ThreadEvent::WaitResult MqttHandler::reqSendPackage(void* payload, int payloadlen, int qos)
+ThreadEvent::WaitResult MqttHandler::reqSendPackage(void* payload, int payloadlen, int qos, int millSec)
 {
 	int retained = 0;
 	MQTTAsync_responseOptions ropts = MQTTAsync_responseOptions_initializer;
@@ -179,7 +179,7 @@ ThreadEvent::WaitResult MqttHandler::reqSendPackage(void* payload, int payloadle
 		return ThreadEvent::WaitResult::Errors;
 	}
 	LOG_I("Token was %d", ropts.token);
-	rc = MQTTAsync_waitForCompletion(client, ropts.token, 5000L);
+	rc = MQTTAsync_waitForCompletion(client, ropts.token, millSec);
 	if (MQTTASYNC_SUCCESS != rc) {
 		rc = MQTTAsync_isComplete(client, ropts.token);
 		if (MQTTASYNC_TRUE != rc) {

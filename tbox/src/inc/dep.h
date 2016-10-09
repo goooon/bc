@@ -8,15 +8,7 @@ void uninitDebugLib(void* lib);
 typedef void (*CmdCallback)(char* cmd);
 typedef void (*LoopCallback)(CmdCallback onCommand);
 #ifdef ME_DEBUGUI
-#define ME_STDIO
-#define ME_HASLUA
-#define WIN
-#define _WIN32
-#include "../../../../../../goooon/svn/Project/meLib/public/UILib.h"
-#include "../../../../../../goooon/svn/Project/external/lua-5.2.3/src/lua.hpp"
-//http://vinniefalco.com/LuaBridge/Manual.html
-#include "../../../../../../goooon/svn/Project/external/LuaBridge/LuaBridge.h"
-#pragma commit(lib,"meLib.lib")
+#include "./incdebug.h"
 #define bc_new new
 #define bc_del delete
 #define bc_alloc malloc
