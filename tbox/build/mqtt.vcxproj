@@ -50,6 +50,7 @@
     <ClCompile Include="..\src\cpp\CmdParser.cpp" />
     <ClCompile Include="..\src\cpp\Config.cpp" />
     <ClCompile Include="..\src\cpp\dep.cpp" />
+    <ClCompile Include="..\src\cpp\Event.cpp" />
     <ClCompile Include="..\src\cpp\main.cpp" />
     <ClCompile Include="..\src\cpp\Mqtt.cpp" />
     <ClCompile Include="..\src\cpp\Task.cpp" />

@@ -4,6 +4,17 @@
 #include "../inc/Application.h"
 #include "../inc/RemoteUnlockTask.h"
 
+class MainLoop : public Thread
+{
+	virtual void run()override
+	{
+		app.loop();
+	}
+public:
+	MainLoop(Application& app):app(app){}
+private:
+	Application& app;
+};
 int main(int argc, char* argv[]) {
 	void* lib = initDebugLib();
 
@@ -11,12 +22,10 @@ int main(int argc, char* argv[]) {
 
 	Application app;
 	app.init(argc, argv);
-	//app.startTask(bc_new RemoteUnlockTask(1, 2, false), false);
-	//app.startTask(bc_new RemoteUnlockTask(2, 1, false), true);
-	//app.startTask(bc_new RemoteUnlockTask(3, 2, true), false);
-	//app.startTask(bc_new RemoteUnlockTask(4, 1, false), false);
-
+	
 	if (lc) {
+		MainLoop loop(app);
+		Thread::startThread(&loop);
 		lc(onCommand);
 	}
 	else {
