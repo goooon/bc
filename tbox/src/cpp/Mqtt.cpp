@@ -44,6 +44,8 @@ void trace_callback(enum MQTTASYNC_TRACE_LEVELS level, char* message)
 }
 bool MqttHandler::reqConnect(char* url, char* topic,int qos)
 {
+	LOG_I("MqttHandler::reqConnect(%s,%s,%d)",url,topic,qos);
+
 	MQTTClient_connectOptions opts = MQTTClient_connectOptions_initializer;
 	MQTTClient_willOptions wopts = MQTTClient_willOptions_initializer;
 

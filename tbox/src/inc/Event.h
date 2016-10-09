@@ -6,6 +6,8 @@
 enum AppEvent
 {
 	NetConnected,
+	ServerConnected,
+	ServerDisconnected,
 	NetDisconnected
 };
 #endif // MQTT_GUARD_Event_h__

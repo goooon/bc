@@ -1,7 +1,14 @@
 #include "../inc/Application.h"
 
+static Application* g_inst;
+Application& Application::getInstance()
+{
+	return *g_inst;
+}
+
 void Application::init(int argc, char** argv)
 {
+	g_inst = this;
 	LOG_I("Application::init(%d)", argc);
 	DebugCode( for (int i = 0; i < argc; ++i) {
 		LOG_I("    %s", argv[i]);
@@ -58,10 +65,21 @@ void Application::onCommand(char* cmd)
 	LOG_P(cmd);
 }
 
+bool Application::connectServer()
+{
+	onEvent(NetConnected, 0, 0);
+	return true;
+}
+
+void Application::disconnectServer()
+{
+	onEvent(NetDisconnected, 0, 0);
+}
+
 void Application::run()
 {
 	while (true) {
-		LOG_I("Application run...");
+		LOG_V("Application run...");
 		auto wr = taskEvent.wait(500);
 		if (wr == ThreadEvent::EventOk) {
 			while (!tasksWaiting.isEmpty()) {
@@ -102,9 +120,25 @@ void Application::onEvent(AppEvent type, void* data, int len)
 	case NetDisconnected:
 		onNetDisconnected();
 		break;
+	case ServerConnected:
+		onServerConnected();
+		break;
+	case ServerDisconnected:
+		onServerDisconnected();
+		break;
 	default:
 		break;
 	}
+}
+
+void Application::onServerConnected()
+{
+	LOG_I("onServerConnected");
+}
+
+void Application::onServerDisconnected()
+{
+	LOG_I("onServerDisconnected");
 }
 
 void Application::onNetConnected()

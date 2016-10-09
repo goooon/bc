@@ -22,6 +22,7 @@ typedef void (*LoopCallback)(CmdCallback onCommand);
 #define bc_alloc malloc
 #define bc_free  free
 LoopCallback debugMain(int argc, char* argv[]);
+void onCommand(char* cmd);
 #else
 #include <stdio.h>
 #define LOG_P(fmt,...) do {printf(fmt, ##__VA_ARGS__);}while(0);
@@ -39,5 +40,6 @@ struct Memory
 #define bc_alloc malloc
 #define bc_free  free
 LoopCallback debugMain(int argc, char* argv[]);;
+void onCommand(char* cmd);
 #endif
 #endif // GUARD_dep_h__
