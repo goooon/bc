@@ -26,6 +26,7 @@ void onCommand(char* cmd);
 #else
 #include <stdio.h>
 #define LOG_P(fmt,...) do {printf(fmt, ##__VA_ARGS__);}while(0);
+#define LOG_V(fmt,...) do {printf(fmt, ##__VA_ARGS__);printf("\n");} while (0);
 #define LOG_I(fmt,...) do {printf(fmt, ##__VA_ARGS__);printf("\n");} while (0);
 #define LOG_W(fmt,...) do {printf(fmt, ##__VA_ARGS__);printf("\n");} while (0);
 #define LOG_E(fmt,...) do {printf(fmt, ##__VA_ARGS__);printf("\n");} while (0);

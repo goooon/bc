@@ -169,10 +169,44 @@ bool MqttHandler::reqConnect(char* url, char* topic,int qos)
 	return true;
 }
 
-bool MqttHandler::reqSendPackage(void* payload, int payloadlen,int qos)
+ThreadEvent::WaitResult MqttHandler::reqSendPackage(void* payload, int payloadlen, int qos)
 {
-	return 0;
+	int retained = 0;
+	MQTTAsync_responseOptions ropts = MQTTAsync_responseOptions_initializer;
+	int rc = MQTTAsync_send(client, topicName, payloadlen, payload, qos, retained, &ropts);
+	if (MQTTASYNC_SUCCESS != rc) {
+		LOG_E("reqSendPackage() failed %d", rc);
+		return ThreadEvent::WaitResult::Errors;
+	}
+	LOG_I("Token was %d", ropts.token);
+	rc = MQTTAsync_waitForCompletion(client, ropts.token, 5000L);
+	if (MQTTASYNC_SUCCESS != rc) {
+		rc = MQTTAsync_isComplete(client, ropts.token);
+		if (MQTTASYNC_TRUE != rc) {
+			LOG_W("MQTTAsync_waitForCompletion() timeout %d", rc);
+			return ThreadEvent::WaitResult::TimeOut;
+		}
+		else {
+			LOG_W("MQTTAsync_waitForCompletion() failed %d", rc);
+			return ThreadEvent::WaitResult::Errors;
+		}
+	}
+	return ThreadEvent::WaitResult::EventOk;
 }
+
+bool MqttHandler::reqSendPackageAsync(void* payload, int payloadlen, int qos)
+{
+	int retained = 0;
+	MQTTAsync_responseOptions ropts = MQTTAsync_responseOptions_initializer;
+	int rc = MQTTAsync_send(client, topicName, payloadlen, payload, qos, retained, &ropts);
+	if (MQTTASYNC_SUCCESS != rc) {
+		LOG_E("reqSendPackage() failed %d", rc);
+		return false;
+	}
+	LOG_I("Token was %d", ropts.token);
+	return true;
+}
+
 void Mqtt_onDisconnected(void* context, MQTTAsync_successData* response)
 {
 	MqttHandler* c = (MqttHandler*)context;

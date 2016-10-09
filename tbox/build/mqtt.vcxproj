@@ -137,7 +137,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\goooon\svn\lib\win32\Con Debug;$(SolutionDir)lib\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>foundation.lib;paho-mqtt3c.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>foundation.lib;paho-mqtt3a.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)bin\$(Platform)\$(Configuration)\$(ProjectName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>

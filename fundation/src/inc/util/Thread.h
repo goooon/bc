@@ -123,7 +123,8 @@ public:
 	enum WaitResult
 	{
 		EventOk,
-		TimeOut
+		TimeOut,
+		Errors
 	};
 	enum PostResult
 	{

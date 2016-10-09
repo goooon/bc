@@ -1,5 +1,5 @@
 #include "../inc/Application.h"
-
+#include "../inc/RemoteUnlockTask.h"
 static Application* g_inst;
 Application& Application::getInstance()
 {
@@ -63,6 +63,14 @@ void Application::loop()
 bool Application::onCommand(char* cmd)
 {
 	LOG_P(cmd);LOG_P("\r\n");
+	if (!strcmp(cmd, "unlock")) {
+		startTask(bc_new RemoteUnlockTask(1, 2, true),false);
+		return true;
+	}
+	if (!strcmp(cmd, "lock")) {
+		startTask(bc_new RemoteUnlockTask(1, 2, true), false);
+		return true;
+	}
 	if (mqtt.onDebugCommand(cmd))return true;
 	return false;
 }
