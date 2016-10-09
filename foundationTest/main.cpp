@@ -38,7 +38,7 @@ static void on_disconnected(void *context)
 
 static void bcp_element_foreach_callback(bcp_element_t *e, void *context)
 {
-	LOG_I("ele: %s,%d", e->data, e->len);
+	LOG_I("element: %s,%d", e->data, e->len);
 }
 
 static void bcp_message_foreach_callback(bcp_message_t *m, void *context)
@@ -59,7 +59,7 @@ static void on_packet_arrived(void *context, bcp_packet_t *p)
 
 static void on_packet_delivered(void *context, int token)
 {
-	LOG_I("APP:package delivered, 0x%x", token);
+	LOG_I("APP:package delivered, %d", token);
 }
 
 static bcp_conn_callbacks_t cbs = {

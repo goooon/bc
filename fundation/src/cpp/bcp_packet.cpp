@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <memory.h>
+#include <time.h>
 #include "../inc/dep.h"
 #include "../inc/bcp_packet.h"
 #include "../inc/crc32.h"
@@ -26,12 +27,13 @@ void bcp_packet_uninit(void)
 u64 bcp_next_seq_id(void)
 {
 	u64 id = 0;
+	time_t t = time(NULL);
 
 	Thread_lock_mutex(mutex);
 	id = seq_id++;
 	Thread_unlock_mutex(mutex);
 
-	return id;
+	return (u64)t + id;
 }
 
 bcp_packet_t *bcp_packet_create(u8 version)
