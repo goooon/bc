@@ -42,7 +42,6 @@ bool Application::startTask(Task* task,bool runAsThread)
 	}
 }
 
-
 void Application::loop()
 {
 	while (true) {
@@ -75,7 +74,7 @@ void Application::loop()
 	}
 }
 
-bool Application::onCommand(char* cmd)
+bool Application::onDebugCommand(char* cmd)
 {
 	LOG_P(cmd);LOG_P("\r\n");
 	if (!strcmp(cmd, "unlock")) {
@@ -84,6 +83,14 @@ bool Application::onCommand(char* cmd)
 	}
 	if (!strcmp(cmd, "lock")) {
 		startTask(bc_new RemoteUnlockTask(1, 2, true), false);
+		return true;
+	}
+	if (!strcmp(cmd, "connMqtt")) {
+		mqtt.reqConnect(config.mqttServer, config.topics, 0);
+		return true;
+	}
+	if (!strcmp(cmd, "discMqtt")) {
+		mqtt.reqDisconnect();
 		return true;
 	}
 	if (mqtt.onDebugCommand(cmd))return true;
@@ -178,7 +185,7 @@ void Application::onServerDisconnected()
 void Application::onNetConnected()
 {
 	LOG_I("onNetConnected");
-	mqtt.reqConnect("tcp://m2m.eclipse.org:1883", config.topics,0);
+	mqtt.reqConnect(config.mqttServer, config.topics,0);
 }
 
 void Application::onNetDisconnected()

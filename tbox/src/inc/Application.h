@@ -18,7 +18,7 @@ public:
 	bool startTask(Task* task,bool runAsThread);
 	//main loop process for event
 	void loop();
-	bool onCommand(char* cmd);
+	bool onDebugCommand(char* cmd);
 public:
 	bool connectServer();
 	void disconnectServer();
