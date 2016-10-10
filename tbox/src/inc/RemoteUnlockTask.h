@@ -29,7 +29,7 @@ public:
 	}
 	void sendAck() {
 		u8 ack = 1;
-		bcp_packet_t *pkg = bcp_packet_create(1);
+		bcp_packet_t *pkg = bcp_packet_create();
 		bcp_message_t *msg = bcp_message_create(applicationId,1, 2, sessionId);
 		bcp_message_append(pkg, msg);
 		bcp_element_t *ele = bcp_element_create(&ack, 1);

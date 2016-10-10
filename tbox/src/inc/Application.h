@@ -29,7 +29,7 @@ private:
 	void onEvent(AppEvent e, u32 param1, u32 param2, void* data);
 	bool postAppEvent(AppEvent e, u32 param1, u32 param2, void* data);
 protected:
-	void onMqttEvent();
+	void onMqttEvent(u32 param1, u32 param2, void* data);
 	void onNetConnected();
 	void onNetDisconnected();
 public:

@@ -205,10 +205,27 @@ ThreadEvent::WaitResult MqttHandler::reqSendPackage(void* payload, int payloadle
 	return ThreadEvent::WaitResult::EventOk;
 }
 
-bool MqttHandler::reqSendPackageAsync(void* payload, int payloadlen, int qos)
+void SendPackageAsync_onSuccess(void* context, MQTTAsync_successData* response)
+{
+	typedef void(*OnResult)(bool);
+	OnResult r = (OnResult)context;
+	r(true);
+}
+
+void SendPackageAsync_onFailure(void* context, MQTTAsync_failureData* response)
+{
+	typedef void(*OnResult)(bool);
+	OnResult r = (OnResult)context;
+	r(false);
+}
+
+bool MqttHandler::reqSendPackageAsync(void* payload, int payloadlen, int qos, void(*onResult)(bool))
 {
 	int retained = 0;
 	MQTTAsync_responseOptions ropts = MQTTAsync_responseOptions_initializer;
+	ropts.onSuccess = SendPackageAsync_onSuccess;
+	ropts.onFailure = SendPackageAsync_onFailure;
+	ropts.context = onResult;
 	int rc = MQTTAsync_send(client, topicName, payloadlen, payload, qos, retained, &ropts);
 	if (MQTTASYNC_SUCCESS != rc) {
 		LOG_E("reqSendPackage() failed %d", rc);
