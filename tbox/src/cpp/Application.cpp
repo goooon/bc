@@ -48,7 +48,6 @@ void Application::loop()
 		LOG_V("Application loop...");
 		auto wr = appEvent.wait(500);
 		if (wr == ThreadEvent::EventOk) {
-			LOG_I("app event");
 			while (!appEventQueue.isEmpty()) {
 				AppEvent e;
 				u32 param1;
@@ -153,7 +152,7 @@ void Application::onEvent(AppEvent e, u32 param1, u32 param2, void* data)
 		onNetDisconnected();
 		break;
 	case MqttEvent:
-		onMqttEvent();
+		onMqttEvent(param1,param2,data);
 		break;
 	default:
 		break;
@@ -169,10 +168,9 @@ bool Application::postAppEvent(AppEvent e, u32 param1, u32 param2, void* data)
 	return ret;
 }
 
-void Application::onMqttEvent()
+void Application::onMqttEvent(u32 param1, u32 param2, void* data)
 {
-	LOG_I("onMqttEvent");
-	
+	LOG_I("onMqttEvent(%d,%d,0x%x)",param1,param2,data);
 }
 
 void Application::onNetConnected()
