@@ -51,12 +51,12 @@ void Application::loop()
 			LOG_I("app event");
 			while (!appEventQueue.isEmpty()) {
 				AppEvent e;
-				u32 param;
+				u32 param1;
 				void* data;
-				int len;
-				bool ok = appEventQueue.out(e,param,data,len);
+				u32 param2;
+				bool ok = appEventQueue.out(e, param1,param2,data);
 				if (ok) {
-					onEvent(e, param, data, len);
+					onEvent(e, param1,param2,data);
 				}
 				else {
 					LOG_E("task should no be null,something wrong");
@@ -142,9 +142,9 @@ void Application::run()
 	}
 }
 
-void Application::onEvent(AppEvent type,u32 param, void* data, int len)
+void Application::onEvent(AppEvent e, u32 param1, u32 param2, void* data)
 {
-	switch (type)
+	switch (e)
 	{
 	case NetConnected:
 		onNetConnected();
@@ -152,34 +152,27 @@ void Application::onEvent(AppEvent type,u32 param, void* data, int len)
 	case NetDisconnected:
 		onNetDisconnected();
 		break;
-	case MqttConnected:
-		onServerConnected();
-		break;
-	case MqttDisconnected:
-		onServerDisconnected();
+	case MqttEvent:
+		onMqttEvent();
 		break;
 	default:
 		break;
 	}
 }
 
-bool Application::setAppEvent(AppEvent type, u32 param, void* data, int len)
+bool Application::postAppEvent(AppEvent e, u32 param1, u32 param2, void* data)
 {
-	bool ret = appEventQueue.in(type, param, data, len);
+	bool ret = appEventQueue.in(e, param1,param2, data);
 	if (ret) {
 		appEvent.post();
 	}
 	return ret;
 }
 
-void Application::onServerConnected()
+void Application::onMqttEvent()
 {
-	LOG_I("onServerConnected");
-}
-
-void Application::onServerDisconnected()
-{
-	LOG_I("onServerDisconnected");
+	LOG_I("onMqttEvent");
+	
 }
 
 void Application::onNetConnected()

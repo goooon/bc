@@ -7,33 +7,32 @@
 enum AppEvent
 {
 	NetConnected,
-	MqttConnected,
-	MqttDisconnected,
+	MqttEvent,
 	NetDisconnected
 };
 
-bool PostEvent(AppEvent e,u32 param, void* data, int len);
+bool PostEvent(AppEvent e,u32 param1, u32 param2,void* data);
 
 class EventQueue
 {
 	struct Node
 	{
 		AppEvent e;
-		u32 param;
+		u32 param1;
+		u32 param2;
 		void* data;
-		int len;
 	};
 public:
 	EventQueue() :events(100) {}
-	bool in(AppEvent type, u32 param, void* data, int len)
+	bool in(AppEvent e, u32 param1, u32 param2, void* data)
 	{
 		if (mutex.lock() == ThreadMutex::Succed)
 		{
 			Node t;
 			t.data = data;
-			t.e = type;
-			t.param = param;
-			t.len = len;
+			t.e = e;
+			t.param1 = param1;
+			t.param2 = param2;
 			bool r = events.push(t);
 			mutex.unlock();
 			return r;
@@ -45,7 +44,7 @@ public:
 			return false;
 		}
 	}
-	bool out(AppEvent& type, u32& param, void*& data, int& len)
+	bool out(AppEvent& type, u32& param1, u32& param2,void*& data)
 	{
 		if (mutex.lock() == ThreadMutex::Succed)
 		{
@@ -53,9 +52,9 @@ public:
 			bool ret = events.pop(out);
 			mutex.unlock();
 			type = out.e;
-			param = out.param;
+			param1 = out.param1;
 			data = out.data;
-			len = out.len;
+			param2 = out.param2;
 			return ret;
 		}
 		else
