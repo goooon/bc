@@ -157,6 +157,7 @@ void bcp_element_append(bcp_message_t *m, bcp_element_t *e)
 	m->hdr.message_len += element_size(e);
 	e->m = m;
 
+	/* appending element last */
 	if (m->p) {
 		m->p->hdr.packet_len += element_size(e);
 	}
@@ -165,10 +166,36 @@ void bcp_element_append(bcp_message_t *m, bcp_element_t *e)
 int bcp_element_remove(bcp_element_t *e)
 {
 	if (e && e->m && ListDetach(&e->m->elements, e)) {
+		e->m->hdr.message_len -= element_size(e);
+		/* remove element first */
+		if (e->m->p) {
+			e->m->p->hdr.packet_len -= element_size(e);
+		}
+		e->m = NULL;
 		return 0;
 	} else {
 		return -1;
 	}
+}
+
+bcp_element_t *bcp_next_element(bcp_message_t *m, bcp_element_t *prev)
+{
+	ListElement *current, *prev_le;
+	bcp_element_t *e = NULL;
+
+	if (prev) {
+		prev_le = prev->le;
+	} else {
+		prev_le = NULL;
+	}
+
+	current = ListNextElement(&m->elements, &prev_le);
+	if (current) {
+		e = (bcp_element_t*)current->content;
+		e->le = current;
+	}
+
+	return e;
 }
 
 void bcp_elements_foreach(bcp_message_t *m, bcp_element_foreach_callback_t *cb, void *context)
@@ -193,11 +220,9 @@ void bcp_element_destroy(bcp_element_t *e)
 	if (!e) {
 		return;
 	}
+	bcp_element_remove(e);
 	if (e->len > 0 && e->data) {
 		free(e->data);
-	}
-	if (e->m) {
-		e->m->hdr.message_len -= element_size(e);
 	}
 	free(e);
 }
@@ -266,10 +291,32 @@ void bcp_message_append(bcp_packet_t *p, bcp_message_t *m)
 int bcp_message_remove(bcp_message_t *m)
 {
 	if (m && m->p && ListDetach(&m->p->messages, m)) {
+		m->p->hdr.packet_len -= message_size(m);
+		m->p = NULL;
 		return 0;
 	} else {
 		return -1;
 	}
+}
+
+bcp_message_t *bcp_next_message(bcp_packet_t *p, bcp_message_t *prev)
+{
+	ListElement *current, *prev_le;
+	bcp_message_t *m = NULL;
+
+	if (prev) {
+		prev_le = prev->le;
+	} else {
+		prev_le = NULL;
+	}
+
+	current = ListNextElement(&p->messages, &prev_le);
+	if (current) {
+		m = (bcp_message_t*)current->content;
+		m->le = current;
+	}
+
+	return m;
 }
 
 void bcp_messages_foreach(bcp_packet_t *p, bcp_message_foreach_callback_t *cb, void *context)
@@ -294,10 +341,8 @@ void bcp_message_destroy(bcp_message_t *m)
 	if (!m) {
 		return;
 	}
+	bcp_message_remove(m);
 	bcp_elements_destroy(&m->elements);
-	if (m->p) {
-		m->p->hdr.packet_len -= message_size(m);
-	}
 	free(m);
 }
 

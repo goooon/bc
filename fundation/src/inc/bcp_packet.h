@@ -27,6 +27,7 @@ typedef struct bcp_element_s {
 	u32 len;
 	u8 *data;
 	struct bcp_message_s *m;
+	ListElement *le;
 } bcp_element_t;
 
 typedef struct bcp_application_header_s {
@@ -42,6 +43,7 @@ typedef struct bcp_message_s {
 	bcp_application_header_t hdr;
 	List elements;
 	struct bcp_packet_s *p;
+	ListElement *le;
 } bcp_message_t;
 
 typedef struct bcp_packet_s {
@@ -69,6 +71,9 @@ bcp_element_t *bcp_element_create(u8 *data, u32 len);
 void bcp_element_append(bcp_message_t *m, bcp_element_t *e);
 int bcp_element_remove(bcp_element_t *e);
 void bcp_element_destroy(bcp_element_t *e);
+
+bcp_element_t *bcp_next_element(bcp_message_t *m, bcp_element_t *prev);
+bcp_message_t *bcp_next_message(bcp_packet_t *p, bcp_message_t *prev);
 
 void bcp_messages_foreach(bcp_packet_t *p, bcp_message_foreach_callback_t *cb, void *context);
 void bcp_elements_foreach(bcp_message_t *m, bcp_element_foreach_callback_t *cb, void *context);

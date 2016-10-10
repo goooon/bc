@@ -1,5 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+
+#if defined(WIN32)
+#define SPRINTF sprintf_s
+#else
+#define SPRINTF sprintf
+#endif
 
 #include "../fundation/src/inc/dep.h"
 #include "../fundation/src/inc/bcp_packet.h"
@@ -12,9 +19,16 @@
 
 #define TOPIC "/beecloud"
 #define ELEMENT "ele"
+#define ELEMENT2 "ele2"
 
 static void *hdl;
 static int connected = 0;
+
+static int my_rnd(int c)
+{
+	srand((int)time(NULL));
+	return rand() % c;
+}
 
 static void my_sleep(int milis)
 {
@@ -37,24 +51,55 @@ static void on_disconnected(void *context)
 	connected = 0;
 }
 
+static void print_element(bcp_element_t *e)
+{
+	LOG_I("\t\telement: %s,%d", e->data, e->len);
+}
+
 static void bcp_element_foreach_callback(bcp_element_t *e, void *context)
 {
-	LOG_I("element: %s,%d", e->data, e->len);
+	print_element(e);
+}
+
+static void print_message(bcp_message_t *m)
+{
+	LOG_I("\tmessage: seqid=%llx, appid=%d, sessid=%d, stepid=%d, ver=%d, msglen=%d", 
+		m->hdr.sequence_id, m->hdr.id, m->hdr.session_id,
+		m->hdr.step_id, m->hdr.version, m->hdr.message_len);
 }
 
 static void bcp_message_foreach_callback(bcp_message_t *m, void *context)
 {
-	LOG_I("seqid=%llx, appid=%d, sessid=%d, stepid=%d, ver=%d, msglen=%d", 
-		m->hdr.sequence_id, m->hdr.id, m->hdr.session_id,
-		m->hdr.step_id, m->hdr.version, m->hdr.message_len);
+	print_message(m);
 	bcp_elements_foreach(m, bcp_element_foreach_callback, NULL);
+}
+
+static void parse_packet(bcp_packet_t *p)
+{
+	bcp_message_t *m = NULL;
+	bcp_element_t *e = NULL;
+
+	//bcp_messages_foreach(p, bcp_message_foreach_callback, NULL);
+
+	while ((m = bcp_next_message(p, m)) != NULL) {
+		print_message(m);
+		e = NULL;
+		while ((e = bcp_next_element(m, e)) != NULL) {
+			print_element(e);
+		}
+	}
+}
+
+static void print_packet(bcp_packet_t *p)
+{
+	LOG_I("APP:package arrived, v=%d, plen=%d, crc=0x%x", 
+		p->hdr.version, p->hdr.packet_len, p->end.crc32);
 }
 
 static void on_packet_arrived(void *context, bcp_packet_t *p)
 {
-	LOG_I("APP:package arrived, v=%d, plen=%d, crc=0x%x", 
-		p->hdr.version, p->hdr.packet_len, p->end.crc32);
-	bcp_messages_foreach(p, bcp_message_foreach_callback, NULL);
+	print_packet(p);
+	parse_packet(p);
 	bcp_packet_destroy(p);
 }
 
@@ -70,11 +115,42 @@ static bcp_conn_callbacks_t cbs = {
 	on_packet_delivered
 };
 
+static void create_elements(bcp_message_t *m, int count)
+{
+	int i;
+	char buf[20];
+	bcp_element_t *e;
+
+	for (i = 0; i < count; i++) {
+		SPRINTF(buf, "ele%d", i);
+		e = bcp_element_create((u8*)buf, strlen(buf) + 1);
+		bcp_element_append(m, e);
+		if (i > 0 && i % 4 == 0) {
+			LOG_I("deleteing %d", i);
+			bcp_element_destroy(e);
+		}
+	}
+}
+
+static void create_messages(bcp_packet_t *p, int count)
+{
+	int i;
+	bcp_message_t *m;
+
+	for (i = 0; i < count; i++) {
+		m = bcp_message_create(i, i + 1, i + 2, i + 3);
+		bcp_message_append(p, m);
+		create_elements(m, my_rnd(5) + i);
+		if (i > 0 && i % 3 == 0) {
+			LOG_I("deleteing %d", i);
+			bcp_message_destroy(m);
+		}
+	}
+}
+
 static void publish_packet(void)
 {
 	bcp_packet_t *p;
-	bcp_message_t *m;
-	bcp_element_t *e;
 	u8 *data;
 	u32 len;
 
@@ -83,21 +159,7 @@ static void publish_packet(void)
 		return;
 	}
 
-	m = bcp_message_create(1, 2, 3, 4);
-	if (!m) {
-		bcp_packet_destroy(p);
-		return;
-	}
-
-	e = bcp_element_create((u8*)ELEMENT, sizeof(ELEMENT));
-	if (!e) {
-		bcp_message_destroy(m);
-		bcp_packet_destroy(p);
-		return;
-	}
-
-	bcp_element_append(m, e);
-	bcp_message_append(p, m);
+	create_messages(p, my_rnd(20));
 
 	if (bcp_packet_serialize(p, &data, &len) >= 0) {
 		bcp_conn_pulish(hdl, TOPIC, p);
