@@ -129,8 +129,9 @@ void StackTrace_exit(const char* name, int line, void* rc, int trace_level)
 	{
 		if (rc == NULL)
 			Log_stackTrace(trace_level, 10, (int)cur_thread->id, cur_thread->current_depth, name, line, NULL);
-		else
+		else {
 			Log_stackTrace(trace_level, 11, (int)cur_thread->id, cur_thread->current_depth, name, line, (int*)rc);
+		}
 	}
 exit:
 	Thread_unlock_mutex(stack_mutex);

@@ -5,30 +5,15 @@
 class RemoteUnlockTask : public Task {
 public:
 	RemoteUnlockTask(u16 appId, u8 sessionId,bool async):Task(appId,sessionId,async){}
-	static void create_messages(bcp_packet_t *p, int count)
-	{
-		int i;
-		bcp_message_t *m;
-
-		for (i = 0; i < count; i++) {
-			m = bcp_message_create(i, i + 1, i + 2, i + 3);
-			bcp_message_append(p, m);
-			create_elements(m, my_rnd(5) + i);
-			if (i > 0 && i % 3 == 0) {
-				LOG_I("deleteing %d", i);
-				bcp_message_destroy(m);
-			}
-		}
-	}
 	void setRequest(u8 lock,u8 ver)
 	{
 		struct Lock_t
 		{
 			//
 		};
-		Lock_t t = fromRemoteLockData(lock, ver);
+		/*Lock_t t = fromRemoteLockData(lock, ver);
 		bcp_pkt_t* p = bcp_send_message(versionId,applicationId,sessionId,stepID &t,sizeof(t));
-		MqttHandler::reqSendPackage(p);
+		MqttHandler::reqSendPackage(p);*/
 	}
 	virtual void doTask()override
 	{

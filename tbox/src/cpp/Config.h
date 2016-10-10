@@ -14,12 +14,14 @@ public:
 	bool parse(int argc, char** argv) {
 		strncpy(mqttServer, "tcp://m2m.eclipse.org:1883", sizeof(mqttServer));
 		strncpy(topics, "topics", sizeof(topics));
+		keepAliveInterval = 20;
 		return true;
 	}
 private:
 public:
 	u32 ip;
 	u16 port;
+	int keepAliveInterval;
 	char topics[32];
 	char mqttServer[256];
 };
