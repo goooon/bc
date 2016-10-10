@@ -8,7 +8,7 @@
 #include "../inc/crc32.h"
 #include "../inc/util/Thread.h"
 
-static u64 seq_id = 0;
+static u64 seq_id = 1;
 static mutex_type mutex = NULL;
 
 void bcp_packet_init(void)
@@ -27,13 +27,12 @@ void bcp_packet_uninit(void)
 u64 bcp_next_seq_id(void)
 {
 	u64 id = 0;
-	time_t t = time(NULL);
 
 	Thread_lock_mutex(mutex);
 	id = seq_id++;
 	Thread_unlock_mutex(mutex);
 
-	return (u64)t + id;
+	return id | (1ULL << 63);
 }
 
 bcp_packet_t *bcp_packet_create(void)
@@ -80,7 +79,7 @@ static u32 element_size(bcp_element_t *e)
 
 static u32 message_hdr_size(bcp_message_t *m)
 {
-	return 15;
+	return 14;
 }
 
 static u32 message_size(bcp_message_t *m)
@@ -244,7 +243,7 @@ void bcp_elements_destroy(List *list)
 }
 
 bcp_message_t *bcp_message_create(u16 application_id,
-	u8 step_id, u8 version, u8 session_id)
+	u8 step_id, u8 version, u64 seq_id)
 {
 	bcp_message_t *m;
 
@@ -258,9 +257,8 @@ bcp_message_t *bcp_message_create(u16 application_id,
 	/* application hdr */
 	m->hdr.id = application_id;
 	m->hdr.step_id = step_id;
-	m->hdr.session_id = session_id;
 	m->hdr.version = version;
-	m->hdr.sequence_id = bcp_next_seq_id();
+	m->hdr.sequence_id = seq_id;
 	m->hdr.message_len = 0;
 
 	m->p = NULL;
@@ -277,10 +275,6 @@ void bcp_message_append(bcp_packet_t *p, bcp_message_t *m)
 	if (m->p) {
 		LOG_W("message appending again");
 		return;
-	}
-
-	if (!m->hdr.sequence_id) {
-		m->hdr.sequence_id = bcp_next_seq_id();
 	}
 
 	ListAppend(&p->messages, m, sizeof(*m));
@@ -373,7 +367,7 @@ void bcp_packet_destroy(bcp_packet_t *p)
 }
 
 bcp_packet_t *bcp_create_one_message(u16 application_id,
-	u8 step_id, u8 version, u8 session_id, u8 *data, u32 len)
+	u8 step_id, u8 version, u64 seq_id, u8 *data, u32 len)
 {
 	bcp_packet_t *p;
 	bcp_message_t *m;
@@ -385,7 +379,7 @@ bcp_packet_t *bcp_create_one_message(u16 application_id,
 	}
 
 	m = bcp_message_create(application_id,
-		step_id, version, session_id);
+		step_id, version, seq_id);
 	if (!m) {
 		bcp_packet_destroy(p);
 		return NULL;
@@ -443,11 +437,16 @@ static u32 message_hdr_serialize(bcp_application_header_t *hdr, u8 *buf, u32 i)
 	buf[i++] = (hdr->id >> 8) & 0xff;
 	buf[i++] = (hdr->id >> 0) & 0xff;
 	buf[i++] = ((hdr->step_id & 0xf) << 4) | (hdr->version & 0xf);
-	buf[i++] = (hdr->session_id) & 0xff;
 
 	/* seq id */
-	memcpy(&buf[i], &hdr->sequence_id, 8);
-	i += 8;
+	buf[i++] = (hdr->sequence_id >> (64 - 1 * 8)) & 0Xff;
+	buf[i++] = (hdr->sequence_id >> (64 - 2 * 8)) & 0Xff;
+	buf[i++] = (hdr->sequence_id >> (64 - 3 * 8)) & 0Xff;
+	buf[i++] = (hdr->sequence_id >> (64 - 4 * 8)) & 0Xff;
+	buf[i++] = (hdr->sequence_id >> (64 - 5 * 8)) & 0Xff;
+	buf[i++] = (hdr->sequence_id >> (64 - 6 * 8)) & 0Xff;
+	buf[i++] = (hdr->sequence_id >> (64 - 7 * 8)) & 0Xff;
+	buf[i++] = (hdr->sequence_id >> (64 - 8 * 8)) & 0Xff;
 
 	/* remaing length */
 	buf[i++] = (hdr->message_len >> 16) & 0xff;
@@ -604,11 +603,16 @@ static u32 message_hdr_unserialize(bcp_message_t **m,
 
 	hdr.step_id = (buf[i] >> 4) & 0xf;
 	hdr.version = (buf[i++] >> 0) & 0xf;
-	hdr.session_id = (buf[i++]) & 0xff;
 
 	/* seq id */
-	memcpy(&hdr.sequence_id, &buf[i], 8);
-	i += 8;
+	hdr.sequence_id = (buf[i++] + 0ULL) << (64 - 1 * 8);
+	hdr.sequence_id |= (buf[i++] + 0ULL) << (64 - 2 * 8);
+	hdr.sequence_id |= (buf[i++] + 0ULL) << (64 - 3 * 8);
+	hdr.sequence_id |= (buf[i++] + 0ULL) << (64 - 4 * 8);
+	hdr.sequence_id |= (buf[i++] + 0ULL) << (64 - 5 * 8);
+	hdr.sequence_id |= (buf[i++] + 0ULL) << (64 - 6 * 8);
+	hdr.sequence_id |= (buf[i++] + 0ULL) << (64 - 7 * 8);
+	hdr.sequence_id |= (buf[i++] + 0ULL) << (64 - 8 * 8);
 
 	/* remaining length */
 	hdr.message_len = buf[i++] << 16;
@@ -616,7 +620,7 @@ static u32 message_hdr_unserialize(bcp_message_t **m,
 	hdr.message_len |= buf[i++] << 0;
 
 	nm = bcp_message_create(hdr.id, hdr.step_id,
-		hdr.version, hdr.session_id);
+		hdr.version, hdr.sequence_id);
 	if (!nm) {
 		return i;
 	}

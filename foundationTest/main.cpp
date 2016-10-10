@@ -64,9 +64,9 @@ static void bcp_element_foreach_callback(bcp_element_t *e, void *context)
 
 static void print_message(bcp_message_t *m)
 {
-	LOG_I("\tmessage: seqid=%llx, appid=%d, sessid=%d, stepid=%d, ver=%d, msglen=%d", 
-		m->hdr.sequence_id, m->hdr.id, m->hdr.session_id,
-		m->hdr.step_id, m->hdr.version, m->hdr.message_len);
+	LOG_I("\tmessage: seqid=%llx, appid=%d, stepid=%d, ver=%d, msglen=%d", 
+		m->hdr.sequence_id, m->hdr.id, m->hdr.step_id, 
+		m->hdr.version, m->hdr.message_len);
 }
 
 static void bcp_message_foreach_callback(bcp_message_t *m, void *context)
@@ -139,7 +139,8 @@ static void create_messages(bcp_packet_t *p, int count)
 	bcp_message_t *m;
 
 	for (i = 0; i < count; i++) {
-		m = bcp_message_create(i, i + 1, i + 2, i + 3);
+		m = bcp_message_create(i, i + 1, i + 2, 
+			bcp_next_seq_id());
 		bcp_message_append(p, m);
 		create_elements(m, my_rnd(5) + i);
 		if (i > 0 && i % 3 == 0) {
@@ -160,14 +161,14 @@ static void publish_one_message(void)
 		return;
 	}
 
-	p = bcp_create_one_message(6, 5, 4, 3, (u8*)ELEMENT_ONE_MSG, sizeof(ELEMENT_ONE_MSG));
+	p = bcp_create_one_message(6, 5, 4, bcp_next_seq_id(), 
+		(u8*)ELEMENT_ONE_MSG, sizeof(ELEMENT_ONE_MSG));
 
 	if (bcp_packet_serialize(p, &data, &len) >= 0) {
 		bcp_conn_pulish(hdl, TOPIC, p);
 	}
 
 	bcp_packet_destroy(p);
-
 }
 
 static void publish_packet(void)
