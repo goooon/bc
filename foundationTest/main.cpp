@@ -96,8 +96,8 @@ static void publish_packet(void)
 		return;
 	}
 
-	bcp_message_append(p, m);
 	bcp_element_append(m, e);
+	bcp_message_append(p, m);
 
 	if (bcp_packet_serialize(p, &data, &len) >= 0) {
 		bcp_conn_pulish(hdl, TOPIC, p);
