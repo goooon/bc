@@ -17,7 +17,7 @@ public:
 	u16  getApplicationId() { return applicationId; }
 	u16  getSessionId() { return sessionId; }
 public:
-	virtual bool handlePackage(void* data, int len) {
+	virtual bool handlePackage(bcp_packet_t* pkg) {
 		return false;
 	}
 protected:
