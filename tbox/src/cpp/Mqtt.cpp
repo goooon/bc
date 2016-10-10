@@ -89,7 +89,10 @@ static int Client_messageArrived(void* context, char* topicName, int topicLen, M
 {
 	MqttHandler* mh = (MqttHandler*)context;
 	LOG_I("MQTT Client_messageArrived: %s %d", topicName,topicLen);
-	return mh->onRecvPackage(message->payload,message->payloadlen);
+	int ret = mh->onRecvPackage(message->payload,message->payloadlen);
+	MQTTAsync_freeMessage(&message);
+	MQTTAsync_free(topicName);
+	return ret;
 }
 static void Client_deliveryComplete(void* context, MQTTAsync_token token)
 {
@@ -378,10 +381,15 @@ bool MqttHandler::onRecvPackage(void* data, int len)
 	u16 sessionID = 0;
 	u16 applicationID = 0;
 	Task* task = nullptr;
+	bcp_packet_t *p;
+	if (bcp_packet_unserialize((u8*)data, (u32)len, &p) < 0) {
+		LOG_E("bcp_packet_unserialize failed");
+		return false;
+	}
 	//	找到applicationID, session对应的task,
 	//task = find(applicationID, sessionID);
 	if (task != nullptr) {
-		bool done = task->handlePackage(data, len);
+		bool done = task->handlePackage(p);
 		if (!done) {
 			//创建新的任务，放入队列
 		}
