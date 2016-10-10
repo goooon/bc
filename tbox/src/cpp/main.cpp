@@ -15,6 +15,7 @@ public:
 private:
 	Application& app;
 };
+
 int main(int argc, char* argv[]) {
 	void* lib = initDebugLib();
 
@@ -25,7 +26,7 @@ int main(int argc, char* argv[]) {
 	
 	if (lc) {
 		MainLoop loop(app);
-		Thread::startThread(&loop);
+		loop.start();
 		lc(onCommand);
 	}
 	else {

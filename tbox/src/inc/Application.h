@@ -11,7 +11,7 @@
 
 class Application : public Thread
 {
-	friend bool PostEvent(AppEvent e, u32 param, void* data, int len);
+	friend bool PostEvent(AppEvent,u32,u32,void*);
 public:
 	static Application& getInstance();
 	void init(int argc, char** argv);
@@ -26,11 +26,10 @@ protected:
 	//thread running for tasks
 	virtual void run()override;
 private:
-	void onEvent(AppEvent type,u32 param,void* data,int len);
-	bool setAppEvent(AppEvent type, u32 param, void* data, int len);
+	void onEvent(AppEvent e, u32 param1, u32 param2, void* data);
+	bool postAppEvent(AppEvent e, u32 param1, u32 param2, void* data);
 protected:
-	void onServerConnected();
-	void onServerDisconnected();
+	void onMqttEvent();
 	void onNetConnected();
 	void onNetDisconnected();
 public:

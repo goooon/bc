@@ -15,14 +15,13 @@ public:
 class MqttHandler : public IMqttHandler
 {
 	enum State{
-		Connected,
+		Disconnected = 0,
 		Connecting,
-		Disconnecting,
-		Disconnected
-	};
-	enum SubState {
 		Unsubscribed,
-		Subscribed
+		Subscribing,
+		Subscribed,
+		Disconnecting,
+		Size
 	};
 public:
 	enum ErrorCode
@@ -35,12 +34,11 @@ public:
 	bool reqConnect(char* url, char* topic,int qos);;
 	ThreadEvent::WaitResult reqSendPackage(void* payload, int payloadlen, int qos,int millSec);
 	bool reqSendPackageAsync(void* payload, int payloadlen, int qos);
-	void reqDisconnect();
+	bool reqDisconnect();
 	bool isConnected();
 	const char* getTopicName()const;
 	bool onDebugCommand(char* cmd);
 private:
-	bool changeSubstate(SubState next);
 	bool changeState(State next);
 public:
 	virtual void onConnected(bool succ)override;
@@ -51,7 +49,6 @@ public:
 	virtual void onError(u32 ecode, char* emsg)override;
 private:
 	State state;
-	SubState subState;
 	void* client;
 	const char* topicName;
 };
