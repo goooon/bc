@@ -42,16 +42,30 @@ bool Application::startTask(Task* task,bool runAsThread)
 	}
 }
 
-
 void Application::loop()
 {
 	while (true) {
-		LOG_I("Application loop...");
+		LOG_V("Application loop...");
 		auto wr = appEvent.wait(500);
 		if (wr == ThreadEvent::EventOk) {
 			LOG_I("app event");
+			while (!appEventQueue.isEmpty()) {
+				AppEvent e;
+				u32 param;
+				void* data;
+				int len;
+				bool ok = appEventQueue.out(e,param,data,len);
+				if (ok) {
+					onEvent(e, param, data, len);
+				}
+				else {
+					LOG_E("task should no be null,something wrong");
+					break;
+				}
+			}
 		}
 		else if (wr == ThreadEvent::TimeOut) {
+
 		}
 		else {
 			LOG_E("wrong wait result %d", wr);
@@ -60,7 +74,7 @@ void Application::loop()
 	}
 }
 
-bool Application::onCommand(char* cmd)
+bool Application::onDebugCommand(char* cmd)
 {
 	LOG_P(cmd);LOG_P("\r\n");
 	if (!strcmp(cmd, "unlock")) {
@@ -71,19 +85,27 @@ bool Application::onCommand(char* cmd)
 		startTask(bc_new RemoteUnlockTask(1, 2, true), false);
 		return true;
 	}
+	if (!strcmp(cmd, "connMqtt")) {
+		mqtt.reqConnect(config.mqttServer, config.topics, 0);
+		return true;
+	}
+	if (!strcmp(cmd, "discMqtt")) {
+		mqtt.reqDisconnect();
+		return true;
+	}
 	if (mqtt.onDebugCommand(cmd))return true;
 	return false;
 }
 
 bool Application::connectServer()
 {
-	onEvent(NetConnected, 0, 0);
+	onEvent(NetConnected, 0,0,0);
 	return true;
 }
 
 void Application::disconnectServer()
 {
-	onEvent(NetDisconnected, 0, 0);
+	onEvent(NetDisconnected, 0,0,0);
 }
 
 void Application::run()
@@ -120,7 +142,7 @@ void Application::run()
 	}
 }
 
-void Application::onEvent(AppEvent type, void* data, int len)
+void Application::onEvent(AppEvent type,u32 param, void* data, int len)
 {
 	switch (type)
 	{
@@ -141,6 +163,15 @@ void Application::onEvent(AppEvent type, void* data, int len)
 	}
 }
 
+bool Application::setAppEvent(AppEvent type, u32 param, void* data, int len)
+{
+	bool ret = appEventQueue.in(type, param, data, len);
+	if (ret) {
+		appEvent.post();
+	}
+	return ret;
+}
+
 void Application::onServerConnected()
 {
 	LOG_I("onServerConnected");
@@ -154,7 +185,7 @@ void Application::onServerDisconnected()
 void Application::onNetConnected()
 {
 	LOG_I("onNetConnected");
-	mqtt.reqConnect("tcp://m2m.eclipse.org:1883", config.topics,0);
+	mqtt.reqConnect(config.mqttServer, config.topics,0);
 }
 
 void Application::onNetDisconnected()

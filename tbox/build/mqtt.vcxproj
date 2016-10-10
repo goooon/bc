@@ -50,6 +50,7 @@
     <ClCompile Include="..\src\cpp\CmdParser.cpp" />
     <ClCompile Include="..\src\cpp\Config.cpp" />
     <ClCompile Include="..\src\cpp\dep.cpp" />
+    <ClCompile Include="..\src\cpp\Event.cpp" />
     <ClCompile Include="..\src\cpp\main.cpp" />
     <ClCompile Include="..\src\cpp\Mqtt.cpp" />
     <ClCompile Include="..\src\cpp\Task.cpp" />
@@ -131,7 +132,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;WIN;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -146,7 +147,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;WIN;ME_DEBUGUI;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN;ME_DEBUGUI;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>

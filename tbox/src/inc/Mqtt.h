@@ -5,7 +5,7 @@
 class IMqttHandler
 {
 public:
-	virtual void onConnected() {}
+	virtual void onConnected(bool) {}
 	virtual void onSubscribed(){}
 	virtual void onDisconnected() {}
 	virtual bool onRecvPackage(void* data, int len) { return true; }
@@ -16,6 +16,8 @@ class MqttHandler : public IMqttHandler
 {
 	enum State{
 		Connected,
+		Connecting,
+		Disconnecting,
 		Disconnected
 	};
 	enum SubState {
@@ -41,7 +43,7 @@ private:
 	bool changeSubstate(SubState next);
 	bool changeState(State next);
 public:
-	virtual void onConnected()override;
+	virtual void onConnected(bool succ)override;
 	virtual void onSubscribed()override;
 	virtual void onDisconnected()override;
 	virtual bool onRecvPackage(void* data, int len)override;

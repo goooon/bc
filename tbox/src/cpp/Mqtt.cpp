@@ -54,6 +54,12 @@ bool MqttHandler::onDebugCommand(char* cmd)
 		MQTTAsync_setTraceLevel(MQTTASYNC_TRACE_ERROR);
 		return true;
 	}
+	if (!strcmp(cmd, "connMqtt")) {
+		return true;
+	}
+	if (!strcmp(cmd, "discMqtt")) {
+		return true;
+	}
 	return false;
 }
 
@@ -115,6 +121,7 @@ void Mqtt_onConnectFailed(void* context, MQTTAsync_failureData* response)
 {
 	MqttHandler* c = (MqttHandler*)context;
 	LOG_W("Mqtt_onConnectFailed %p", c);
+	c->onConnected(false);
 	if (response) {
 		c->onError(response->code, response->message);
 	}
@@ -125,11 +132,15 @@ void Mqtt_onConnectFailed(void* context, MQTTAsync_failureData* response)
 void Mqtt_onConnected(void* context, MQTTAsync_successData* response)
 {
 	MqttHandler* c = (MqttHandler*)context;
-	c->onConnected();
+	c->onConnected(true);
 }
 
 bool MqttHandler::reqConnect(char* url, char* topic,int qos)
 {
+	if (!changeState(Connecting)) {
+		return false;
+	}
+
 	LOG_I("MqttHandler::reqConnect(%s,%s,%d)",url,topic,qos);
 	if (state == Connected) {
 		LOG_W("MqttHandler state not right: Already Connected");
@@ -213,6 +224,7 @@ void Mqtt_onDisconnected(void* context, MQTTAsync_successData* response)
 	LOG_I("Mqtt_onDisconnected %p", c);
 	c->onDisconnected();
 }
+
 void Mqtt_onDisconnectFailed(void* context, MQTTAsync_failureData* response)
 {
 	MqttHandler* c = (MqttHandler*)context;
@@ -224,6 +236,7 @@ void Mqtt_onDisconnectFailed(void* context, MQTTAsync_failureData* response)
 		c->onError(0, "test8_onFailure");
 	}
 }
+
 void MqttHandler::reqDisconnect()
 {
 	MQTTAsync_disconnectOptions dopts = MQTTAsync_disconnectOptions_initializer;
@@ -256,10 +269,6 @@ bool MqttHandler::changeSubstate(SubState next)
 	switch (next)
 	{
 	case MqttHandler::Unsubscribed:
-		if (subState == Unsubscribed) {
-			LOG_W("subState %d not right", subState);
-			return false;
-		}
 		subState = next;
 		return true;
 		break;
@@ -280,24 +289,45 @@ bool MqttHandler::changeSubstate(SubState next)
 
 bool MqttHandler::changeState(State next)
 {
-	const char* ss[] = { "Connected","Disconnected" };
+	const char* ss[] = { "Connected","Connecting","Disconnecting","Disconnected" };
 	LOG_I("Mqtt:%s->%s", ss[state], ss[next]);
 	switch (next)
 	{
-	case MqttHandler::Connected:
+	case Connecting:
 		if (state != Disconnected) {
+			LOG_W("MqttHandler state(%d) not right", state);
+			return false;
+		}
+		state = Connecting;
+		return true;
+		break;
+	case Connected:
+		if (state != Connecting) {
 			LOG_W("MqttHandler state(%d) not right", state);
 			return false;
 		}
 		state = Connected;
 		return true;
 		break;
-	case MqttHandler::Disconnected:
+	case Disconnecting:
 		if (state != Connected) {
 			LOG_W("MqttHandler state(%d) not right", state);
 			return false;
 		}
-		state = Disconnected;
+		state = Disconnecting;
+		return true;
+		break;
+	case Disconnected:
+		if (state == Disconnecting ||
+			state == Connected ||
+			state == Connecting) {
+			state = Disconnected;
+			return true;
+		}
+		else {
+			LOG_W("MqttHandler state(%d) not right", state);
+			return false;
+		}
 		return true;
 		break;
 	default:
@@ -306,25 +336,30 @@ bool MqttHandler::changeState(State next)
 	return false;
 }
 
-void MqttHandler::onConnected()
+void MqttHandler::onConnected(bool succ)
 {
 	//LOG_I("MqttHandler::onConnected()");
-	if (changeState(Connected)) {
-		MQTTAsync_responseOptions opts = MQTTAsync_responseOptions_initializer;
-		int rc;
-		//LOG_I("Mqtt_onConnected");
-		opts.onSuccess = Mqtt_onSubscribed;
-		opts.onFailure = Mqtt_onSubscribFailed;
-		opts.context = this;
-		rc = MQTTAsync_subscribe(client, topicName, 2, &opts);
-		if (rc != MQTTASYNC_SUCCESS)
-		{
-			LOG_W("MQTTAsync_subscribe Fail %d", rc);
-			onError(rc, "MQTTAsync_subscribe");
+	if (succ) {
+		if (changeState(Connected)) {
+			MQTTAsync_responseOptions opts = MQTTAsync_responseOptions_initializer;
+			int rc;
+			//LOG_I("Mqtt_onConnected");
+			opts.onSuccess = Mqtt_onSubscribed;
+			opts.onFailure = Mqtt_onSubscribFailed;
+			opts.context = this;
+			rc = MQTTAsync_subscribe(client, topicName, 2, &opts);
+			if (rc != MQTTASYNC_SUCCESS)
+			{
+				LOG_W("MQTTAsync_subscribe Fail %d", rc);
+				onError(rc, "MQTTAsync_subscribe");
+			}
+		}
+		else {
+			LOG_W("changeState failed");
 		}
 	}
 	else {
-		LOG_W("changeState failed");
+		changeState(Disconnected);
 	}
 }
 
@@ -357,8 +392,10 @@ void MqttHandler::onDeliveryComplete()
 void MqttHandler::onDisconnected()
 {
 	LOG_I("MqttHandler::onDisconnected()");
-	if (changeState(Disconnected)) {}
-	else {
+	if (!changeSubstate(Unsubscribed)) {
+		LOG_W("changeSubstate failed");
+	}
+	if (!changeState(Disconnected)) {
 		LOG_W("changeState failed");
 	}
 }
