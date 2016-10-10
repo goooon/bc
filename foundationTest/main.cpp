@@ -20,6 +20,7 @@
 #define TOPIC "/beecloud"
 #define ELEMENT "ele"
 #define ELEMENT2 "ele2"
+#define ELEMENT_ONE_MSG "ele_one_msg"
 
 static void *hdl;
 static int connected = 0;
@@ -148,13 +149,34 @@ static void create_messages(bcp_packet_t *p, int count)
 	}
 }
 
+static void publish_one_message(void)
+{
+	bcp_packet_t *p;
+	u8 *data;
+	u32 len;
+
+	p = bcp_packet_create();
+	if (!p) {
+		return;
+	}
+
+	p = bcp_create_one_message(6, 5, 4, 3, (u8*)ELEMENT_ONE_MSG, sizeof(ELEMENT_ONE_MSG));
+
+	if (bcp_packet_serialize(p, &data, &len) >= 0) {
+		bcp_conn_pulish(hdl, TOPIC, p);
+	}
+
+	bcp_packet_destroy(p);
+
+}
+
 static void publish_packet(void)
 {
 	bcp_packet_t *p;
 	u8 *data;
 	u32 len;
 
-	p = bcp_packet_create(2);
+	p = bcp_packet_create();
 	if (!p) {
 		return;
 	}
@@ -185,7 +207,8 @@ static void publish(void)
 	}
 
 	while (connected) {
-		publish_packet();
+		//publish_packet();
+		publish_one_message();
 		my_sleep(1000);
 	}
 }

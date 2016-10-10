@@ -8,6 +8,8 @@
 extern "C" {
 #endif
 
+#define BCP_PACKET_VERSION 0
+
 typedef List list_t;
 struct bcp_packet_s;
 struct bcp_message_s;
@@ -58,7 +60,7 @@ typedef void bcp_message_foreach_callback_t(bcp_message_t *m, void *context);
 void bcp_packet_init(void);
 void bcp_packet_uninit(void);
 
-bcp_packet_t *bcp_packet_create(u8 version);
+bcp_packet_t *bcp_packet_create(void);
 void bcp_packet_destroy(bcp_packet_t *p);
 
 bcp_message_t *bcp_message_create(u16 application_id, 
@@ -77,6 +79,9 @@ bcp_message_t *bcp_next_message(bcp_packet_t *p, bcp_message_t *prev);
 
 void bcp_messages_foreach(bcp_packet_t *p, bcp_message_foreach_callback_t *cb, void *context);
 void bcp_elements_foreach(bcp_message_t *m, bcp_element_foreach_callback_t *cb, void *context);
+
+bcp_packet_t *bcp_create_one_message(u16 application_id,
+	u8 step_id, u8 version, u8 session_id, u8 *data, u32 len);
 
 /*
  * serialize packet

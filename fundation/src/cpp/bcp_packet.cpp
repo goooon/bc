@@ -36,7 +36,7 @@ u64 bcp_next_seq_id(void)
 	return (u64)t + id;
 }
 
-bcp_packet_t *bcp_packet_create(u8 version)
+bcp_packet_t *bcp_packet_create(void)
 {
 	bcp_packet_t *p;
 	
@@ -51,7 +51,7 @@ bcp_packet_t *bcp_packet_create(u8 version)
 	p->hdr.sof[1] = 0x6c;
 	p->hdr.sof[2] = 0x81;
 	p->hdr.sof[3] = 0x29;
-	p->hdr.version = version;
+	p->hdr.version = BCP_PACKET_VERSION;
 
 	ListZero(&p->messages);
 
@@ -370,6 +370,38 @@ void bcp_packet_destroy(bcp_packet_t *p)
 
 	bcp_messages_destroy(&p->messages);
 	free(p);
+}
+
+bcp_packet_t *bcp_create_one_message(u16 application_id,
+	u8 step_id, u8 version, u8 session_id, u8 *data, u32 len)
+{
+	bcp_packet_t *p;
+	bcp_message_t *m;
+	bcp_element_t *e;
+
+	p = bcp_packet_create();
+	if (!p) {
+		return NULL;
+	}
+
+	m = bcp_message_create(application_id,
+		step_id, version, session_id);
+	if (!m) {
+		bcp_packet_destroy(p);
+		return NULL;
+	} else {
+		bcp_message_append(p, m);
+	}
+
+	e = bcp_element_create(data, len);
+	if (!e) {
+		bcp_packet_destroy(p);
+		return NULL;
+	} else {
+		bcp_element_append(m, e);
+	}
+
+	return p;
 }
 
 #define DEF_CRC32 0xaabbccdd
@@ -737,7 +769,7 @@ s32 bcp_packet_unserialize(u8 *buf, u32 len, bcp_packet_t **p)
 		return -1;
 	}
 
-	pk = bcp_packet_create(0);
+	pk = bcp_packet_create();
 	if (!pk) {
 		return -1;
 	}
