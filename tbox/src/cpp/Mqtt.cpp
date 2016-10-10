@@ -383,6 +383,7 @@ bool MqttHandler::onRecvPackage(void* data, int len)
 	Task* task = nullptr;
 	bcp_packet_t *p;
 	if (bcp_packet_unserialize((u8*)data, (u32)len, &p) < 0) {
+		LOG_E("bcp_packet_unserialize failed");
 		return false;
 	}
 	//	找到applicationID, session对应的task,

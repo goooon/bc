@@ -27,12 +27,12 @@ public:
 			//
 		};
 		Lock_t t = fromRemoteLockData(lock, ver);
-		bcp_pkt_t* p = bcp_send_message(&t,sizeof(t));
+		bcp_pkt_t* p = bcp_send_message(versionId,applicationId,sessionId,stepID &t,sizeof(t));
 		MqttHandler::reqSendPackage(p);
 	}
 	virtual void doTask()override
 	{
-		setRequest();
+		setRequest(1,1);
 		LOG_I("Task(%d,%d) run...",applicationId,sessionId);
 		e.wait(5000);
 		LOG_I("Task(%d,%d) done", applicationId, sessionId);
