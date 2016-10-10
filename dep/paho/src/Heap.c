@@ -170,7 +170,7 @@ void* mymalloc(char* file, int line, size_t size)
 	space += size + 2*sizeof(int);
 	*(int*)(s->ptr) = eyecatcher; /* start eyecatcher */
 	*(int*)(((char*)(s->ptr)) + (sizeof(int) + size)) = eyecatcher; /* end eyecatcher */
-	Log(TRACE_MAX, -1, "Allocating %d bytes in heap at file %s line %d ptr %p\n", size, file, line, s->ptr);
+	//Log(TRACE_MAX, -1, "Allocating %d bytes in heap at file %s line %d ptr %p\n", size, file, line, s->ptr);
 	TreeAdd(&heap, s, space);
 	state.current_size += size;
 	if (state.current_size > state.max_size)

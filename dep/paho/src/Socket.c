@@ -86,7 +86,7 @@ int Socket_setnonblocking(int sock)
  * @param sock the socket on which the error occurred
  * @return the specific TCP error code
  */
-int Socket_error(char* aString, int sock)
+int Socket_error(char* aString, int sock,int rc)
 {
 #if defined(WIN32) || defined(WIN64)
 	int errno;
@@ -99,7 +99,7 @@ int Socket_error(char* aString, int sock)
 	if (errno != EINTR && errno != EAGAIN && errno != EINPROGRESS && errno != EWOULDBLOCK)
 	{
 		if (strcmp(aString, "shutdown") != 0 || (errno != ENOTCONN && errno != ECONNRESET))
-			Log(TRACE_MINIMUM, -1, "Socket error %s in %s for socket %d", strerror(errno), aString, sock);
+			Log(LOG_ERROR, -1, "Socket error rc(%d),errno(%d) %s in %s for socket %d",rc, errno, strerror(errno), aString, sock);
 	}
 	FUNC_EXIT_RC(errno);
 	return errno;
@@ -239,7 +239,7 @@ int Socket_getReadySocket(int more_work, struct timeval *tp)
 		memcpy((void*)&(pwset), (void*)&(s.pending_wset), sizeof(pwset));
 		if ((rc = select(s.maxfdp1, &(s.rset), &pwset, NULL, &timeout)) == SOCKET_ERROR)
 		{
-			Socket_error("read select", 0);
+			Socket_error("read select", 0 ,rc);
 			goto exit;
 		}
 		Log(TRACE_MAX, -1, "Return code %d from read select", rc);
@@ -253,7 +253,7 @@ int Socket_getReadySocket(int more_work, struct timeval *tp)
 		memcpy((void*)&wset, (void*)&(s.rset_saved), sizeof(wset));
 		if ((rc1 = select(s.maxfdp1, NULL, &(wset), NULL, &zero)) == SOCKET_ERROR)
 		{
-			Socket_error("write select", 0);
+			Socket_error("write select", 0, rc1);
 			rc = rc1;
 			goto exit;
 		}
@@ -301,7 +301,7 @@ int Socket_getch(int socket, char* c)
 
 	if ((rc = recv(socket, c, (size_t)1, 0)) == SOCKET_ERROR)
 	{
-		int err = Socket_error("recv - getch", socket);
+		int err = Socket_error("recv - getch", socket,rc);
 		if (err == EWOULDBLOCK || err == EAGAIN)
 		{
 			rc = TCPSOCKET_INTERRUPTED;
@@ -345,7 +345,7 @@ char *Socket_getdata(int socket, size_t bytes, size_t* actual_len)
 
 	if ((rc = recv(socket, buf + (*actual_len), (int)(bytes - (*actual_len)), 0)) == SOCKET_ERROR)
 	{
-		rc = Socket_error("recv - getdata", socket);
+		rc = Socket_error("recv - getdata", socket,rc);
 		if (rc != EAGAIN && rc != EWOULDBLOCK)
 		{
 			buf = NULL;
@@ -402,7 +402,7 @@ int Socket_writev(int socket, iobuf* iovecs, int count, unsigned long* bytes)
 	rc = WSASend(socket, iovecs, count, (LPDWORD)bytes, 0, NULL, NULL);
 	if (rc == SOCKET_ERROR)
 	{
-		int err = Socket_error("WSASend - putdatas", socket);
+		int err = Socket_error("WSASend - putdatas", socket,rc);
 		if (err == EWOULDBLOCK || err == EAGAIN)
 			rc = TCPSOCKET_INTERRUPTED;
 	}
@@ -523,10 +523,11 @@ int Socket_close_only(int socket)
 
 	FUNC_ENTRY;
 #if defined(WIN32) || defined(WIN64)
-	if (shutdown(socket, SD_BOTH) == SOCKET_ERROR)
-		Socket_error("shutdown", socket);
+	rc = shutdown(socket, SD_BOTH);
+	if (rc == SOCKET_ERROR)
+		Socket_error("shutdown", socket,rc);
 	if ((rc = closesocket(socket)) == SOCKET_ERROR)
-		Socket_error("close", socket);
+		Socket_error("close", socket,rc);
 #else
 	if (shutdown(socket, SHUT_WR) == SOCKET_ERROR)
 		Socket_error("shutdown", socket);
@@ -650,7 +651,7 @@ int Socket_new(char* addr, int port, int* sock)
 	{
 		*sock =	(int)socket(family, type, 0);
 		if (*sock == INVALID_SOCKET)
-			rc = Socket_error("socket", *sock);
+			rc = Socket_error("socket", *sock,0);
 		else
 		{
 #if defined(NOSIGPIPE)
@@ -661,8 +662,8 @@ int Socket_new(char* addr, int port, int* sock)
 #endif
 
 			Log(TRACE_MIN, -1, "New socket %d for %s, port %d",	*sock, addr, port);
-			if (Socket_addSocket(*sock) == SOCKET_ERROR)
-				rc = Socket_error("setnonblocking", *sock);
+			if (rc = Socket_addSocket(*sock) == SOCKET_ERROR)
+				rc = Socket_error("setnonblocking", *sock,rc);
 			else
 			{
 				/* this could complete immmediately, even though we are non-blocking */
@@ -673,7 +674,7 @@ int Socket_new(char* addr, int port, int* sock)
 					rc = connect(*sock, (struct sockaddr*)&address6, sizeof(address6));
 	#endif
 				if (rc == SOCKET_ERROR)
-					rc = Socket_error("connect", *sock);
+					rc = Socket_error("connect", *sock,rc);
 				if (rc == EINPROGRESS || rc == EWOULDBLOCK)
 				{
 					int* pnewSd = (int*)malloc(sizeof(int));
@@ -821,8 +822,9 @@ char* Socket_getaddrname(struct sockaddr* sa, int sock)
 #if defined(WIN32) || defined(WIN64)
 	int buflen = ADDRLEN*2;
 	wchar_t buf[ADDRLEN*2];
-	if (WSAAddressToString(sa, sizeof(struct sockaddr_in6), NULL, buf, (LPDWORD)&buflen) == SOCKET_ERROR)
-		Socket_error("WSAAddressToString", sock);
+	int rc;
+	if (rc = WSAAddressToString(sa, sizeof(struct sockaddr_in6), NULL, buf, (LPDWORD)&buflen) == SOCKET_ERROR)
+		Socket_error("WSAAddressToString", sock,rc);
 	else
 		wcstombs(addr_string, buf, sizeof(addr_string));
 	/* TODO: append the port information - format: [00:00:00::]:port */
@@ -849,7 +851,7 @@ char* Socket_getpeer(int sock)
 
 	if ((rc = getpeername(sock, (struct sockaddr*)&sa, &sal)) == SOCKET_ERROR)
 	{
-		Socket_error("getpeername", sock);
+		Socket_error("getpeername", sock,rc);
 		return "unknown";
 	}
 

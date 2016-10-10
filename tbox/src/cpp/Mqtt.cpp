@@ -139,13 +139,13 @@ void Mqtt_onConnected(void* context, MQTTAsync_successData* response)
 	c->onConnected(true);
 }
 
-bool MqttHandler::reqConnect(char* url, char* topic,int qos)
+bool MqttHandler::reqConnect(char* url, char* topic,int qos,int keepAliveInterval)
 {
 	if (!changeState(Connecting)) {
 		return false;
 	}
 
-	LOG_I("MqttHandler::reqConnect(%s,%s,%d)",url,topic,qos);
+	LOG_I("MqttHandler::reqConnect(%s,%s,%d,%d)",url,topic,qos, keepAliveInterval);
 
 	MQTTAsync_connectOptions opts = MQTTAsync_connectOptions_initializer;
 
@@ -161,7 +161,7 @@ bool MqttHandler::reqConnect(char* url, char* topic,int qos)
 	}
 	rc = MQTTAsync_setCallbacks(client, this, Client_connectionLost, Client_messageArrived, Client_deliveryComplete);
 
-	opts.keepAliveInterval = 20;
+	opts.keepAliveInterval = keepAliveInterval;
 	opts.username = "testuser";
 	opts.password = "testpassword";
 	opts.MQTTVersion = 0;
@@ -292,53 +292,6 @@ bool MqttHandler::changeState(State next)
 		LOG_W("Mqtt:%s +> %s", ss[state], ss[next]);
 		return false;
 	}
-	/*bool ret = false;
-	switch (next)
-	{
-	case Connecting:
-		if (state != Disconnected) {
-			LOG_W("MqttHandler state(%d) not right", state);
-			ret = false;
-		}
-		state = Connecting;
-		ret = true;
-		break;
-	case Connected:
-		if (state != Connecting) {
-			LOG_W("MqttHandler state(%d) not right", state);
-			return false;
-		}
-		state = Connected;
-		ret = true;
-		break;
-	case Disconnecting:
-		if (state != Connected) {
-			LOG_W("MqttHandler state(%d) not right", state);
-			return false;
-		}
-		state = Disconnecting;
-		ret = true;
-		break;
-	case Disconnected:
-		if (state == Disconnecting ||
-			state == Connected ||
-			state == Connecting) {
-			state = Disconnected;
-			ret = true;
-		}
-		else {
-			LOG_W("MqttHandler state(%d) not right", state);
-			ret = false;
-		}
-		ret = true;
-		break;
-	default:
-		break;
-	}*/
-	//if (ret) {
-	//	PostEvent(AppEvent::MqttEvent, 0, 0, 0);
-	//}
-	//return ret;
 }
 
 void MqttHandler::onConnected(bool succ)

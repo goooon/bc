@@ -285,7 +285,6 @@ int Thread_wait_sem(sem_type sem, int timeout)
  	return rc;
 }
 
-
 /**
  * Check to see if a semaphore has been posted, without waiting.
  * @param sem the semaphore
