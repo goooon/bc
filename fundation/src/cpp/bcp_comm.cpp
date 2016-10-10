@@ -6,6 +6,7 @@
 #include "../inc/bcp_packet.h"
 #include "../inc/crc32.h"
 #include "../inc/util/Thread.h"
+#include "../inc/util/LinkedList.h"
 
 #include "../inc/MQTTAsync.h"
 #include "../inc/MQTTClientPersistence.h"
@@ -18,18 +19,6 @@
 #include <windows.h>
 #endif
 
-static char *my_strdup(const char *s)
-{
-	if (!s) {
-		return NULL;
-	}
-#if defined(WIN32)
-	return _strdup(s);
-#else
-	return strdup(s);
-#endif
-}
-
 typedef struct bcp_conn_s {
 	mutex_type mutex;
 	char *address;
@@ -41,9 +30,24 @@ typedef struct bcp_conn_s {
 	int qos;
 	void *callback_context;
 	bcp_conn_callbacks_t *cbs;
+
+	/* subscribe topics */
+	List topics;
 } bcp_conn_t;
 
 #define DEF_QOS	1
+
+static char *my_strdup(const char *s)
+{
+	if (!s) {
+		return NULL;
+	}
+#if defined(WIN32)
+	return _strdup(s);
+#else
+	return strdup(s);
+#endif
+}
 
 static void conn_mutex_lock(bcp_conn_t *conn)
 {
@@ -106,6 +110,9 @@ static void on_disconnect(void* context, MQTTAsync_successData* response)
 		return;
 	}
 	set_disconnected(conn);
+	if (conn->cbs->on_disconnected) {
+		conn->cbs->on_disconnected(conn->callback_context);
+	}
 }
 
 static void on_connect_failed(void* context, MQTTAsync_failureData* response)
@@ -125,6 +132,20 @@ static void on_connect_failed(void* context, MQTTAsync_failureData* response)
 	}
 }
 
+static void subscribe_topics(bcp_conn_t *conn)
+{
+	ListElement *current = NULL;
+
+	LOG_I("resubscribe topics");
+
+	while (ListNextElement(&conn->topics, &current) != NULL) {
+		if (current->content) {
+			LOG_I("\ttopic: %s", (char*)current->content);
+			bcp_conn_subscribe(conn, (const char*)current->content);
+		}
+	}
+}
+
 static void on_connected(void* context, MQTTAsync_successData* response)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)context;
@@ -139,6 +160,10 @@ static void on_connected(void* context, MQTTAsync_successData* response)
 	if (conn->cbs->on_connected) {
 		conn->cbs->on_connected(conn->callback_context);
 	}
+
+	conn_mutex_lock(conn);
+	subscribe_topics(conn);
+	conn_mutex_unlock(conn);
 }
 
 static int on_message_arrived(void* context, char* topic_name, int topic_len, MQTTAsync_message* message)
@@ -261,6 +286,7 @@ void *bcp_conn_create(const char *address, const char *clientid)
 	}
 
 	set_def_opts(conn);
+	ListZero(&conn->topics);
 
 	return conn;
 }
@@ -345,6 +371,8 @@ int bcp_conn_disconnect(void *hdl)
 	return 0;
 }
 
+static void remove_topics(List *list);
+
 void bcp_conn_destroy(void *hdl)
 {
 	bcp_conn_t *conn = (bcp_conn_t*)hdl;
@@ -367,10 +395,58 @@ void bcp_conn_destroy(void *hdl)
 		free(conn->clientid);
 	}
 
+	remove_topics(&conn->topics);
+
 	MQTTAsync_destroy(&conn->client);
 	Thread_destroy_mutex(&conn->mutex);
 
 	free(conn);
+}
+
+static void *find_topic(List *list, const char *topic)
+{
+	ListElement *e = ListFind(list, (void*)topic);
+
+	if (e) {
+		return e->content;
+	} else {
+		return NULL;
+	}
+}
+
+static void append_topic(List *list, const char *topic)
+{
+	char *s;
+
+	if (!find_topic(list, topic)) {
+		s = my_strdup(topic);
+		ListAppend(list, s, strlen(s));
+	}
+}
+
+static void remove_topic(List *list, const char *topic)
+{
+	void *c;
+
+	if ((c = find_topic(list, topic))) {
+		ListDetach(list, c);
+		free(c);
+	}
+}
+
+static void remove_topics(List *list)
+{
+	ListElement *current = NULL;
+	void *c;
+
+	while (ListNextElement(list, &current) != NULL) {
+		c = current->content;
+		free(c);
+		current->content = NULL;
+		ListDetach(list, c);
+	}
+
+	ListEmpty(list);
 }
 
 int bcp_conn_subscribe(void *hdl, const char *topic)
@@ -391,6 +467,10 @@ int bcp_conn_subscribe(void *hdl, const char *topic)
 		LOG_W("failed to start subscribe, return code %d", rc);
 		return -1;
 	}
+
+	conn_mutex_lock(conn);
+	append_topic(&conn->topics, topic);
+	conn_mutex_unlock(conn);
 
 	return 0;
 }
@@ -413,6 +493,10 @@ int bcp_conn_unsubscribe(void *hdl, const char *topic)
 		LOG_W("failed to start unsubscribe, return code %d", rc);
 		return -1;
 	}
+
+	conn_mutex_lock(conn);
+	remove_topic(&conn->topics, topic);
+	conn_mutex_unlock(conn);
 
 	return 0;
 }
@@ -459,3 +543,4 @@ int bcp_conn_pulish(void *hdl, const char *topic, bcp_packet_t *p)
 	}
 	return bcp_conn_publish_raw(conn, topic, (const char*)buf, len);
 }
+

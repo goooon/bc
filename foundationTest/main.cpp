@@ -191,8 +191,26 @@ static void publish_packet(void)
 	bcp_packet_destroy(p);
 }
 
+static void test_reconnect(void)
+{
+	LOG_I("disconnection");
+	bcp_conn_disconnect(hdl);
+	while (connected) {/* wait disconnected */
+		my_sleep(10);
+	}
+
+	LOG_I("reconnection");
+	bcp_conn_connect(hdl);
+	while (!connected) { /* wait connected */
+		my_sleep(10);
+	}
+	my_sleep(5000);
+}
+
 static void publish(void)
 {
+	int times = 10;
+
 	hdl = bcp_conn_create(ADDRESS, PUB_CLIENTID);
 	if (!hdl) {
 		return;
@@ -207,15 +225,24 @@ static void publish(void)
 		my_sleep(10);
 	}
 
-	while (connected) {
+	while (connected && times-- > 0) {
+		bcp_conn_connect(hdl);
 		//publish_packet();
 		publish_one_message();
 		my_sleep(1000);
 	}
+
+	test_reconnect();
+
+	bcp_conn_disconnect(hdl);
+	bcp_conn_destroy(hdl);
+	hdl = NULL;
 }
 
 static void subscribe(void)
 {
+	int times = 10;
+
 	hdl = bcp_conn_create(ADDRESS, SUB_CLIENTID);
 	if (!hdl) {
 		return;
@@ -233,9 +260,15 @@ static void subscribe(void)
 	bcp_conn_subscribe(hdl, TOPIC);
 	//wait topic message
 
-	while (connected) {
-		my_sleep(10);
+	while (connected && times-- > 0) {
+		my_sleep(1000);
 	}
+
+	test_reconnect();
+
+	bcp_conn_disconnect(hdl);
+	bcp_conn_destroy(hdl);
+	hdl = NULL;
 }
 
 int main(int argc, char **argv)
