@@ -12,7 +12,7 @@ public:
 	virtual void onDeliveryComplete(){}
 	virtual void onError(u32 ecode, char* emsg){}
 };
-class MqttHandler : public IMqttHandler
+class MqttClient : public IMqttHandler
 {
 	enum State{
 		Disconnected = 0,
@@ -29,8 +29,9 @@ public:
 		SubscribFailed
 	};
 public:
-	MqttHandler();
-	~MqttHandler();
+	static MqttClient& getInstance();
+	MqttClient();
+	~MqttClient();
 	bool reqConnect(char* url, char* topic,int qos,int keepAliveInterval);;
 	ThreadEvent::WaitResult reqSendPackage(void* payload, int payloadlen, int qos,int millSec);
 	bool reqSendPackageAsync(void* payload, int payloadlen, int qos,void (*onResult)(bool));

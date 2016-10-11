@@ -51,10 +51,9 @@ void Application::loop()
 			while (!appEventQueue.isEmpty()) {
 				AppEvent e;
 				u32 param1;
-				void* data;
 				u32 param2;
-				bool ok = appEventQueue.out(e, param1,param2,data);
-				if (ok) {
+				void* data;
+				if (appEventQueue.out(e, param1, param2, data)) {
 					onEvent(e, param1,param2,data);
 				}
 				else {
@@ -77,11 +76,11 @@ bool Application::onDebugCommand(char* cmd)
 {
 	LOG_P(cmd);LOG_P("\r\n");
 	if (!strcmp(cmd, "unlock")) {
-		startTask(bc_new RemoteUnlockTask(1, 2, true),false);
+
 		return true;
 	}
 	if (!strcmp(cmd, "lock")) {
-		startTask(bc_new RemoteUnlockTask(1, 2, true), false);
+		PostEvent(AppEvent::AddTask, 0, 0, bc_new RemoteUnlockTask(1, 2, true));
 		return true;
 	}
 	if (!strcmp(cmd, "connMqtt")) {
@@ -145,18 +144,32 @@ void Application::onEvent(AppEvent e, u32 param1, u32 param2, void* data)
 {
 	switch (e)
 	{
+	case AddTask:
+		LOG_A(data, "should not be null");
+		startTask((Task*)data, true);
+		break;
+	case DelTask:
+		LOG_A(data,"should not be null");
+		tasksWorking.out((Task*)data);
+		bc_del(Task*)data;
+		break;
 	case NetConnected:
 		onNetConnected();
 		break;
 	case NetDisconnected:
 		onNetDisconnected();
 		break;
-	case MqttEvent:
+	case MqttStateChanged:
 		onMqttEvent(param1,param2,data);
+		break;
+	case AutoStateChanged:
+		break;
+	case SensorEvent:
 		break;
 	default:
 		break;
 	}
+	broadcastEvent(e, param1, param2, data);
 }
 
 bool Application::postAppEvent(AppEvent e, u32 param1, u32 param2, void* data)
@@ -166,6 +179,15 @@ bool Application::postAppEvent(AppEvent e, u32 param1, u32 param2, void* data)
 		appEvent.post();
 	}
 	return ret;
+}
+
+void Application::broadcastEvent(AppEvent e, u32 param1, u32 param2, void* data)
+{
+	Task* t = tasksWorking.getTask(nullptr);
+	while (t) {
+		t->onEvent(e, param1, param2, data);
+		t = tasksWorking.getTask(t);
+	}
 }
 
 void Application::onMqttEvent(u32 param1, u32 param2, void* data)

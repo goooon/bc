@@ -15,7 +15,7 @@ class Application : public Thread
 public:
 	static Application& getInstance();
 	void init(int argc, char** argv);
-	bool startTask(Task* task,bool runAsThread);
+	
 	//main loop process for event
 	void loop();
 	bool onDebugCommand(char* cmd);
@@ -26,8 +26,10 @@ protected:
 	//thread running for tasks
 	virtual void run()override;
 private:
+	bool startTask(Task* task, bool runAsThread);
 	void onEvent(AppEvent e, u32 param1, u32 param2, void* data);
 	bool postAppEvent(AppEvent e, u32 param1, u32 param2, void* data);
+	void broadcastEvent(AppEvent e, u32 param1, u32 param2, void* data);
 protected:
 	void onMqttEvent(u32 param1, u32 param2, void* data);
 	void onNetConnected();
@@ -39,7 +41,7 @@ public:
 	ThreadEvent taskEvent;
 	ThreadEvent appEvent;
 	EventQueue  appEventQueue;
-	MqttHandler mqtt;
+	MqttClient mqtt;
 };
 
 

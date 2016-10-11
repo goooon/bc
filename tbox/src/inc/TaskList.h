@@ -29,6 +29,10 @@ public:
 		if (task->next)task->next->prev = task->prev;
 		mutex.unlock();
 	}
+	Task* getTask(Task* prev) {
+		if (prev)return prev->next;
+		return listHead;
+	}
 private:
 	Task* listHead;
 	ThreadMutex  mutex;
