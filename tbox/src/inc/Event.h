@@ -6,13 +6,17 @@
 
 enum AppEvent
 {
+	Customized,
+	AddTask,
+	DelTask,
 	NetConnected,
-	MqttEvent,
-	NetDisconnected
+	NetDisconnected,
+	MqttStateChanged,		//param1 is Mqtt::State currState,param2 is Mqtt::State nextState
+	AutoStateChanged,		//
+	SensorEvent
 };
 
-bool PostEvent(AppEvent e,u32 param1, u32 param2,void* data);
-
+bool PostEvent(AppEvent e, u32 param1, u32 param2, void* data);
 class EventQueue
 {
 	struct Node

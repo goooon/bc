@@ -33,7 +33,7 @@ void trace_callback(enum MQTTASYNC_TRACE_LEVELS level, char* message)
 	}
 }
 
-bool MqttHandler::onDebugCommand(char* cmd)
+bool MqttClient::onDebugCommand(char* cmd)
 {
 	if (!strcmp(cmd, "MAXIMUM")) {
 		MQTTAsync_setTraceLevel(MQTTASYNC_TRACE_MAXIMUM);
@@ -64,15 +64,22 @@ bool MqttHandler::onDebugCommand(char* cmd)
 	return false;
 }
 
-MqttHandler::MqttHandler() :state(Disconnected),client(0), topicName("async test topic")
+static MqttClient* g_client;
+MqttClient& MqttClient::getInstance()
+{
+	return *g_client;
+}
+
+MqttClient::MqttClient() :state(Disconnected), client(0), topicName("async test topic")
 {
 	MQTTAsync_nameValue* info = MQTTAsync_getVersionInfo();
 	MQTTAsync_setTraceCallback(trace_callback);
 	LOG_I("Mqtt name:%s value:%s", info->name, info->value);
 	MQTTAsync_setTraceLevel(MQTTASYNC_TRACE_MAXIMUM);
+	g_client = this;
 }
 
-MqttHandler::~MqttHandler()
+MqttClient::~MqttClient()
 {
 	if (client != NULL) {
 		MQTTAsync_destroy(&client);
@@ -81,13 +88,13 @@ MqttHandler::~MqttHandler()
 }
 static void Client_connectionLost(void* context, char* cause)
 {
-	MqttHandler* mh = (MqttHandler*)context;
+	MqttClient* mh = (MqttClient*)context;
 	LOG_I("MQTT Client_connectionLost: %s",cause ? cause : "unknown");
 	mh->onDisconnected();
 }
 static int Client_messageArrived(void* context, char* topicName, int topicLen, MQTTAsync_message* message)
 {
-	MqttHandler* mh = (MqttHandler*)context;
+	MqttClient* mh = (MqttClient*)context;
 	LOG_I("MQTT Client_messageArrived: %s %d", topicName,topicLen);
 	int ret = mh->onRecvPackage(message->payload,message->payloadlen);
 	MQTTAsync_freeMessage(&message);
@@ -96,26 +103,26 @@ static int Client_messageArrived(void* context, char* topicName, int topicLen, M
 }
 static void Client_deliveryComplete(void* context, MQTTAsync_token token)
 {
-	MqttHandler* mh = (MqttHandler*)context;
+	MqttClient* mh = (MqttClient*)context;
 	LOG_I("MQTT Client_deliveryComplete:token %d", token);
 	mh->onDeliveryComplete();
 }
 void Mqtt_onSubscribFailed(void* context, MQTTAsync_failureData* response)
 {
-	MqttHandler* c = (MqttHandler*)context;
+	MqttClient* c = (MqttClient*)context;
 	
 	if (response) {
 		LOG_W("Mqtt_onConnectFailed %p %d %d %s", c,response->code,response->token,response->message);
-		c->onError(MqttHandler::ErrorCode::SubscribFailed, response->message);
+		c->onError(MqttClient::ErrorCode::SubscribFailed, response->message);
 	}
 	else {
 		LOG_W("Mqtt_onConnectFailed %p", c);
-		c->onError(MqttHandler::ErrorCode::SubscribFailed, "Mqtt_onConnectFailed");
+		c->onError(MqttClient::ErrorCode::SubscribFailed, "Mqtt_onConnectFailed");
 	}
 }
 void Mqtt_onSubscribed(void* context, MQTTAsync_successData* response)
 {
-	MqttHandler* c = (MqttHandler*)context;
+	MqttClient* c = (MqttClient*)context;
 
 	LOG_I("Mqtt_onSubscribed qos %d", response->alt.qos);
 
@@ -123,7 +130,7 @@ void Mqtt_onSubscribed(void* context, MQTTAsync_successData* response)
 }
 void Mqtt_onConnectFailed(void* context, MQTTAsync_failureData* response)
 {
-	MqttHandler* c = (MqttHandler*)context;
+	MqttClient* c = (MqttClient*)context;
 	LOG_W("Mqtt_onConnectFailed %p", c);
 	c->onConnected(false);
 	if (response) {
@@ -135,11 +142,11 @@ void Mqtt_onConnectFailed(void* context, MQTTAsync_failureData* response)
 }
 void Mqtt_onConnected(void* context, MQTTAsync_successData* response)
 {
-	MqttHandler* c = (MqttHandler*)context;
+	MqttClient* c = (MqttClient*)context;
 	c->onConnected(true);
 }
 
-bool MqttHandler::reqConnect(char* url, char* topic,int qos,int keepAliveInterval)
+bool MqttClient::reqConnect(char* url, char* topic,int qos,int keepAliveInterval)
 {
 	if (!changeState(Connecting)) {
 		return false;
@@ -180,7 +187,7 @@ bool MqttHandler::reqConnect(char* url, char* topic,int qos,int keepAliveInterva
 	return true;
 }
 
-ThreadEvent::WaitResult MqttHandler::reqSendPackage(void* payload, int payloadlen, int qos, int millSec)
+ThreadEvent::WaitResult MqttClient::reqSendPackage(void* payload, int payloadlen, int qos, int millSec)
 {
 	int retained = 0;
 	MQTTAsync_responseOptions ropts = MQTTAsync_responseOptions_initializer;
@@ -219,7 +226,7 @@ void SendPackageAsync_onFailure(void* context, MQTTAsync_failureData* response)
 	r(false);
 }
 
-bool MqttHandler::reqSendPackageAsync(void* payload, int payloadlen, int qos, void(*onResult)(bool))
+bool MqttClient::reqSendPackageAsync(void* payload, int payloadlen, int qos, void(*onResult)(bool))
 {
 	int retained = 0;
 	MQTTAsync_responseOptions ropts = MQTTAsync_responseOptions_initializer;
@@ -237,14 +244,14 @@ bool MqttHandler::reqSendPackageAsync(void* payload, int payloadlen, int qos, vo
 
 void Mqtt_onDisconnected(void* context, MQTTAsync_successData* response)
 {
-	MqttHandler* c = (MqttHandler*)context;
+	MqttClient* c = (MqttClient*)context;
 	LOG_I("Mqtt_onDisconnected %p", c);
 	c->onDisconnected();
 }
 
 void Mqtt_onDisconnectFailed(void* context, MQTTAsync_failureData* response)
 {
-	MqttHandler* c = (MqttHandler*)context;
+	MqttClient* c = (MqttClient*)context;
 	LOG_I("Mqtt_onDisconnectFailed %p", c);
 	if (response) {
 		c->onError(response->code, response->message);
@@ -254,7 +261,7 @@ void Mqtt_onDisconnectFailed(void* context, MQTTAsync_failureData* response)
 	}
 }
 
-bool MqttHandler::reqDisconnect()
+bool MqttClient::reqDisconnect()
 {
 	if (!changeState(Disconnecting)) {
 		return false;
@@ -273,17 +280,17 @@ bool MqttHandler::reqDisconnect()
 	return true;
 }
 
-bool MqttHandler::isConnected()
+bool MqttClient::isConnected()
 {
 	return true == MQTTAsync_isConnected(client);
 }
 
-const char* MqttHandler::getTopicName() const
+const char* MqttClient::getTopicName() const
 {
 	return topicName;
 }
 
-bool MqttHandler::changeState(State next)
+bool MqttClient::changeState(State next)
 {
 	const static bool st[State::Size][State::Size] = {
 	//Disconnected,Connecting,Connected,Unsubscribed,Subscribing,Subscribed,Disconnecting,
@@ -301,7 +308,7 @@ bool MqttHandler::changeState(State next)
 			LOG_I("Mqtt:%s -> %s", ss[state], ss[next]);
 			State prev = state;
 			state = next;
-			PostEvent(AppEvent::MqttEvent, prev, next, 0);
+			PostEvent(AppEvent::MqttStateChanged, prev, next, 0);
 		}
 		return true;
 	}
@@ -311,7 +318,7 @@ bool MqttHandler::changeState(State next)
 	}
 }
 
-void MqttHandler::onConnected(bool succ)
+void MqttClient::onConnected(bool succ)
 {
 	//LOG_I("MqttHandler::onConnected()");
 	if (succ) {
@@ -341,12 +348,12 @@ void MqttHandler::onConnected(bool succ)
 	}
 }
 
-void MqttHandler::onError(u32 ecode,char* emsg)
+void MqttClient::onError(u32 ecode,char* emsg)
 {
 	LOG_E("Error:%d,%s", ecode, emsg);
 }
 
-bool MqttHandler::onRecvPackage(void* data, int len)
+bool MqttClient::onRecvPackage(void* data, int len)
 {
 	u16 sessionID = 0;
 	u16 applicationID = 0;
@@ -367,12 +374,12 @@ bool MqttHandler::onRecvPackage(void* data, int len)
 	return true;
 }
 
-void MqttHandler::onDeliveryComplete()
+void MqttClient::onDeliveryComplete()
 {
 	LOG_I("onDeliveryComplete");
 }
 
-void MqttHandler::onDisconnected()
+void MqttClient::onDisconnected()
 {
 	LOG_I("MqttHandler::onDisconnected()");
 	if (!changeState(Disconnected)) {
@@ -380,7 +387,7 @@ void MqttHandler::onDisconnected()
 	}
 }
 
-void MqttHandler::onSubscribed()
+void MqttClient::onSubscribed()
 {
 	//LOG_I("MqttHandler::onSubscribed()");
 	if (changeState(Subscribed)) {}

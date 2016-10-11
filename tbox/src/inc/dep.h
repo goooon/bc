@@ -17,6 +17,7 @@ LoopCallback debugMain(int argc, char* argv[]);
 void onCommand(char* cmd);
 #else
 #include <stdio.h>
+#define LOG_A(expr,...) if(!expr)printf(##__VA_ARGS__);
 #define LOG_P(fmt,...) do {printf(fmt, ##__VA_ARGS__);}while(0);
 #define LOG_V(fmt,...) do {printf(fmt, ##__VA_ARGS__);printf("\n");} while (0);
 #define LOG_I(fmt,...) do {printf(fmt, ##__VA_ARGS__);printf("\n");} while (0);
