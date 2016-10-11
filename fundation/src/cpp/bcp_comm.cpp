@@ -32,9 +32,25 @@ typedef struct bcp_conn_s {
 
 	/* subscribe topics */
 	List topics;
+	int locked;
 } bcp_conn_t;
 
+typedef struct bcp_pub_context_s
+{
+	char *topic;
+	bcp_conn_t *conn;
+	void *context;
+} bcp_pub_context_t;
+
+typedef struct bcp_sub_context_s
+{
+	char *topic;
+	bcp_conn_t *conn;
+	void *context;
+} bcp_sub_context_t;
+
 #define DEF_QOS	1
+#define DEF_KEEPALIVE 30
 
 static char *my_strdup(const char *s)
 {
@@ -132,94 +148,114 @@ static void remove_connect(bcp_conn_t *conn)
 	}
 }
 
+static bcp_conn_t *lock_connect(bcp_conn_t *conn)
+{
+	bcp_conn_t *c;
+
+	conns_list_lock();
+	c = find_connect(conn);
+	if (c) {
+		conn_lock(c);
+		++c->locked;
+		conn_unlock(c);
+	}
+	conns_list_unlock();
+
+	return c;
+}
+
+static void unlock_connect(bcp_conn_t *conn)
+{
+	if (conn) {
+		conn_lock(conn);
+		if (conn->locked > 0) {
+			--conn->locked;
+		}
+		conn_unlock(conn);
+	}
+}
+
+static bcp_sub_context_t *create_sub_context(bcp_conn_t *conn,
+	const char *topic, void *context)
+{
+	bcp_sub_context_t *c;
+
+	if (!conn || !topic) {
+		return NULL;
+	}
+
+	c = (bcp_sub_context_t*)malloc(sizeof(*c));
+	if (c) {
+		c->conn = conn;
+		c->context = context;
+		c->topic = my_strdup(topic);
+	}
+
+	return c;
+}
+
+static void free_sub_context(bcp_sub_context_t *c)
+{
+	if (c) {
+		free(c->topic);
+		free(c);
+	}
+}
+
+static bcp_pub_context_t *create_pub_context(bcp_conn_t *conn,
+	const char *topic, void *context)
+{
+	bcp_pub_context_t *c;
+
+	if (!conn || !topic) {
+		return NULL;
+	}
+
+	c = (bcp_pub_context_t*)malloc(sizeof(*c));
+	if (c) {
+		c->conn = conn;
+		c->context = context;
+		c->topic = my_strdup(topic);
+	}
+
+	return c;
+}
+
+static void free_pub_context(bcp_pub_context_t *c)
+{
+	if (c) {
+		free(c->topic);
+		free(c);
+	}
+}
+
 static void on_conn_lost(void *context, char *cause)
 {
 	bcp_conn_t *conn = (bcp_conn_t*)context;
-	int rc;
 
-	conns_list_lock();
-	conn = find_connect(conn);
-	conns_list_unlock();
+	conn = lock_connect(conn);
 
 	LOG_I("connection lost");
 	if (cause) {
-		LOG_I("     cause: %s", cause);
+		LOG_I("\tcause: %s", cause);
 	}
 
 	if (!conn) {
 		return;
 	}
-
-	conn_lock(conn);
-	conn->opts.keepAliveInterval = 20;
-	conn->opts.cleansession = 1;
-	conn_unlock(conn);
 
 	LOG_I("reconnecting");
 	bcp_conn_connect(conn);
+
+	unlock_connect(conn);
 }
 
-static void on_disconnect(void* context, MQTTAsync_successData* response)
-{
-	bcp_conn_t *conn = (bcp_conn_t *)context;
-
-	conns_list_lock();
-	conn = find_connect(conn);
-	conns_list_unlock();
-
-	if (!conn) {
-		return;
-	}
-
-	LOG_I("%s disconnected from %s", 
-		conn->clientid, conn->address);
-
-	if (conn->cbs->on_disconnected) {
-		conn->cbs->on_disconnected(conn->callback_context);
-	}
-}
-
-static void on_connect_failed(void* context, MQTTAsync_failureData* response)
-{
-	bcp_conn_t *conn = (bcp_conn_t *)context;
-	
-	conns_list_lock();
-	conn = find_connect(conn);
-	conns_list_unlock();
-
-	if (!conn) {
-		return;
-	}
-
-	LOG_I("%s connection failure from %s, rc=%d", 
-		conn->clientid, conn->address, response ? response->code : 0);
-
-	if (conn->cbs->on_disconnected) {
-		conn->cbs->on_disconnected(conn->callback_context);
-	}
-}
-
-static void subscribe_topics(bcp_conn_t *conn)
-{
-	ListElement *current = NULL;
-
-	LOG_I("resubscribe topics");
-
-	while (ListNextElement(&conn->topics, &current) != NULL) {
-		if (current->content) {
-			LOG_I("\ttopic: %s", (char*)current->content);
-			bcp_conn_subscribe(conn, (const char*)current->content);
-		}
-	}
-}
-
+static void subscribe_topics(bcp_conn_t *conn);
 static void on_connected(void* context, MQTTAsync_successData* response)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)context;
 
-	conns_list_lock();
-	conn = find_connect(conn);
-	conns_list_unlock();
+	conn = lock_connect(conn);
 
 	if (!conn) {
 		return;
@@ -231,19 +267,57 @@ static void on_connected(void* context, MQTTAsync_successData* response)
 		conn->cbs->on_connected(conn->callback_context);
 	}
 
-	conn_lock(conn);
 	subscribe_topics(conn);
-	conn_unlock(conn);
+	unlock_connect(conn);
 }
 
-static int on_message_arrived(void* context, char* topic_name, int topic_len, MQTTAsync_message* message)
+static void on_disconnect(void* context, MQTTAsync_successData* response)
+{
+	bcp_conn_t *conn = (bcp_conn_t *)context;
+
+	conn = lock_connect(conn);
+
+	if (!conn) {
+		return;
+	}
+
+	LOG_I("%s disconnected from %s", 
+		conn->clientid, conn->address);
+
+	if (conn->cbs->on_disconnected) {
+		conn->cbs->on_disconnected(conn->callback_context);
+	}
+
+	unlock_connect(conn);
+}
+
+static void on_connect_failed(void* context, MQTTAsync_failureData* response)
+{
+	bcp_conn_t *conn = (bcp_conn_t *)context;
+	
+	conn = lock_connect(conn);
+
+	if (!conn) {
+		return;
+	}
+
+	LOG_I("%s connection failure from %s, rc=%d", 
+		conn->clientid, conn->address, response ? response->code : 0);
+
+	if (conn->cbs->on_connect_failed) {
+		conn->cbs->on_connect_failed(conn->callback_context);
+	}
+
+	unlock_connect(conn);
+}
+
+static int on_message_arrived(void *context, 
+	char *topic_name, int topic_len, MQTTAsync_message *message)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)context;
 	bcp_packet_t *p;
 
-	conns_list_lock();
-	conn = find_connect(conn);
-	conns_list_unlock();
+	conn = lock_connect(conn);
 
 	if (!conn) {
 		MQTTAsync_freeMessage(&message);
@@ -256,6 +330,7 @@ static int on_message_arrived(void* context, char* topic_name, int topic_len, MQ
 	if (bcp_packet_unserialize((u8*)message->payload, (u32)message->payloadlen, &p) < 0) {
 		MQTTAsync_freeMessage(&message);
 		MQTTAsync_free(topic_name);
+		unlock_connect(conn);
 		return 1;
 	}
 
@@ -266,82 +341,176 @@ static int on_message_arrived(void* context, char* topic_name, int topic_len, MQ
 
 	MQTTAsync_freeMessage(&message);
 	MQTTAsync_free(topic_name);
+	unlock_connect(conn);
 	return 1;
 }
 
-static void on_send(void *context, MQTTAsync_successData *response)
-{
-	bcp_conn_t *conn = (bcp_conn_t *)context;
-	
-	conns_list_lock();
-	conn = find_connect(conn);
-	conns_list_unlock();
-	LOG_I("message with token value %d delivery confirmed", response->token);
-}
-
-static void on_message_delivered(void* context, MQTTAsync_token token)
+static void on_message_delivered(void *context, MQTTAsync_token token)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)context;
 
-	conns_list_lock();
-	conn = find_connect(conn);
-	conns_list_unlock();
+	conn = lock_connect(conn);
 
 	if (!conn) {
 		return;
 	}
 
-	LOG_I("message delivered, token = %d", token);
-	if (conn->cbs->on_packet_delivered) {
-		conn->cbs->on_packet_delivered(conn->callback_context, (int)token);
+	LOG_I("delivered to server, token = %d", token);
+	unlock_connect(conn);
+}
+
+static void on_publish(void *context, MQTTAsync_successData *response)
+{
+	bcp_pub_context_t *c = (bcp_pub_context_t*)context;
+	bcp_conn_t *conn;
+
+	if (!c) {
+		return;
 	}
+
+	LOG_I("published, %d:%s", response ? response->token : 0, 
+		c->topic);
+
+	conn = lock_connect(c->conn);
+
+	if (!conn) {
+		free_pub_context(c);
+		return;
+	}
+
+	if (conn->cbs->on_packet_delivered) {
+		conn->cbs->on_packet_delivered(c->context, response->token);
+	}
+	free_pub_context(c);
+	unlock_connect(conn);
+}
+
+static void on_publish_failure(void *context, MQTTAsync_failureData* response)
+{
+	bcp_pub_context_t *c = (bcp_pub_context_t*)context;
+	bcp_conn_t *conn;
+
+	if (!c) {
+		return;
+	}
+
+	LOG_W("publish %d:%s failed, rc=%d", 
+		response ? response->token : 0, 
+		c->topic, response ? response->code : 0);
+
+	conn = lock_connect(c->conn);
+
+	if (!conn) {
+		free_pub_context(c);
+		return;
+	}
+	if (conn->cbs->on_packet_deliver_failed) {
+		conn->cbs->on_packet_deliver_failed(c->context, response->token);
+	}
+	free_pub_context(c);
+	unlock_connect(conn);
 }
 
 static void on_subscribe(void* context, MQTTAsync_successData* response)
 {
-	bcp_conn_t *conn = (bcp_conn_t *)context;
+	bcp_sub_context_t *c = (bcp_sub_context_t*)context;
+	bcp_conn_t *conn;
 
-	conns_list_lock();
-	conn = find_connect(conn);
-	conns_list_unlock();
-	LOG_I("subscribe succeeded");
+	if (!c) {
+		return;
+	}
+	LOG_I("subscribe, topic: %s", c->topic);
+
+	conn = lock_connect(c->conn);
+
+	if (!conn) {
+		free_sub_context(c);
+		return;
+	}
+	if (conn->cbs->on_subscribe) {
+		conn->cbs->on_subscribe(c->context, my_strdup(c->topic));
+	}
+	free_sub_context(c);
+	unlock_connect(conn);
 }
 
 static void on_subscribe_failure(void* context, MQTTAsync_failureData* response)
 {
-	bcp_conn_t *conn = (bcp_conn_t *)context;
+	bcp_sub_context_t *c = (bcp_sub_context_t*)context;
+	bcp_conn_t *conn;
+	
+	if (!c) {
+		return;
+	}
+	LOG_W("subscribe failed, topic: %s, rc: %d", 
+		c->topic, response ? response->code : 0);
 
-	conns_list_lock();
-	conn = find_connect(conn);
-	conns_list_unlock();
-	LOG_W("subscribe failed, rc=%d", response ? response->code : 0);
+	conn = lock_connect(c->conn);
+
+	if (!conn) {
+		free_sub_context(c);
+		return;
+	}
+	if (conn->cbs->on_subscribe_failed) {
+		conn->cbs->on_subscribe_failed(c->context, my_strdup(c->topic));
+	}
+	free_sub_context(c);
+	unlock_connect(conn);
 }
 
 static void on_unsubscribe(void* context, MQTTAsync_successData* response)
 {
-	bcp_conn_t *conn = (bcp_conn_t *)context;
+	bcp_sub_context_t *c = (bcp_sub_context_t*)context;
+	bcp_conn_t *conn;
 
-	conns_list_lock();
-	conn = find_connect(conn);
-	conns_list_unlock();
-	LOG_I("unsubscribe succeeded");
+	if (!c) {
+		return;
+	}
+	LOG_I("unsubscribe succeeded, topic: %s", c->topic);
+
+	conn = lock_connect(c->conn);
+
+	if (!conn) {
+		free_sub_context(c);
+		return;
+	}
+	if (conn->cbs->on_unsubscribe) {
+		conn->cbs->on_unsubscribe(c->context, my_strdup(c->topic));
+	}
+	free_sub_context(c);
+	unlock_connect(conn);
 }
 
 static void on_unsubscribe_failure(void* context, MQTTAsync_failureData* response)
 {
-	bcp_conn_t *conn = (bcp_conn_t *)context;
+	bcp_sub_context_t *c = (bcp_sub_context_t*)context;
+	bcp_conn_t *conn;
 
-	conns_list_lock();
-	conn = find_connect(conn);
-	conns_list_unlock();
-	LOG_W("unsubscribe failed, rc=%d", response ? response->code : 0);
+	if (!c) {
+		return;
+	}
+
+	LOG_W("unsubscribe failed, topic: %s, rc: %d", 
+		c->topic, response ? response->code : 0);
+
+	conn = lock_connect(c->conn);
+
+	if (!conn) {
+		free_sub_context(c);
+		return;
+	}
+	if (conn->cbs->on_unsubscribe_failed) {
+		conn->cbs->on_unsubscribe_failed(c->context, my_strdup(c->topic));
+	}
+	free_sub_context(c);
+	unlock_connect(conn);
 }
 
 static void set_def_opts(bcp_conn_t *conn)
 {
 	MQTTAsync_connectOptions conn_opts = MQTTAsync_connectOptions_initializer;
 
-	conn_opts.keepAliveInterval = 20;
+	conn_opts.keepAliveInterval = DEF_KEEPALIVE;
 	conn_opts.cleansession = 1;
 
 	conn->qos = DEF_QOS;
@@ -389,7 +558,8 @@ void *bcp_conn_create(const char *address, const char *clientid)
 
 	set_def_opts(conn);
 	ListZero(&conn->topics);
-	
+	conn->locked = 0;
+
 	conns_list_lock();
 	insert_connect(conn);
 	conns_list_unlock();
@@ -489,13 +659,15 @@ void bcp_conn_destroy(void *hdl)
 		return;
 	}
 
-	conns_list_lock();
-	remove_connect(conn);
-	conns_list_unlock();
-
 	conn_lock(conn);
 	if (bcp_conn_isconnected(conn)) {
 		bcp_conn_disconnect(conn);
+	}
+
+	while (conn->locked > 0) {
+		conn_unlock(conn);
+		my_sleep(10);
+		conn_lock(conn);
 	}
 
 	unsubcribe_topics(conn);
@@ -512,6 +684,10 @@ void bcp_conn_destroy(void *hdl)
 
 	conn->cbs = NULL;
 	conn_unlock(conn);
+
+	conns_list_lock();
+	remove_connect(conn);
+	conns_list_unlock();
 
 	MQTTAsync_destroy(&conn->client);
 	Thread_destroy_mutex(&conn->mutex);
@@ -567,6 +743,20 @@ static void remove_topics(List *list)
 	ListEmpty(list);
 }
 
+static void subscribe_topics(bcp_conn_t *conn)
+{
+	ListElement *current = NULL;
+
+	LOG_I("resubscribe topics");
+
+	while (ListNextElement(&conn->topics, &current) != NULL) {
+		if (current->content) {
+			LOG_I("\ttopic: %s", (char*)current->content);
+			bcp_conn_subscribe(conn, (const char*)current->content, NULL);
+		}
+	}
+}
+
 static void unsubcribe_topics(bcp_conn_t *conn)
 {
 	ListElement *current = NULL;
@@ -575,12 +765,13 @@ static void unsubcribe_topics(bcp_conn_t *conn)
 	while (ListNextElement(&conn->topics, &current) != NULL) {
 		c = current->content;
 		if (c) {
-			bcp_conn_unsubscribe(conn, (const char*)c);
+			bcp_conn_unsubscribe(conn, (const char*)c, NULL);
 		}
 	}
 }
 
-int bcp_conn_subscribe(void *hdl, const char *topic)
+int bcp_conn_subscribe(void *hdl, const char *topic,
+	void *context)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)hdl;
 	MQTTAsync_responseOptions opts = MQTTAsync_responseOptions_initializer;
@@ -592,10 +783,11 @@ int bcp_conn_subscribe(void *hdl, const char *topic)
 
 	opts.onSuccess = on_subscribe;
 	opts.onFailure = on_subscribe_failure;
-	opts.context = conn;
+	opts.context = create_sub_context(conn, topic, context);
 
 	if (MQTTASYNC_SUCCESS != (rc = MQTTAsync_subscribe(conn->client, topic, conn->qos, &opts))) {
 		LOG_W("failed to start subscribe, return code %d", rc);
+		free_sub_context((bcp_sub_context_t*)opts.context);
 		return -1;
 	}
 
@@ -606,7 +798,8 @@ int bcp_conn_subscribe(void *hdl, const char *topic)
 	return 0;
 }
 
-int bcp_conn_unsubscribe(void *hdl, const char *topic)
+int bcp_conn_unsubscribe(void *hdl, const char *topic, 
+	void *context)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)hdl;
 	MQTTAsync_responseOptions opts = MQTTAsync_responseOptions_initializer;
@@ -618,10 +811,11 @@ int bcp_conn_unsubscribe(void *hdl, const char *topic)
 
 	opts.onSuccess = on_unsubscribe;
 	opts.onFailure = on_unsubscribe_failure;
-	opts.context = conn;
+	opts.context = create_sub_context(conn, topic, context);
 
 	if (MQTTASYNC_SUCCESS != (rc = MQTTAsync_unsubscribe(conn->client, topic, &opts))) {
 		LOG_W("failed to start unsubscribe, return code %d", rc);
+		free_sub_context((bcp_sub_context_t*)opts.context);
 		return -1;
 	}
 
@@ -632,7 +826,8 @@ int bcp_conn_unsubscribe(void *hdl, const char *topic)
 	return 0;
 }
 
-int bcp_conn_publish_raw(void *hdl, const char *topic, const char *buf, int len)
+int bcp_conn_publish_raw(void *hdl, const char *buf, int len,
+	const char *topic, void *context)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)hdl;
 	int rc;
@@ -643,8 +838,9 @@ int bcp_conn_publish_raw(void *hdl, const char *topic, const char *buf, int len)
 		return -1;
 	}
 
-	opts.onSuccess = on_send;
-	opts.context = conn;
+	opts.onSuccess = on_publish;
+	opts.onFailure = on_publish_failure;
+	opts.context = create_pub_context(conn, topic, context);
 
 	pubmsg.payload = (void*)buf;
 	pubmsg.payloadlen = len;
@@ -653,13 +849,14 @@ int bcp_conn_publish_raw(void *hdl, const char *topic, const char *buf, int len)
 
 	if (MQTTASYNC_SUCCESS != (rc = MQTTAsync_sendMessage(conn->client, topic, &pubmsg, &opts))) {
 		LOG_W("failed to start sendMessage, return code %d", rc);
+		free_pub_context((bcp_pub_context_t*)opts.context);
 		return -1;
 	}
 
 	return 0;
 }
 
-int bcp_conn_pulish(void *hdl, const char *topic, bcp_packet_t *p)
+int bcp_conn_pulish(void *hdl, bcp_packet_t *p, const char *topic, void *context)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)hdl;
 	u8 *buf;
@@ -672,6 +869,6 @@ int bcp_conn_pulish(void *hdl, const char *topic, bcp_packet_t *p)
 	if (bcp_packet_serialize(p, &buf, &len) < 0) {
 		return -1;
 	}
-	return bcp_conn_publish_raw(conn, topic, (const char*)buf, len);
+	return bcp_conn_publish_raw(conn, (const char*)buf, len, topic, context);
 }
 

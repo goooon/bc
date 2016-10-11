@@ -119,7 +119,7 @@ static u32 datagram_end_size(bcp_packet_t *p)
 bcp_element_t *bcp_element_create(u8 *data, u32 len)
 {
 	bcp_element_t *e;
-	u8 *pload;
+	u8 *pload = NULL;
 
 	e = (bcp_element_t*)malloc(sizeof(*e));
 	if (!e) {

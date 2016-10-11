@@ -106,11 +106,54 @@ static void on_packet_delivered(void *context, int token)
 	LOG_I("APP:package delivered, %d", token);
 }
 
+static void on_connect_failed(void *context)
+{
+	LOG_I("APP:connection failed");
+}
+static void on_packet_deliver_failed(void *context, int token)
+{
+	LOG_I("APP:packet deliver failed");
+}
+
+static void on_subscribe(void *context, char *topic)
+{
+	LOG_I("APP:subscribe topic: %s", topic);
+	free(topic);
+}
+
+static void on_subscribe_failed(void *context, char *topic)
+{
+	LOG_I("APP:unsubscribe failed, topic: %s", topic);
+	free(topic);
+}
+
+static void on_unsubscribe(void *context, char *topic)
+{
+	LOG_I("APP:subscribe topic: %s", topic);
+	free(topic);
+}
+
+static void on_unsubscribe_failed(void *context, char *topic)
+{
+	LOG_I("APP:unsubscribe failed, topic: %s", topic);
+	free(topic);
+}
+
 static bcp_conn_callbacks_t cbs = {
 	on_connected,
+	on_connect_failed,
 	on_disconnected,
+	
 	on_packet_arrived,
-	on_packet_delivered
+	
+	on_packet_delivered,
+	on_packet_deliver_failed,
+
+	on_subscribe,
+	on_subscribe_failed,
+	
+	on_unsubscribe,
+	on_unsubscribe_failed,
 };
 
 static void create_elements(bcp_message_t *m, int count)
@@ -123,10 +166,11 @@ static void create_elements(bcp_message_t *m, int count)
 		SPRINTF(buf, "ele%d", i);
 		e = bcp_element_create((u8*)buf, strlen(buf) + 1);
 		bcp_element_append(m, e);
+		/*
 		if (i > 0 && i % 4 == 0) {
 			LOG_I("deleteing %d", i);
 			bcp_element_destroy(e);
-		}
+		}*/
 	}
 }
 
@@ -138,11 +182,12 @@ static void create_messages(bcp_packet_t *p, int count)
 	for (i = 0; i < count; i++) {
 		m = bcp_message_create((u16)i, (u8)i + 1, bcp_next_seq_id());
 		bcp_message_append(p, m);
-		create_elements(m, my_rnd(5) + i);
+		create_elements(m, my_rnd(3) + i);
+		/*
 		if (i > 0 && i % 3 == 0) {
 			LOG_I("deleteing %d", i);
 			bcp_message_destroy(m);
-		}
+		}*/
 	}
 }
 
@@ -161,7 +206,7 @@ static void publish_one_message(const char *topic, void *hdl)
 		(u8*)ELEMENT_ONE_MSG, sizeof(ELEMENT_ONE_MSG));
 
 	if (bcp_packet_serialize(p, &data, &len) >= 0) {
-		bcp_conn_pulish(hdl, topic, p);
+		bcp_conn_pulish(hdl, p, topic, NULL);
 	}
 
 	bcp_packet_destroy(p);
@@ -178,10 +223,14 @@ static void publish_packet(const char *topic, void *hdl)
 		return;
 	}
 
-	create_messages(p, my_rnd(20));
-
-	if (bcp_packet_serialize(p, &data, &len) >= 0) {
-		bcp_conn_pulish(hdl, topic, p);
+	create_messages(p, my_rnd(10));
+	if (1) {
+		bcp_conn_pulish(hdl, p, topic, NULL);
+	} else {
+		if (bcp_packet_serialize(p, &data, &len) >= 0) {
+			bcp_conn_publish_raw(hdl, (const char*)data, len, topic, NULL);
+			free(data);
+		}
 	}
 
 	bcp_packet_destroy(p);
@@ -225,7 +274,7 @@ static void publish(const char *clientid, const char *topic)
 		my_sleep(1000);
 	}
 
-	while (bcp_conn_isconnected(hdl) && times-- > 0) {
+	while (bcp_conn_isconnected(hdl) /*&& times-- > 0*/) {
 		bcp_conn_connect(hdl);
 		publish_packet(topic, hdl);
 		//publish_one_message(topic, hdl);
@@ -260,10 +309,10 @@ static void subscribe(const char *clientid, const char *topic)
 		my_sleep(1000);
 	}
 
-	bcp_conn_subscribe(hdl, topic);
+	bcp_conn_subscribe(hdl, topic, NULL);
 	//wait topic message
 
-	while (bcp_conn_isconnected(hdl) && times-- > 0) {
+	while (bcp_conn_isconnected(hdl) /*&& times-- > 0*/) {
 		my_sleep(1000);
 	}
 
@@ -326,7 +375,24 @@ static void subscribes(void)
 int main(int argc, char **argv)
 {
 	int ispub;
-	
+
+/*
+	while (1) {
+		char data[1] = {1};
+		bcp_packet_t *p;
+		bcp_message_t *m;
+		bcp_element_t *e;
+		p = bcp_packet_create();
+			m = bcp_message_create(1, 1, 1);
+			//bcp_message_append(p, m);
+				e = bcp_element_create(NULL, 0);
+				bcp_element_append(m, e);
+				bcp_element_destroy(e);
+			bcp_message_destroy(m);
+		bcp_packet_destroy(p);
+	}
+*/
+
 	if (argc < 2) {
 		printf("usage %s {0|1}", argv[0]);
 		return -1;
@@ -341,7 +407,9 @@ int main(int argc, char **argv)
 		subscribes();
 	}
 
-	my_sleep(1000 * 50);
+	while (1) {
+		my_sleep(100);
+	}
 
 	bcp_uninit();
 
