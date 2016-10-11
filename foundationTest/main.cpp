@@ -8,6 +8,8 @@
 #define SPRINTF sprintf
 #endif
 
+#include "../fundation/src/inc/util/Thread.h"
+
 #include "../fundation/src/inc/dep.h"
 #include "../fundation/src/inc/bcp_packet.h"
 #include "../fundation/src/inc/bcp_comm.h"
@@ -21,9 +23,6 @@
 #define ELEMENT "ele"
 #define ELEMENT2 "ele2"
 #define ELEMENT_ONE_MSG "ele_one_msg"
-
-static void *hdl;
-static int connected = 0;
 
 static int my_rnd(int c)
 {
@@ -43,13 +42,11 @@ static void my_sleep(int milis)
 static void on_connected(void *context)
 {
 	LOG_I("APP:connected");
-	connected = 1;
 }
 
 static void on_disconnected(void *context)
 {
 	LOG_I("APP:disconnected");
-	connected = 0;
 }
 
 static void print_element(bcp_element_t *e)
@@ -149,7 +146,7 @@ static void create_messages(bcp_packet_t *p, int count)
 	}
 }
 
-static void publish_one_message(void)
+static void publish_one_message(const char *topic, void *hdl)
 {
 	bcp_packet_t *p;
 	u8 *data;
@@ -164,13 +161,13 @@ static void publish_one_message(void)
 		(u8*)ELEMENT_ONE_MSG, sizeof(ELEMENT_ONE_MSG));
 
 	if (bcp_packet_serialize(p, &data, &len) >= 0) {
-		bcp_conn_pulish(hdl, TOPIC, p);
+		bcp_conn_pulish(hdl, topic, p);
 	}
 
 	bcp_packet_destroy(p);
 }
 
-static void publish_packet(void)
+static void publish_packet(const char *topic, void *hdl)
 {
 	bcp_packet_t *p;
 	u8 *data;
@@ -184,33 +181,36 @@ static void publish_packet(void)
 	create_messages(p, my_rnd(20));
 
 	if (bcp_packet_serialize(p, &data, &len) >= 0) {
-		bcp_conn_pulish(hdl, TOPIC, p);
+		bcp_conn_pulish(hdl, topic, p);
 	}
 
 	bcp_packet_destroy(p);
 }
 
-static void test_reconnect(void)
+static void test_reconnect(void *hdl)
 {
-	LOG_I("disconnection");
+	LOG_I("REQ disconnection");
 	bcp_conn_disconnect(hdl);
-	while (connected) {/* wait disconnected */
-		my_sleep(10);
+	while (bcp_conn_isconnected(hdl)) {/* wait disconnected */
+		printf("waiting disconnected\n");
+		my_sleep(1000);
 	}
 
-	LOG_I("reconnection");
+	LOG_I("REQ reconnection");
 	bcp_conn_connect(hdl);
-	while (!connected) { /* wait connected */
-		my_sleep(10);
+	while (!bcp_conn_isconnected(hdl)) { /* wait connected */
+		printf("waiting connected\n");
+		my_sleep(1000);
 	}
 	my_sleep(5000);
 }
 
-static void publish(void)
+static void publish(const char *clientid, const char *topic)
 {
-	int times = 10;
+	void *hdl;
+	int times = 20;
 
-	hdl = bcp_conn_create(ADDRESS, PUB_CLIENTID);
+	hdl = bcp_conn_create(ADDRESS, clientid);
 	if (!hdl) {
 		return;
 	}
@@ -220,29 +220,32 @@ static void publish(void)
 	bcp_conn_set_keepalive(hdl, 20);
 
 	bcp_conn_connect(hdl);
-	while (!connected) {
-		my_sleep(10);
-	}
-
-	while (connected && times-- > 0) {
-		bcp_conn_connect(hdl);
-		//publish_packet();
-		publish_one_message();
+	while (!bcp_conn_isconnected(hdl)) {
+		printf("waiting connected\n");
 		my_sleep(1000);
 	}
 
-	test_reconnect();
+	while (bcp_conn_isconnected(hdl) && times-- > 0) {
+		bcp_conn_connect(hdl);
+		publish_packet(topic, hdl);
+		//publish_one_message(topic, hdl);
+		my_sleep(1000);
+	}
+
+	test_reconnect(hdl);
 
 	bcp_conn_disconnect(hdl);
 	bcp_conn_destroy(hdl);
 	hdl = NULL;
+	printf("publish %s exit.\n", topic);
 }
 
-static void subscribe(void)
+static void subscribe(const char *clientid, const char *topic)
 {
+	void *hdl;
 	int times = 10;
 
-	hdl = bcp_conn_create(ADDRESS, SUB_CLIENTID);
+	hdl = bcp_conn_create(ADDRESS, clientid);
 	if (!hdl) {
 		return;
 	}
@@ -252,22 +255,72 @@ static void subscribe(void)
 	bcp_conn_set_keepalive(hdl, 20);
 
 	bcp_conn_connect(hdl);
-	while (!connected) {
-		my_sleep(10);
-	}
-
-	bcp_conn_subscribe(hdl, TOPIC);
-	//wait topic message
-
-	while (connected && times-- > 0) {
+	while (!bcp_conn_isconnected(hdl)) {
+		printf("waiting connected\n");
 		my_sleep(1000);
 	}
 
-	test_reconnect();
+	bcp_conn_subscribe(hdl, topic);
+	//wait topic message
+
+	while (bcp_conn_isconnected(hdl) && times-- > 0) {
+		my_sleep(1000);
+	}
+
+	test_reconnect(hdl);
 
 	bcp_conn_disconnect(hdl);
 	bcp_conn_destroy(hdl);
 	hdl = NULL;
+	printf("subscribe %s exit.\n", topic);
+}
+
+static thread_return_type WINAPI publish_thread(void *arg)
+{
+	int i = (int)arg;
+	char clientid[20];
+	char topic[20];
+	
+	SPRINTF(clientid, "%s%d", PUB_CLIENTID, i);
+	SPRINTF(topic, "%s%d", TOPIC, i);
+	printf("publish clientid: %s, topic: %s\n", clientid, topic);
+	publish(clientid, topic);
+
+	return NULL;
+}
+
+static void publishs(void)
+{
+	int threads = 2;
+
+	while (threads-- > 0) {
+		Thread_start(publish_thread, (void*)threads);
+		my_sleep(3000);
+	}
+}
+
+static thread_return_type WINAPI subscribe_thread(void *arg)
+{
+	int i = (int)arg;
+	char clientid[20];
+	char topic[20];
+
+	SPRINTF(clientid, "%s%d", SUB_CLIENTID, i);
+	SPRINTF(topic, "%s%d", TOPIC, i);
+	printf("subscribe clientid: %s, topic: %s\n", clientid, topic);
+	subscribe(clientid, topic);
+
+	return NULL;
+}
+
+static void subscribes(void)
+{
+	int threads = 2;
+
+	while (threads-- > 0) {
+		Thread_start(subscribe_thread, (void*)threads);
+		my_sleep(3000);
+	}
 }
 
 int main(int argc, char **argv)
@@ -283,10 +336,12 @@ int main(int argc, char **argv)
 
 	ispub = atoi(argv[1]);
 	if (ispub) {
-		publish();
+		publishs();
 	} else {
-		subscribe();
+		subscribes();
 	}
+
+	my_sleep(1000 * 50);
 
 	bcp_uninit();
 

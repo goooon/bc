@@ -21,6 +21,9 @@ typedef struct bcp_conn_callbacks_s {
 	bcp_packet_delivered *on_packet_delivered;
 } bcp_conn_callbacks_t;
 
+void bcp_conn_init(void);
+void bcp_conn_uninit(void);
+
 void *bcp_conn_create(const char *address, const char *clientid);
 
 void bcp_conn_set_callbacks(void *hdl, bcp_conn_callbacks_t *cbs);

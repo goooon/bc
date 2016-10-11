@@ -23,7 +23,6 @@ typedef struct bcp_conn_s {
 	mutex_type mutex;
 	char *address;
 	char *clientid;
-	int connected;
 	MQTTAsync client;
 	MQTTAsync_connectOptions opts;
 
@@ -49,34 +48,98 @@ static char *my_strdup(const char *s)
 #endif
 }
 
-static void conn_mutex_lock(bcp_conn_t *conn)
+static void my_sleep(int milis)
+{
+#if defined(WIN32)
+	Sleep(milis);
+#else
+	usleep(1000L * milis);
+#endif
+}
+
+static List conns;
+static mutex_type conns_mutex = NULL;
+
+void bcp_conn_init(void)
+{
+	ListZero(&conns);
+	conns_mutex = Thread_create_mutex();
+	if (!conns_mutex) {
+		LOG_W("bcp_conn_init create mutex failed");
+	}
+}
+
+void bcp_conn_uninit(void)
+{
+	Thread_lock_mutex(conns_mutex);
+	if (conns.count) {
+		Thread_unlock_mutex(conns_mutex);
+		LOG_W("bcp_conn_uninit has %d connection need destroy.", 
+			conns.count);
+		return;
+	}
+	ListEmpty(&conns);
+	Thread_unlock_mutex(conns_mutex);
+
+	Thread_destroy_mutex(conns_mutex);
+	conns_mutex = NULL;
+}
+
+static void conn_lock(bcp_conn_t *conn)
 {
 	Thread_lock_mutex(conn->mutex);
 }
 
-static void conn_mutex_unlock(bcp_conn_t *conn)
+static void conn_unlock(bcp_conn_t *conn)
 {
 	Thread_unlock_mutex(conn->mutex);
 }
 
-static void set_disconnected(bcp_conn_t *conn)
+static void conns_list_lock(void)
 {
-	conn_mutex_lock(conn);
-	conn->connected = 0;
-	conn_mutex_unlock(conn);
+	Thread_lock_mutex(conns_mutex);
 }
 
-static void set_connected(bcp_conn_t *conn)
+static void conns_list_unlock(void)
 {
-	conn_mutex_lock(conn);
-	conn->connected = 1;
-	conn_mutex_unlock(conn);
+	Thread_unlock_mutex(conns_mutex);
+}
+
+static bcp_conn_t *find_connect(bcp_conn_t *conn)
+{
+	ListElement *e;
+	bcp_conn_t *c = NULL;
+
+	e = ListFind(&conns, (void*)conn);
+	if (e) {
+		c = (bcp_conn_t*)e->content;
+	}
+
+	return c;
+}
+
+static void insert_connect(bcp_conn_t *conn)
+{
+	if (!find_connect(conn)) {
+		ListAppend(&conns, (void*)conn, sizeof(*conn));
+	}
+}
+
+static void remove_connect(bcp_conn_t *conn)
+{
+	if (find_connect(conn)) {
+		ListDetach(&conns, (void*)conn);
+	}
 }
 
 static void on_conn_lost(void *context, char *cause)
 {
 	bcp_conn_t *conn = (bcp_conn_t*)context;
 	int rc;
+
+	conns_list_lock();
+	conn = find_connect(conn);
+	conns_list_unlock();
 
 	LOG_I("connection lost");
 	if (cause) {
@@ -87,29 +150,30 @@ static void on_conn_lost(void *context, char *cause)
 		return;
 	}
 
-	set_disconnected(conn);
-
-	conn_mutex_lock(conn);
+	conn_lock(conn);
 	conn->opts.keepAliveInterval = 20;
 	conn->opts.cleansession = 1;
-	conn_mutex_unlock(conn);
+	conn_unlock(conn);
 
 	LOG_I("reconnecting");
-	if (MQTTASYNC_SUCCESS != (rc = MQTTAsync_connect(conn->client, &conn->opts))) {
-		LOG_W("failed to start reconnect, return code %d", rc);
-	}
+	bcp_conn_connect(conn);
 }
 
 static void on_disconnect(void* context, MQTTAsync_successData* response)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)context;
 
-	LOG_I("successful disconnection");
-	
+	conns_list_lock();
+	conn = find_connect(conn);
+	conns_list_unlock();
+
 	if (!conn) {
 		return;
 	}
-	set_disconnected(conn);
+
+	LOG_I("%s disconnected from %s", 
+		conn->clientid, conn->address);
+
 	if (conn->cbs->on_disconnected) {
 		conn->cbs->on_disconnected(conn->callback_context);
 	}
@@ -118,15 +182,18 @@ static void on_disconnect(void* context, MQTTAsync_successData* response)
 static void on_connect_failed(void* context, MQTTAsync_failureData* response)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)context;
+	
+	conns_list_lock();
+	conn = find_connect(conn);
+	conns_list_unlock();
 
 	if (!conn) {
 		return;
 	}
 
-	LOG_I("%s disconnected from %s, rc=%d", 
+	LOG_I("%s connection failure from %s, rc=%d", 
 		conn->clientid, conn->address, response ? response->code : 0);
 
-	set_disconnected(conn);
 	if (conn->cbs->on_disconnected) {
 		conn->cbs->on_disconnected(conn->callback_context);
 	}
@@ -150,26 +217,33 @@ static void on_connected(void* context, MQTTAsync_successData* response)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)context;
 
+	conns_list_lock();
+	conn = find_connect(conn);
+	conns_list_unlock();
+
 	if (!conn) {
 		return;
 	}
 
 	LOG_I("%s connected to %s", conn->clientid, conn->address);
 
-	set_connected(conn);
 	if (conn->cbs->on_connected) {
 		conn->cbs->on_connected(conn->callback_context);
 	}
 
-	conn_mutex_lock(conn);
+	conn_lock(conn);
 	subscribe_topics(conn);
-	conn_mutex_unlock(conn);
+	conn_unlock(conn);
 }
 
 static int on_message_arrived(void* context, char* topic_name, int topic_len, MQTTAsync_message* message)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)context;
 	bcp_packet_t *p;
+
+	conns_list_lock();
+	conn = find_connect(conn);
+	conns_list_unlock();
 
 	if (!conn) {
 		MQTTAsync_freeMessage(&message);
@@ -198,12 +272,20 @@ static int on_message_arrived(void* context, char* topic_name, int topic_len, MQ
 static void on_send(void *context, MQTTAsync_successData *response)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)context;
+	
+	conns_list_lock();
+	conn = find_connect(conn);
+	conns_list_unlock();
 	LOG_I("message with token value %d delivery confirmed", response->token);
 }
 
 static void on_message_delivered(void* context, MQTTAsync_token token)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)context;
+
+	conns_list_lock();
+	conn = find_connect(conn);
+	conns_list_unlock();
 
 	if (!conn) {
 		return;
@@ -217,21 +299,41 @@ static void on_message_delivered(void* context, MQTTAsync_token token)
 
 static void on_subscribe(void* context, MQTTAsync_successData* response)
 {
+	bcp_conn_t *conn = (bcp_conn_t *)context;
+
+	conns_list_lock();
+	conn = find_connect(conn);
+	conns_list_unlock();
 	LOG_I("subscribe succeeded");
 }
 
 static void on_subscribe_failure(void* context, MQTTAsync_failureData* response)
 {
+	bcp_conn_t *conn = (bcp_conn_t *)context;
+
+	conns_list_lock();
+	conn = find_connect(conn);
+	conns_list_unlock();
 	LOG_W("subscribe failed, rc=%d", response ? response->code : 0);
 }
 
 static void on_unsubscribe(void* context, MQTTAsync_successData* response)
 {
+	bcp_conn_t *conn = (bcp_conn_t *)context;
+
+	conns_list_lock();
+	conn = find_connect(conn);
+	conns_list_unlock();
 	LOG_I("unsubscribe succeeded");
 }
 
 static void on_unsubscribe_failure(void* context, MQTTAsync_failureData* response)
 {
+	bcp_conn_t *conn = (bcp_conn_t *)context;
+
+	conns_list_lock();
+	conn = find_connect(conn);
+	conns_list_unlock();
 	LOG_W("unsubscribe failed, rc=%d", response ? response->code : 0);
 }
 
@@ -287,6 +389,10 @@ void *bcp_conn_create(const char *address, const char *clientid)
 
 	set_def_opts(conn);
 	ListZero(&conn->topics);
+	
+	conns_list_lock();
+	insert_connect(conn);
+	conns_list_unlock();
 
 	return conn;
 }
@@ -299,9 +405,9 @@ void bcp_conn_set_callbacks(void *hdl, bcp_conn_callbacks_t *cbs)
 		return;
 	}
 
-	conn_mutex_lock(conn);
+	conn_lock(conn);
 	conn->cbs = cbs;
-	conn_mutex_unlock(conn);
+	conn_unlock(conn);
 }
 
 void bcp_conn_set_qos(void *hdl, int qos)
@@ -372,6 +478,7 @@ int bcp_conn_disconnect(void *hdl)
 }
 
 static void remove_topics(List *list);
+static void unsubcribe_topics(bcp_conn_t *conn);
 
 void bcp_conn_destroy(void *hdl)
 {
@@ -381,21 +488,29 @@ void bcp_conn_destroy(void *hdl)
 		return;
 	}
 
-	conn_mutex_lock(conn);
+	conns_list_lock();
+	remove_connect(conn);
+	conns_list_unlock();
+
+	conn_lock(conn);
 	if (bcp_conn_isconnected(conn)) {
 		bcp_conn_disconnect(conn);
-		conn->connected = 0; /* force set */
 	}
-	conn_mutex_unlock(conn);
+
+	unsubcribe_topics(conn);
+	remove_topics(&conn->topics);
 
 	if (conn->address) {
 		free(conn->address);
+		conn->clientid =  NULL;
 	}
 	if (conn->clientid) {
 		free(conn->clientid);
+		conn->clientid =  NULL;
 	}
 
-	remove_topics(&conn->topics);
+	conn->cbs = NULL;
+	conn_unlock(conn);
 
 	MQTTAsync_destroy(&conn->client);
 	Thread_destroy_mutex(&conn->mutex);
@@ -405,16 +520,18 @@ void bcp_conn_destroy(void *hdl)
 
 static void *find_topic(List *list, const char *topic)
 {
-	ListElement *e = ListFind(list, (void*)topic);
+	ListElement *e;
+	void *c = NULL;
 
+	e = ListFind(list, (void*)topic);
 	if (e) {
-		return e->content;
-	} else {
-		return NULL;
+		c = e->content;
 	}
+
+	return c;
 }
 
-static void append_topic(List *list, const char *topic)
+static void insert_topic(List *list, const char *topic)
 {
 	char *s;
 
@@ -449,6 +566,19 @@ static void remove_topics(List *list)
 	ListEmpty(list);
 }
 
+static void unsubcribe_topics(bcp_conn_t *conn)
+{
+	ListElement *current = NULL;
+	void *c;
+
+	while (ListNextElement(&conn->topics, &current) != NULL) {
+		c = current->content;
+		if (c) {
+			bcp_conn_unsubscribe(conn, (const char*)c);
+		}
+	}
+}
+
 int bcp_conn_subscribe(void *hdl, const char *topic)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)hdl;
@@ -468,9 +598,9 @@ int bcp_conn_subscribe(void *hdl, const char *topic)
 		return -1;
 	}
 
-	conn_mutex_lock(conn);
-	append_topic(&conn->topics, topic);
-	conn_mutex_unlock(conn);
+	conn_lock(conn);
+	insert_topic(&conn->topics, topic);
+	conn_unlock(conn);
 
 	return 0;
 }
@@ -494,9 +624,9 @@ int bcp_conn_unsubscribe(void *hdl, const char *topic)
 		return -1;
 	}
 
-	conn_mutex_lock(conn);
+	conn_lock(conn);
 	remove_topic(&conn->topics, topic);
-	conn_mutex_unlock(conn);
+	conn_unlock(conn);
 
 	return 0;
 }
