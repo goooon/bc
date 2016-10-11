@@ -243,7 +243,7 @@ void bcp_elements_destroy(List *list)
 }
 
 bcp_message_t *bcp_message_create(u16 application_id,
-	u8 step_id, u8 version, u64 seq_id)
+	u8 step_id, u64 seq_id)
 {
 	bcp_message_t *m;
 
@@ -257,7 +257,7 @@ bcp_message_t *bcp_message_create(u16 application_id,
 	/* application hdr */
 	m->hdr.id = application_id;
 	m->hdr.step_id = step_id;
-	m->hdr.version = version;
+	m->hdr.version = BCP_MESSAGE_VERSION;
 	m->hdr.sequence_id = seq_id;
 	m->hdr.message_len = 0;
 
@@ -367,7 +367,7 @@ void bcp_packet_destroy(bcp_packet_t *p)
 }
 
 bcp_packet_t *bcp_create_one_message(u16 application_id,
-	u8 step_id, u8 version, u64 seq_id, u8 *data, u32 len)
+	u8 step_id, u64 seq_id, u8 *data, u32 len)
 {
 	bcp_packet_t *p;
 	bcp_message_t *m;
@@ -378,8 +378,7 @@ bcp_packet_t *bcp_create_one_message(u16 application_id,
 		return NULL;
 	}
 
-	m = bcp_message_create(application_id,
-		step_id, version, seq_id);
+	m = bcp_message_create(application_id, step_id, seq_id);
 	if (!m) {
 		bcp_packet_destroy(p);
 		return NULL;
@@ -565,6 +564,7 @@ static u32 datagram_hdr_unserialize(bcp_packet_t *p,
 	u8 *buf, u32 i, u32 len)
 {
 	u32 plen;
+	u8 v;
 
 	if (i + datagram_hdr_size(p) > len) {
 		return i;
@@ -574,7 +574,11 @@ static u32 datagram_hdr_unserialize(bcp_packet_t *p,
 	p->hdr.sof[1] = buf[i++];
 	p->hdr.sof[2] = buf[i++];
 	p->hdr.sof[3] = buf[i++];
-	p->hdr.version = buf[i++] & 0xf;
+	v = buf[i++] & 0xf;
+	if (v != p->hdr.version) {
+		LOG_W("packet protocol version difference");
+	}
+	p->hdr.version = v;
 
 	plen = buf[i++] << 16;
 	plen |= buf[i++] << 8;
@@ -619,10 +623,13 @@ static u32 message_hdr_unserialize(bcp_message_t **m,
 	hdr.message_len |= buf[i++] << 8;
 	hdr.message_len |= buf[i++] << 0;
 
-	nm = bcp_message_create(hdr.id, hdr.step_id,
-		hdr.version, hdr.sequence_id);
+	nm = bcp_message_create(hdr.id, hdr.step_id, hdr.sequence_id);
 	if (!nm) {
 		return i;
+	}
+
+	if (hdr.version != nm->hdr.version) {
+		LOG_W("application protocol version difference");
 	}
 
 	nm->hdr.message_len = hdr.message_len;

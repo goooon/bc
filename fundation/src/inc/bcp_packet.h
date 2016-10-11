@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 #define BCP_PACKET_VERSION 0
+#define BCP_MESSAGE_VERSION 0
 
 typedef List list_t;
 struct bcp_packet_s;
@@ -65,7 +66,7 @@ bcp_packet_t *bcp_packet_create(void);
 void bcp_packet_destroy(bcp_packet_t *p);
 
 bcp_message_t *bcp_message_create(u16 application_id, 
-	u8 step_id, u8 version, u64 seq_id);
+	u8 step_id, u64 seq_id);
 void bcp_message_append(bcp_packet_t *p, bcp_message_t *m);
 int bcp_message_remove(bcp_message_t *m);
 void bcp_message_destroy(bcp_message_t *m);
@@ -82,7 +83,7 @@ void bcp_messages_foreach(bcp_packet_t *p, bcp_message_foreach_callback_t *cb, v
 void bcp_elements_foreach(bcp_message_t *m, bcp_element_foreach_callback_t *cb, void *context);
 
 bcp_packet_t *bcp_create_one_message(u16 application_id,
-	u8 step_id, u8 version, u64 seq_id, u8 *data, u32 len);
+	u8 step_id, u64 seq_id, u8 *data, u32 len);
 
 /*
  * serialize packet

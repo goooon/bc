@@ -139,8 +139,7 @@ static void create_messages(bcp_packet_t *p, int count)
 	bcp_message_t *m;
 
 	for (i = 0; i < count; i++) {
-		m = bcp_message_create(i, i + 1, i + 2, 
-			bcp_next_seq_id());
+		m = bcp_message_create((u16)i, (u8)i + 1, bcp_next_seq_id());
 		bcp_message_append(p, m);
 		create_elements(m, my_rnd(5) + i);
 		if (i > 0 && i % 3 == 0) {
@@ -161,7 +160,7 @@ static void publish_one_message(void)
 		return;
 	}
 
-	p = bcp_create_one_message(6, 5, 4, bcp_next_seq_id(), 
+	p = bcp_create_one_message((u16)6, (u8)5, bcp_next_seq_id(), 
 		(u8*)ELEMENT_ONE_MSG, sizeof(ELEMENT_ONE_MSG));
 
 	if (bcp_packet_serialize(p, &data, &len) >= 0) {
