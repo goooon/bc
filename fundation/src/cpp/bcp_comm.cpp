@@ -397,7 +397,7 @@ void *bcp_conn_create(const char *address, const char *clientid)
 	return conn;
 }
 
-void bcp_conn_set_callbacks(void *hdl, bcp_conn_callbacks_t *cbs)
+void bcp_conn_set_callbacks(void *hdl, bcp_conn_callbacks_t *cbs, void *context)
 {
 	bcp_conn_t *conn = (bcp_conn_t *)hdl;
 
@@ -407,6 +407,7 @@ void bcp_conn_set_callbacks(void *hdl, bcp_conn_callbacks_t *cbs)
 
 	conn_lock(conn);
 	conn->cbs = cbs;
+	conn->callback_context = context;
 	conn_unlock(conn);
 }
 

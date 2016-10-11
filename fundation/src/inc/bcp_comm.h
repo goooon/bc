@@ -26,7 +26,8 @@ void bcp_conn_uninit(void);
 
 void *bcp_conn_create(const char *address, const char *clientid);
 
-void bcp_conn_set_callbacks(void *hdl, bcp_conn_callbacks_t *cbs);
+void bcp_conn_set_callbacks(void *hdl, bcp_conn_callbacks_t *cbs,
+	void *context);
 void bcp_conn_set_qos(void *hdl, int qos);
 void bcp_conn_set_keepalive(void *hdl, int keepalive_interval);
 

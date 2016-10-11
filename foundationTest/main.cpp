@@ -215,7 +215,7 @@ static void publish(const char *clientid, const char *topic)
 		return;
 	}
 
-	bcp_conn_set_callbacks(hdl, &cbs);
+	bcp_conn_set_callbacks(hdl, &cbs, NULL);
 	bcp_conn_set_qos(hdl, 1);
 	bcp_conn_set_keepalive(hdl, 20);
 
@@ -250,7 +250,7 @@ static void subscribe(const char *clientid, const char *topic)
 		return;
 	}
 
-	bcp_conn_set_callbacks(hdl, &cbs);
+	bcp_conn_set_callbacks(hdl, &cbs, NULL);
 	bcp_conn_set_qos(hdl, 1);
 	bcp_conn_set_keepalive(hdl, 20);
 
