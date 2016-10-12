@@ -16,6 +16,9 @@
     <Filter Include="bcp">
       <UniqueIdentifier>{19a6d001-f0b6-4886-b24f-ae715ce3708a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\inc\tasks">
+      <UniqueIdentifier>{aec676a0-ab6e-478a-a228-de102a92eaaf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\inc\Message.h">
@@ -31,9 +34,6 @@
       <Filter>src\inc</Filter>
     </ClInclude>
     <ClInclude Include="..\src\inc\Task.h">
-      <Filter>src\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\inc\RemoteUnlockTask.h">
       <Filter>src\inc</Filter>
     </ClInclude>
     <ClInclude Include="..\src\inc\dep.h">
@@ -59,6 +59,15 @@
     </ClInclude>
     <ClInclude Include="..\src\inc\List.h">
       <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\Vehicle.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\RemoteUnlockTask.h">
+      <Filter>src\inc\tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\VehicleAuthTask.h">
+      <Filter>src\inc\tasks</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -3,29 +3,7 @@
 
 #include "./Task.h"
 #include "./Mqtt.h"
-class EventHander
-{
-private:
-	ThreadEvent event;
-	EventQueue  eventArgs;
-public:
-	bool sendEvent(AppEvent e, u32 param1, u32 param2, void* data)
-	{
-		bool ret = eventArgs.in(e, param1, param2, data);
-		if (!ret) {
-			LOG_E("eventArgs.in() failed");
-			return false;
-		}
-		if (ThreadEvent::PostOk != event.post()) {
-			LOG_E("event.post() failed");
-			return false;
-		}
-		return true;
-	}
-	ThreadEvent::WaitResult wait(u32 millSecond) {
-		return event.wait(millSecond);
-	}
-};
+
 
 class RemoteUnlockTask : public Task {
 public:
@@ -66,7 +44,7 @@ public:
 	{
 		//prepare knob for triggering 
 		//wait
-		ThreadEvent::WaitResult ret = event.wait(5000);
+		ThreadEvent::WaitResult ret = msgQueue.wait(5000);
 		stopWaitForKnobTrigger();
 		return ret;
 	}
@@ -86,11 +64,11 @@ public:
 	virtual bool handlePackage(bcp_packet_t* pkg)override
 	{
 		duringTime = 10000;
-		return event.sendEvent(AppEvent::Customized, 0, duringTime,0);
+		return msgQueue.post(AppEvent::Customized, 0, duringTime,0);
 	}
 	virtual void onEvent(AppEvent e, u32 param1, u32 param2, void* data)override
 	{
-		event.sendEvent(e, param1, param2, data);
+		msgQueue.post(e, param1, param2, data);
 	}
 	void sendAck() {
 		u8 ack = 1;
@@ -110,6 +88,6 @@ public:
 	}
 private:
 	u32         duringTime;
-	EventHander event;
+	MessageQueue msgQueue;
 };
 #endif // GUARD_RemoteUnlockTask_h__

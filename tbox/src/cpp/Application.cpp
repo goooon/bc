@@ -1,5 +1,6 @@
 #include "../inc/Application.h"
 #include "../inc/RemoteUnlockTask.h"
+#include "../inc/VehicleAuthTask.h"
 static Application* g_inst;
 Application& Application::getInstance()
 {
@@ -44,6 +45,7 @@ bool Application::startTask(Task* task,bool runAsThread)
 
 void Application::loop()
 {
+	loopID = Thread::getCurrentThreadId();
 	while (true) {
 		LOG_V("Application loop...");
 		auto wr = appEvent.wait(500);
@@ -174,6 +176,11 @@ void Application::onEvent(AppEvent e, u32 param1, u32 param2, void* data)
 bool Application::postAppEvent(AppEvent e, u32 param1, u32 param2, void* data)
 {
 	bool ret = appEventQueue.in(e, param1,param2, data);
+	if (!ret && 
+		Thread::getCurrentThreadId() != loopID) {
+		while(appEventQueue.in(e, param1, param2, data)){}
+		ret = true;
+	}
 	if (ret) {
 		appEvent.post();
 	}
@@ -192,6 +199,7 @@ void Application::broadcastEvent(AppEvent e, u32 param1, u32 param2, void* data)
 void Application::onMqttEvent(u32 param1, u32 param2, void* data)
 {
 	LOG_I("onMqttEvent(%d,%d,0x%x)",param1,param2,data);
+	startTask(bc_new VehicleAuthTask(),false);
 }
 
 void Application::onNetConnected()

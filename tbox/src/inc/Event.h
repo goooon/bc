@@ -12,8 +12,8 @@ enum AppEvent
 	NetConnected,
 	NetDisconnected,
 	MqttStateChanged,		//param1 is Mqtt::State currState,param2 is Mqtt::State nextState
-	AutoStateChanged,		//
-	SensorEvent
+	AutoStateChanged,		//param1 Vehicle::State
+	SensorEvent,
 };
 
 bool PostEvent(AppEvent e, u32 param1, u32 param2, void* data);

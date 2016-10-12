@@ -41,6 +41,8 @@
     <ClInclude Include="..\src\inc\Task.h" />
     <ClInclude Include="..\src\inc\TaskList.h" />
     <ClInclude Include="..\src\inc\TaskQueue.h" />
+    <ClInclude Include="..\src\inc\Vehicle.h" />
+    <ClInclude Include="..\src\inc\VehicleAuthTask.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

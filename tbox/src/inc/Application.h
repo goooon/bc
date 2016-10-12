@@ -8,6 +8,7 @@
 #include "./State.h"
 #include "./Mqtt.h"
 #include "./Event.h"
+#include "./Vehicle.h"
 
 class Application : public Thread
 {
@@ -35,6 +36,7 @@ protected:
 	void onNetConnected();
 	void onNetDisconnected();
 public:
+	Vehicle     vehicle;
 	Config      config;
 	TaskQueue   tasksWaiting;
 	TaskList    tasksWorking;
@@ -42,6 +44,7 @@ public:
 	ThreadEvent appEvent;
 	EventQueue  appEventQueue;
 	MqttClient  mqtt;
+	Thread::ID  loopID;
 };
 
 

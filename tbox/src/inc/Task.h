@@ -3,6 +3,34 @@
 
 #include "./Message.h"
 #include "./Event.h"
+
+class MessageQueue
+{
+private:
+	ThreadEvent event;
+	EventQueue  eventArgs;
+public:
+	bool post(AppEvent e, u32 param1, u32 param2, void* data)
+	{
+		bool ret = eventArgs.in(e, param1, param2, data);
+		if (!ret) {
+			LOG_E("eventArgs.in() failed");
+			return false;
+		}
+		if (ThreadEvent::PostOk != event.post()) {
+			LOG_E("event.post() failed");
+			return false;
+		}
+		return true;
+	}
+	bool out(AppEvent& e, u32& param1, u32& param2, void*& data) {
+		return eventArgs.out(e, param1, param2, data);
+	}
+	ThreadEvent::WaitResult wait(u32 millSecond) {
+		return event.wait(millSecond);
+	}
+};
+
 class Task : public Thread
 {
 	friend class Application;

@@ -47,6 +47,7 @@
 #endif
 
 thread_type Thread_start(thread_fn, void*);
+thread_id_type Thread_getid();
 class Runnable
 {
 public:
@@ -55,7 +56,12 @@ public:
 class Thread : public Runnable
 {
 public:
+	typedef thread_id_type ID;
+public:
 	static void startThread(Runnable* fn);
+	static thread_id_type getCurrentThreadId() {
+		return Thread_getid();
+	}
 	void start()
 	{
 		startThread(this);
@@ -108,8 +114,6 @@ public:
 private:
 	ThreadMutex& m;
 };
-
-thread_id_type Thread_getid();
 
 sem_type Thread_create_sem();
 int Thread_wait_sem(sem_type sem, int timeout);
