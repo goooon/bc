@@ -23,7 +23,7 @@
 
 #define TOPIC_SUB "/beecloud"
 //#define TOPIC_SUB "mqtt/notify/15218"
-#define TOPIC_PUB "/beecloud1"
+#define TOPIC_PUB "/beecloud"
 
 #define ELEMENT "ele"
 #define ELEMENT2 "ele2"
@@ -207,11 +207,12 @@ static void publish_one_message(const char *topic, void *hdl)
 		(u8*)ELEMENT_ONE_MSG, sizeof(ELEMENT_ONE_MSG));
 
 	if (bcp_packet_serialize(p, &data, &len) >= 0) {
-		//bcp_conn_pulish(hdl, p, topic, NULL);
+		bcp_conn_pulish(hdl, p, topic, NULL);
+		/*
 		if (bcp_packet_unserialize(data, len, &pu) >= 0) {
-			//parse_packet(pu);
+			parse_packet(pu);
 			bcp_packet_destroy(pu);
-		}
+		}*/
 		free(data);
 	}
 
