@@ -26,9 +26,7 @@ public:
 	virtual void onEvent(AppEvent e, u32 param1, u32 param2, void* data);
 protected:
 	//the function should be override by its subclass
-	virtual void doTask(){
-		return;
-	}
+	virtual void doTask(){return;}
 private:
 	//called by Application
 	virtual void run()override;
@@ -36,7 +34,6 @@ private:
 	////list node in refList//////////////////////////////////////////////////////////////////////
 	Task* prev;
 	Task* next;
-	TaskList* refList;
 protected:
 	u16  appID;	//ref in bcp
 	u64  seqID; //ref in bcp

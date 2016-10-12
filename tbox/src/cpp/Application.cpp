@@ -14,6 +14,7 @@ void Application::init(int argc, char** argv)
 		LOG_I("    %s", argv[i]);
 	})
 	config.parse(argc, argv);
+	//launch thread to do branch task
 	Thread::startThread(this);
 }
 
@@ -21,7 +22,6 @@ bool Application::startTask(Task* task,bool runAsThread)
 {
 	if (runAsThread) {
 		tasksWorking.in(task);
-		task->refList = &tasksWorking;
 		Thread::startThread(task);
 		return true;
 	}
@@ -109,13 +109,12 @@ void Application::disconnectServer()
 void Application::run()
 {
 	while (true) {
-		LOG_V("Application run...");
+		LOG_V("tasks run...");
 		auto wr = taskEvent.wait(500);
 		if (wr == ThreadEvent::EventOk) {
 			while (!tasksWaiting.isEmpty()) {
 				Task* task = tasksWaiting.out();
 				if (task != nullptr) {
-					task->refList = &tasksWorking;
 					tasksWorking.in(task);
 					if (!task->isAsync) {
 						task->run();

@@ -83,9 +83,14 @@ public:
 	void onPackageArrived() {
 
 	}
-	virtual bool handlePackage(void* data, int len) {
+	virtual bool handlePackage(bcp_packet_t* pkg)override
+	{
 		duringTime = 10000;
 		return event.sendEvent(AppEvent::Customized, 0, duringTime,0);
+	}
+	virtual void onEvent(AppEvent e, u32 param1, u32 param2, void* data)override
+	{
+		event.sendEvent(e, param1, param2, data);
 	}
 	void sendAck() {
 		u8 ack = 1;

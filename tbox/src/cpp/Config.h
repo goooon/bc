@@ -12,7 +12,7 @@ public:
 	}
 public:
 	bool parse(int argc, char** argv) {
-		strncpy(mqttServer, "tcp://m2m.eclipse.org:1883", sizeof(mqttServer));
+		strncpy(mqttServer, "139.219.238.66:1883", sizeof(mqttServer));
 		strncpy(topics, "topics", sizeof(topics));
 		keepAliveInterval = 20;
 		return true;

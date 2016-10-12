@@ -16,7 +16,7 @@ public:
 	static Application& getInstance();
 	void init(int argc, char** argv);
 	
-	//main loop process for event
+	//main loop process for app event
 	void loop();
 	bool onDebugCommand(char* cmd);
 public:
@@ -41,7 +41,7 @@ public:
 	ThreadEvent taskEvent;
 	ThreadEvent appEvent;
 	EventQueue  appEventQueue;
-	MqttClient mqtt;
+	MqttClient  mqtt;
 };
 
 

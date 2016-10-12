@@ -24,9 +24,9 @@ public:
 	}
 	void out(Task* task) {
 		mutex.lock();
-		if (listHead == task) {listHead = task->next;}
-		if (task->prev)task->prev->next = task->next;
-		if (task->next)task->next->prev = task->prev;
+		if (listHead == task) { listHead = task->next;}
+		if (task->prev) { task->prev->next = task->next; }
+		if (task->next) { task->next->prev = task->prev; }
 		mutex.unlock();
 	}
 	Task* getTask(Task* prev) {
