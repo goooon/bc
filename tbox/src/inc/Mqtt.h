@@ -14,6 +14,7 @@ public:
 };
 class MqttClient : public IMqttHandler
 {
+public:
 	enum State{
 		Disconnected = 0,
 		Connecting,

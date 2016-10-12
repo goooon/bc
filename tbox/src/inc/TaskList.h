@@ -29,7 +29,7 @@ public:
 		if (task->next) { task->next->prev = task->prev; }
 		mutex.unlock();
 	}
-	Task* getTask(Task* prev) {
+	Task* getNextTask(Task* prev) {
 		if (prev)return prev->next;
 		return listHead;
 	}

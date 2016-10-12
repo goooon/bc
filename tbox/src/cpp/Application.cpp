@@ -189,17 +189,19 @@ bool Application::postAppEvent(AppEvent e, u32 param1, u32 param2, void* data)
 
 void Application::broadcastEvent(AppEvent e, u32 param1, u32 param2, void* data)
 {
-	Task* t = tasksWorking.getTask(nullptr);
+	Task* t = tasksWorking.getNextTask(nullptr);
 	while (t) {
 		t->onEvent(e, param1, param2, data);
-		t = tasksWorking.getTask(t);
+		t = tasksWorking.getNextTask(t);
 	}
 }
 
 void Application::onMqttEvent(u32 param1, u32 param2, void* data)
 {
 	LOG_I("onMqttEvent(%d,%d,0x%x)",param1,param2,data);
-	startTask(bc_new VehicleAuthTask(),false);
+	if (param2 == MqttClient::Subscribed) {
+		startTask(bc_new VehicleAuthTask(), false);
+	}
 }
 
 void Application::onNetConnected()
