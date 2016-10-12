@@ -165,7 +165,8 @@ void bcp_element_append(bcp_message_t *m, bcp_element_t *e)
 
 int bcp_element_remove(bcp_element_t *e)
 {
-	if (e && e->m && ListDetach(&e->m->elements, e)) {
+	if (e && e->m) {
+		ListDetach(&e->m->elements, e);
 		e->m->hdr.message_len -= element_size(e);
 		/* remove element first */
 		if (e->m->p) {
@@ -230,15 +231,9 @@ void bcp_element_destroy(bcp_element_t *e)
 void bcp_elements_destroy(List *list)
 {
 	bcp_element_t *e;
-	ListElement* current = NULL;
 
-	while (ListNextElement(list, &current) != NULL) {
-		e = (bcp_element_t*)current->content;
-		if (e) {
-			current->content = NULL;
-			bcp_element_destroy(e);
-			current = NULL;
-		}
+	while ((e = (bcp_element_t*)ListDetachHead(list)) != NULL) {
+		bcp_element_destroy(e);
 	}
 
 	ListEmpty(list);
@@ -286,7 +281,8 @@ void bcp_message_append(bcp_packet_t *p, bcp_message_t *m)
 
 int bcp_message_remove(bcp_message_t *m)
 {
-	if (m && m->p && ListDetach(&m->p->messages, m)) {
+	if (m && m->p) {
+		ListDetach(&m->p->messages, m);
 		m->p->hdr.packet_len -= message_size(m);
 		m->p = NULL;
 		return 0;
@@ -347,13 +343,8 @@ void bcp_messages_destroy(List *list)
 	bcp_message_t *m;
 	ListElement* current = NULL;
 
-	while (ListNextElement(list, &current) != NULL) {
-		m = (bcp_message_t*)current->content;
-		if (m) {
-			current->content = NULL;
-			bcp_message_destroy(m);
-			current = NULL;
-		}
+	while ((m = (bcp_message_t*)ListDetachHead(list)) != NULL) {
+		bcp_message_destroy(m);
 	}
 
 	ListEmpty(list);
@@ -645,7 +636,6 @@ static u32 element_unserialize(bcp_message_t *m,
 	u8 *buf, u32 i, u32 len, s32 *ret)
 {
 	bcp_element_t *e;
-	u8 *data;
 	u32 hdr_size, data_len;
 
 	hdr_size = element_hdr_size(NULL);
@@ -665,22 +655,13 @@ static u32 element_unserialize(bcp_message_t *m,
 		return i;
 	}
 
-	data = (u8*)malloc(data_len);
-	if (!data) {
-		*ret = -1;
-		return i;
-	}
-
-	memcpy(data, &buf[i], data_len);
-	i += data_len;
-
-	e = bcp_element_create(data, data_len);
+	e = bcp_element_create(&buf[i], data_len);
 	if (!e) {
-		free(data);
 		*ret = -1;
 		return i;
 	}
 
+	i += data_len;
 	bcp_element_append(m, e);
 
 	*ret = 0;

@@ -207,7 +207,11 @@ static void publish_one_message(const char *topic, void *hdl)
 		(u8*)ELEMENT_ONE_MSG, sizeof(ELEMENT_ONE_MSG));
 
 	if (bcp_packet_serialize(p, &data, &len) >= 0) {
-		bcp_conn_pulish(hdl, p, topic, NULL);
+		//bcp_conn_pulish(hdl, p, topic, NULL);
+		if (bcp_packet_unserialize(data, len, &pu) >= 0) {
+			//parse_packet(pu);
+			bcp_packet_destroy(pu);
+		}
 		free(data);
 	}
 
@@ -230,7 +234,7 @@ static void publish_packet(const char *topic, void *hdl)
 		bcp_conn_pulish(hdl, p, topic, NULL);
 	} else {
 		if (bcp_packet_serialize(p, &data, &len) >= 0) {
-			//bcp_conn_publish_raw(hdl, (const char*)data, len, topic, NULL);
+			bcp_conn_publish_raw(hdl, (const char*)data, len, topic, NULL);
 			free(data);
 		}
 	}
