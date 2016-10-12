@@ -126,13 +126,14 @@ bcp_element_t *bcp_element_create(u8 *data, u32 len)
 		return NULL;
 	}
 
-	pload = (u8*)malloc(len);
-	if (!pload) {
-		free(e);
-		return NULL;
+	if (len > 0 && data) {
+		pload = (u8*)malloc(len);
+		if (!pload) {
+			free(e);
+			return NULL;
+		}
+		memcpy(pload, data, len);
 	}
-
-	memcpy(pload, data, len);
 
 	e->len = len;
 	e->data = pload;
@@ -234,8 +235,9 @@ void bcp_elements_destroy(List *list)
 	while (ListNextElement(list, &current) != NULL) {
 		e = (bcp_element_t*)current->content;
 		if (e) {
-			bcp_element_destroy(e);
 			current->content = NULL;
+			bcp_element_destroy(e);
+			current = NULL;
 		}
 	}
 
@@ -348,8 +350,9 @@ void bcp_messages_destroy(List *list)
 	while (ListNextElement(list, &current) != NULL) {
 		m = (bcp_message_t*)current->content;
 		if (m) {
-			bcp_message_destroy(m);
 			current->content = NULL;
+			bcp_message_destroy(m);
+			current = NULL;
 		}
 	}
 

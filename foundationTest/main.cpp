@@ -9,17 +9,22 @@
 #endif
 
 #include "../fundation/src/inc/util/Thread.h"
+#include "../fundation/src/inc/util/LinkedList.h"
 
 #include "../fundation/src/inc/dep.h"
 #include "../fundation/src/inc/bcp_packet.h"
 #include "../fundation/src/inc/bcp_comm.h"
 #include "../fundation/src/inc/bcp.h"
 
+//#define ADDRESS "tcp://139.219.238.66:1883"
 #define ADDRESS "tcp://iot.eclipse.org:1883"
 #define PUB_CLIENTID "BCP_CLIENT_PUB"
 #define SUB_CLIENTID "BCP_CLIENT_SUB"
 
-#define TOPIC "/beecloud"
+#define TOPIC_SUB "/beecloud"
+//#define TOPIC_SUB "mqtt/notify/15218"
+#define TOPIC_PUB "/beecloud1"
+
 #define ELEMENT "ele"
 #define ELEMENT2 "ele2"
 #define ELEMENT_ONE_MSG "ele_one_msg"
@@ -51,7 +56,10 @@ static void on_disconnected(void *context)
 
 static void print_element(bcp_element_t *e)
 {
-	LOG_I("\t\telement: %s,%d", e->data, e->len);
+	char *p = (char*)malloc(e->len + 1);
+	memset(p, 0, e->len + 1);
+	memcpy(p, e->data, e->len);
+	LOG_I("\t\telement: %s,%d", p, e->len);
 }
 
 static void bcp_element_foreach_callback(bcp_element_t *e, void *context)
@@ -166,11 +174,10 @@ static void create_elements(bcp_message_t *m, int count)
 		SPRINTF(buf, "ele%d", i);
 		e = bcp_element_create((u8*)buf, strlen(buf) + 1);
 		bcp_element_append(m, e);
-		/*
 		if (i > 0 && i % 4 == 0) {
 			LOG_I("deleteing %d", i);
 			bcp_element_destroy(e);
-		}*/
+		}
 	}
 }
 
@@ -183,30 +190,25 @@ static void create_messages(bcp_packet_t *p, int count)
 		m = bcp_message_create((u16)i, (u8)i + 1, bcp_next_seq_id());
 		bcp_message_append(p, m);
 		create_elements(m, my_rnd(3) + i);
-		/*
 		if (i > 0 && i % 3 == 0) {
 			LOG_I("deleteing %d", i);
 			bcp_message_destroy(m);
-		}*/
+		}
 	}
 }
 
 static void publish_one_message(const char *topic, void *hdl)
 {
-	bcp_packet_t *p;
+	bcp_packet_t *p, *pu;
 	u8 *data;
 	u32 len;
 
-	p = bcp_packet_create();
-	if (!p) {
-		return;
-	}
-
-	p = bcp_create_one_message((u16)6, (u8)5, bcp_next_seq_id(), 
+	p = bcp_create_one_message((u16)2, (u8)5, bcp_next_seq_id(), 
 		(u8*)ELEMENT_ONE_MSG, sizeof(ELEMENT_ONE_MSG));
 
 	if (bcp_packet_serialize(p, &data, &len) >= 0) {
 		bcp_conn_pulish(hdl, p, topic, NULL);
+		free(data);
 	}
 
 	bcp_packet_destroy(p);
@@ -224,11 +226,11 @@ static void publish_packet(const char *topic, void *hdl)
 	}
 
 	create_messages(p, my_rnd(10));
-	if (1) {
+	if (0) {
 		bcp_conn_pulish(hdl, p, topic, NULL);
 	} else {
 		if (bcp_packet_serialize(p, &data, &len) >= 0) {
-			bcp_conn_publish_raw(hdl, (const char*)data, len, topic, NULL);
+			//bcp_conn_publish_raw(hdl, (const char*)data, len, topic, NULL);
 			free(data);
 		}
 	}
@@ -276,9 +278,9 @@ static void publish(const char *clientid, const char *topic)
 
 	while (bcp_conn_isconnected(hdl) /*&& times-- > 0*/) {
 		bcp_conn_connect(hdl);
-		publish_packet(topic, hdl);
-		//publish_one_message(topic, hdl);
-		my_sleep(1000);
+		//publish_packet(topic, hdl);
+		publish_one_message(topic, hdl);
+		//my_sleep(1000);
 	}
 
 	test_reconnect(hdl);
@@ -331,7 +333,8 @@ static thread_return_type WINAPI publish_thread(void *arg)
 	char topic[20];
 	
 	SPRINTF(clientid, "%s%d", PUB_CLIENTID, i);
-	SPRINTF(topic, "%s%d", TOPIC, i);
+	SPRINTF(topic, "%s", TOPIC_PUB);
+	//SPRINTF(topic, "%s%d", TOPIC_PUB, i);
 	printf("publish clientid: %s, topic: %s\n", clientid, topic);
 	publish(clientid, topic);
 
@@ -340,7 +343,7 @@ static thread_return_type WINAPI publish_thread(void *arg)
 
 static void publishs(void)
 {
-	int threads = 2;
+	int threads = 1;
 
 	while (threads-- > 0) {
 		Thread_start(publish_thread, (void*)threads);
@@ -355,7 +358,8 @@ static thread_return_type WINAPI subscribe_thread(void *arg)
 	char topic[20];
 
 	SPRINTF(clientid, "%s%d", SUB_CLIENTID, i);
-	SPRINTF(topic, "%s%d", TOPIC, i);
+	SPRINTF(topic, "%s", TOPIC_SUB);
+	//SPRINTF(topic, "%s%d", TOPIC_SUB, i);
 	printf("subscribe clientid: %s, topic: %s\n", clientid, topic);
 	subscribe(clientid, topic);
 
@@ -364,7 +368,7 @@ static thread_return_type WINAPI subscribe_thread(void *arg)
 
 static void subscribes(void)
 {
-	int threads = 2;
+	int threads = 1;
 
 	while (threads-- > 0) {
 		Thread_start(subscribe_thread, (void*)threads);
@@ -372,26 +376,39 @@ static void subscribes(void)
 	}
 }
 
-int main(int argc, char **argv)
+static void test_api(void)
 {
-	int ispub;
-
-/*
 	while (1) {
-		char data[1] = {1};
+		char *pbuf;
 		bcp_packet_t *p;
 		bcp_message_t *m;
 		bcp_element_t *e;
 		p = bcp_packet_create();
 			m = bcp_message_create(1, 1, 1);
-			//bcp_message_append(p, m);
-				e = bcp_element_create(NULL, 0);
+			bcp_message_append(p, m);
+				e = bcp_element_create((u8*)(pbuf = (char*)malloc(1)), 1);
 				bcp_element_append(m, e);
 				bcp_element_destroy(e);
+				free(pbuf);
 			bcp_message_destroy(m);
 		bcp_packet_destroy(p);
 	}
-*/
+
+	while (1) {
+		List l;
+		char buf[1] = { 0, };
+
+		ListZero(&l);
+		ListAppend(&l, buf, 1);
+		ListDetach(&l, buf);
+
+		ListEmpty(&l);
+	}
+}
+
+int main(int argc, char **argv)
+{
+	int ispub;
 
 	if (argc < 2) {
 		printf("usage %s {0|1}", argv[0]);

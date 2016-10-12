@@ -19,7 +19,8 @@
 #if !defined(HEAP_H)
 #define HEAP_H
 
-#if defined(HIGH_PERFORMANCE)
+// HIGH_PERFORMANCE
+#if !defined(TRACE_MALLOC_PERFORMANCE)
 #define NO_HEAP_TRACKING 1
 #endif
 
@@ -48,7 +49,6 @@
  * @param x the size of the item to be freed
  */
 #define free(x) myfree(__FILE__, __LINE__, x)
-
 #endif
 
 /**

@@ -379,7 +379,7 @@ static void on_publish(void *context, MQTTAsync_successData *response)
 	}
 
 	if (conn->cbs->on_packet_delivered) {
-		conn->cbs->on_packet_delivered(c->context, response->token);
+		conn->cbs->on_packet_delivered(c->context, response ? response->token : 0);
 	}
 	free_pub_context(c);
 	unlock_connect(conn);
@@ -405,7 +405,7 @@ static void on_publish_failure(void *context, MQTTAsync_failureData* response)
 		return;
 	}
 	if (conn->cbs->on_packet_deliver_failed) {
-		conn->cbs->on_packet_deliver_failed(c->context, response->token);
+		conn->cbs->on_packet_deliver_failed(c->context, response ? response->token : 0);
 	}
 	free_pub_context(c);
 	unlock_connect(conn);
@@ -690,7 +690,7 @@ void bcp_conn_destroy(void *hdl)
 	conns_list_unlock();
 
 	MQTTAsync_destroy(&conn->client);
-	Thread_destroy_mutex(&conn->mutex);
+	Thread_destroy_mutex(conn->mutex);
 
 	free(conn);
 }
@@ -738,6 +738,7 @@ static void remove_topics(List *list)
 		free(c);
 		current->content = NULL;
 		ListDetach(list, c);
+		current = NULL;
 	}
 
 	ListEmpty(list);
@@ -858,6 +859,7 @@ int bcp_conn_publish_raw(void *hdl, const char *buf, int len,
 
 int bcp_conn_pulish(void *hdl, bcp_packet_t *p, const char *topic, void *context)
 {
+	int ret;
 	bcp_conn_t *conn = (bcp_conn_t *)hdl;
 	u8 *buf;
 	u32 len;
@@ -869,6 +871,10 @@ int bcp_conn_pulish(void *hdl, bcp_packet_t *p, const char *topic, void *context
 	if (bcp_packet_serialize(p, &buf, &len) < 0) {
 		return -1;
 	}
-	return bcp_conn_publish_raw(conn, (const char*)buf, len, topic, context);
+
+	ret = bcp_conn_publish_raw(conn, (const char*)buf, len, topic, context);
+	free(buf);
+
+	return ret;
 }
 
