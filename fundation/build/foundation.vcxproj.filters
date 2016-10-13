@@ -90,6 +90,9 @@
     <ClInclude Include="..\src\inc\bcp.h">
       <Filter>src\inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\binary_formater.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cpp\util\Heap.cpp">
@@ -120,6 +123,9 @@
       <Filter>src\cpp</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cpp\bcp.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\binary_formater.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
   </ItemGroup>

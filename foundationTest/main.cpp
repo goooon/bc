@@ -16,6 +16,8 @@
 #include "../fundation/src/inc/bcp_comm.h"
 #include "../fundation/src/inc/bcp.h"
 
+#include "../fundation/src/inc/binary_formater.h"
+
 //#define ADDRESS "tcp://139.219.238.66:1883"
 #define ADDRESS "tcp://iot.eclipse.org:1883"
 #define PUB_CLIENTID "BCP_CLIENT_PUB"
@@ -283,9 +285,9 @@ static void publish(const char *clientid, const char *topic)
 
 	while (bcp_conn_isconnected(hdl) /*&& times-- > 0*/) {
 		bcp_conn_connect(hdl);
-		//publish_packet(topic, hdl);
-		publish_one_message(topic, hdl);
-		//my_sleep(1000);
+		publish_packet(topic, hdl);
+		//publish_one_message(topic, hdl);
+		my_sleep(1000);
 	}
 
 	test_reconnect(hdl);
@@ -381,7 +383,7 @@ static void subscribes(void)
 	}
 }
 
-static void test_api(void)
+static void test_bcp_api(void)
 {
 	while (1) {
 		char *pbuf;
@@ -409,6 +411,109 @@ static void test_api(void)
 
 		ListEmpty(&l);
 	}
+}
+
+static void test_binary_formater(void)
+{
+	u32 i;
+	u8 u8data2, u8data = 0xf1;
+	u16 u16data2, u16data = 0xf2f3;
+	u32 u24data2, u24data = 0xf4f5f6UL;
+	u32 u32data2, u32data = 0xf7f8f9UL;
+	u64 u64data2, u64data = 0xfafbfcfdfeefdfcfULL;
+	u8 *recv_bytes, bytes[5] = {6, 7, 8, 9, 10};
+	u32 recv_bytes_len;
+	u8 *rs, *s = (u8*)"hello, world!";
+	
+	void *h = bf_create_encoder();
+	if (!h) {
+		LOG_W("create bf encoder failed");
+		return;
+	}
+
+	if (bf_put_u8(h, u8data) < 0) {
+		LOG_W("put u8 failed");
+	} else {
+		LOG_I("put u8 = 0x%x", u8data);
+	}
+	if (bf_put_u16(h, u16data) < 0) {
+		LOG_W("put u16 failed");
+	} else {
+		LOG_I("put u16 = 0x%x", u16data);
+	}
+	if (bf_put_u24(h, u24data) < 0) {
+		LOG_W("put u24 failed");
+	} else {
+		LOG_I("put u24 = 0x%x", u24data);
+	}
+	if (bf_put_u32(h, u32data) < 0) {
+		LOG_W("put u32 failed");
+	} else {
+		LOG_I("put u32 = 0x%x", u32data);
+	}
+	if (bf_put_u64(h, u64data) < 0) {
+		LOG_W("put u64 failed");
+	} else {
+		LOG_I("put u64 = 0x%llx", u64data);
+	}
+	if (bf_put_bytes(h, bytes, sizeof(bytes)) < 0) {
+		LOG_W("put bytes failed");
+	} else {
+		LOG_I("put bytes len = %d, bytes = ", sizeof(bytes));
+		for (i = 0; i < sizeof(bytes); i++) {
+			printf("\t%d ", bytes[i]);
+		}
+		printf("\n");
+	}
+	if (bf_put_string(h, (const char*)s) < 0) {
+		LOG_W("put string failed");
+	} else {
+		LOG_I("put string = %s", s);
+	}
+
+	bf_reset(h, 0);
+
+	if (bf_read_u8(h, &u8data2) < 0) {
+		LOG_W("read u8 failed");
+	} else {
+		LOG_I("read u8 = 0x%x", u8data2);
+	}
+	if (bf_read_u16(h, &u16data2) < 0) {
+		LOG_W("read u16 failed");
+	} else {
+		LOG_I("read u16 = 0x%x", u16data2);
+	}
+	if (bf_read_u24(h, &u24data2) < 0) {
+		LOG_W("read u24 failed");
+	} else {
+		LOG_I("read u24 = 0x%x", u24data2);
+	}
+	if (bf_read_u32(h, &u32data2) < 0) {
+		LOG_W("read u32 failed");
+	} else {
+		LOG_I("read u32 = 0x%x", u32data2);
+	}
+	if (bf_read_u64(h, &u64data2) < 0) {
+		LOG_W("read u64 failed");
+	} else {
+		LOG_I("read u64 = 0x%llx", u64data2);
+	}
+	if (bf_read_bytes(h, &recv_bytes, &recv_bytes_len) < 0) {
+		LOG_W("read bytes failed");
+	} else {
+		LOG_I("read bytes, len = %d, bytes = ", recv_bytes_len);
+		for (i = 0; i < recv_bytes_len; i++) {
+			printf("\t%d ", recv_bytes[i]);
+		}
+		printf("\n");
+	}
+	if (bf_read_string(h, (char**)&rs) < 0) {
+		LOG_W("put string failed");
+	} else {
+		LOG_I("put string = %s", s);
+	}
+
+	bf_destroy(h);
 }
 
 int main(int argc, char **argv)
