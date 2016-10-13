@@ -451,11 +451,13 @@ static u32 message_hdr_serialize(bcp_application_header_t *hdr, u8 *buf, u32 i)
 
 static u32 element_serialize(bcp_element_t *e, u8 *buf, u32 i)
 {
-	if (e && e->data && e->len > 0) {
+	if (e) {
 		buf[i++] = (e->len >> 8) & 0xff;
 		buf[i++] = (e->len >> 0) & 0xff;
-		memcpy(&buf[i], e->data, e->len);
-		i += e->len;
+		if (e->data && e->len > 0) {
+			memcpy(&buf[i], e->data, e->len);
+			i += e->len;
+		}
 	}
 	return i;
 }

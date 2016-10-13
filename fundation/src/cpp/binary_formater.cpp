@@ -218,7 +218,7 @@ s32 bf_put_bytes(void *h, u8 *data, u32 len)
 {
 	bf_t *f = (bf_t*)h;
 	
-	if (!f || !data || !len) {
+	if (!f) {
 		return -1;
 	}
 
@@ -226,33 +226,37 @@ s32 bf_put_bytes(void *h, u8 *data, u32 len)
 		return -1;
 	} else {
 		PUT_BYTES(h, len, 4);
-		memcpy(&f->stream[f->index], data, len);
-		f->index += len;
+		if (data && len > 0) {
+			memcpy(&f->stream[f->index], data, len);
+			f->index += len;
+		}
 		return 0;
 	}
 }
 
-/* TODO: encode to utf8 */
 s32 bf_put_string(void *h, const char *s)
 {
 	bf_t *f = (bf_t*)h;
 	u32 len;
 	
-	if (!f || !s) {
+	if (!f) {
 		return -1;
 	}
 
-	len = (u32)strlen(s);
-	if (!len) {
-		return -1;
+	if (s) {
+		len = (u32)strlen(s);
+	} else {
+		len = 0;
 	}
 
 	if (check_encode_buf(h, len + 4) < 0) {
 		return -1;
 	} else {
 		PUT_BYTES(h, len, 4);
-		memcpy(&f->stream[f->index], s, len);
-		f->index += len;
+		if (s) {
+			memcpy(&f->stream[f->index], s, len);
+			f->index += len;
+		}
 		return 0;
 	}
 }
@@ -310,7 +314,7 @@ s32 bf_read_u64(void *h, u64 *v)
 s32 bf_read_bytes(void *h, u8 **v, u32 *len)
 {
 	bf_t *f = (bf_t*)h;
-	u8 *data;
+	u8 *data = NULL;
 	u32 bytes = 0;
 
 	if (!v || !len || check_decode_buf(h, 4) < 0) {
@@ -319,17 +323,18 @@ s32 bf_read_bytes(void *h, u8 **v, u32 *len)
 	
 	/* read bytes length */
 	READ_BYTES(h, (&bytes), u32, 4);
-	if (!bytes || check_decode_buf(h, bytes) < 0) {
+	if (check_decode_buf(h, bytes) < 0) {
 		return -1;
 	}
 
-	data = (u8*)malloc(bytes);
-	if (!data) {
-		return -1;
+	if (bytes > 0) {
+		data = (u8*)malloc(bytes);
+		if (!data) {
+			return -1;
+		}
+		memcpy(data, &f->stream[f->index], bytes);
+		f->index += bytes;
 	}
-
-	memcpy(data, &f->stream[f->index], bytes);
-	f->index += bytes;
 
 	*v = data;
 	*len = bytes;
@@ -340,7 +345,7 @@ s32 bf_read_bytes(void *h, u8 **v, u32 *len)
 s32 bf_read_string(void *h, char **v)
 {
 	bf_t *f = (bf_t*)h;
-	u8 *data;
+	u8 *data = NULL;
 	u32 bytes = 0;
 
 	if (!v || check_decode_buf(h, 4) < 0) {
@@ -349,18 +354,19 @@ s32 bf_read_string(void *h, char **v)
 	
 	/* read bytes length */
 	READ_BYTES(h, (&bytes), u32, 4);
-	if (!bytes || check_decode_buf(h, bytes) < 0) {
+	if (check_decode_buf(h, bytes) < 0) {
 		return -1;
 	}
 
-	data = (u8*)malloc(bytes + 1);
-	if (!data) {
-		return -1;
+	if (bytes > 0) {
+		data = (u8*)malloc(bytes + 1);
+		if (!data) {
+			return -1;
+		}
+		memcpy(data, &f->stream[f->index], bytes);
+		f->index += bytes;
+		data[bytes] = '\0';
 	}
-
-	memcpy(data, &f->stream[f->index], bytes);
-	f->index += bytes;
-	data[bytes] = '\0';
 
 	*v = (char*)data;
 
