@@ -8,6 +8,25 @@
  * impl data serialize and unserialize
  * encoded big-endian for u8, u16, u24, u32, u64
  * encoded utf8 for string
+ *
+ * binary stream format, such as:
+ *------------------------------
+ *|				u8			   |
+ *------------------------------
+ *|				u16			   |
+ *------------------------------
+ *|				u32			   |
+ *------------------------------
+ *|				u64			   |
+ *------------------------------
+ *|			bytes length(u32)  |
+ *------------------------------
+ *|			bytes data		   |
+ *------------------------------
+ *|	  utf8 string length(u32)  |
+ *------------------------------
+ *|	   utf8 string data		   |
+ *------------------------------
 */
 
 #define MAX_DEF_BUF_SIZE (8 * 1024)
