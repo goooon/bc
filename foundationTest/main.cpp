@@ -520,7 +520,7 @@ int main(int argc, char **argv)
 {
 	int ispub;
 
-	execl();
+	//execl();
 
 
 	if (argc < 2) {
