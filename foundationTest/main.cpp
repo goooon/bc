@@ -520,6 +520,9 @@ int main(int argc, char **argv)
 {
 	int ispub;
 
+	execl();
+
+
 	if (argc < 2) {
 		printf("usage %s {0|1}", argv[0]);
 		return -1;
