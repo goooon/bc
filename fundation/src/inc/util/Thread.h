@@ -28,6 +28,7 @@
 	#define mutex_type HANDLE
 	#define cond_type HANDLE
 	#define sem_type HANDLE
+	typedef HANDLE   pipe_type;
 #else
 	#include <pthread.h>
 	#include <semaphore.h>
@@ -39,7 +40,7 @@
 	typedef struct { pthread_cond_t cond; pthread_mutex_t mutex; } cond_type_struct;
 	typedef cond_type_struct *cond_type;
 	typedef sem_t *sem_type;
-
+	typedef void* pipe_type;
 	cond_type Thread_create_cond();
 	int Thread_signal_cond(cond_type);
 	int Thread_wait_cond(cond_type condvar, int timeout);

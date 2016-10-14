@@ -13,6 +13,7 @@ protected:
 		reqAuth();
 		ThreadEvent::WaitResult wr = msgQueue.wait(5000);
 		if (wr == ThreadEvent::TimeOut) {
+			LOG_E("Auth TimeOut");
 			PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);
 			return;
 		}
@@ -44,7 +45,7 @@ protected:
 private:
 	void reqAuth() {
 		LOG_I("reqAuth()");
-		msgQueue.post(AppEvent::AutoStateChanged, Vehicle::Authing, 0, 0);
+		PostEvent(AppEvent::AutoStateChanged, Vehicle::Authing, 0, 0);
 	}
 private:
 	MessageQueue msgQueue;

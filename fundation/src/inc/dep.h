@@ -8,4 +8,9 @@
 #define LOG_E(fmt,...) do {printf("E:");printf(fmt, ##__VA_ARGS__);printf("\n");} while (0);
 #define LOG_F(fmt,...) do {printf("F:");printf(fmt, ##__VA_ARGS__);printf("\n");} while (0);
 
+#if defined(WIN32) || defined(WIN64)
+
+#else
+
+#endif
 #endif // FUNDATION_dep_h__

@@ -207,6 +207,9 @@
     <ClInclude Include="..\src\inc\util\Heap.h" />
     <ClInclude Include="..\src\inc\util\LinkedList.h" />
     <ClInclude Include="..\src\inc\util\Log.h" />
+    <ClInclude Include="..\src\inc\util\Pipe.h" />
+    <ClInclude Include="..\src\inc\util\Semaphore.h" />
+    <ClInclude Include="..\src\inc\util\SharedMemory.h" />
     <ClInclude Include="..\src\inc\util\StackTrace.h" />
     <ClInclude Include="..\src\inc\util\Thread.h" />
     <ClInclude Include="..\src\inc\util\Tree.h" />
@@ -220,6 +223,9 @@
     <ClCompile Include="..\src\cpp\util\Heap.cpp" />
     <ClCompile Include="..\src\cpp\util\LinkedList.cpp" />
     <ClCompile Include="..\src\cpp\util\Log.cpp" />
+    <ClCompile Include="..\src\cpp\util\Pipe.cpp" />
+    <ClCompile Include="..\src\cpp\util\Semaphore.cpp" />
+    <ClCompile Include="..\src\cpp\util\SharedMemory.cpp" />
     <ClCompile Include="..\src\cpp\util\StackTrace.cpp" />
     <ClCompile Include="..\src\cpp\util\Thread.cpp" />
     <ClCompile Include="..\src\cpp\util\Tree.cpp" />
