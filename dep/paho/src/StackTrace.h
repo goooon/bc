@@ -21,6 +21,8 @@
 #include "Log.h"
 #include "Thread.h"
 
+#define NOSTACKTRACE 1
+
 #if defined(NOSTACKTRACE)
 #define FUNC_ENTRY
 #define FUNC_ENTRY_NOLOG

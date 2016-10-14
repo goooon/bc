@@ -411,7 +411,7 @@ int Socket_writev(int socket, iobuf* iovecs, int count, unsigned long* bytes)
 	rc = writev(socket, iovecs, count);
 	if (rc == SOCKET_ERROR)
 	{
-		int err = Socket_error("writev - putdatas", socket);
+		int err = Socket_error("writev - putdatas", socket, SOCKET_ERROR);
 		if (err == EWOULDBLOCK || err == EAGAIN)
 			rc = TCPSOCKET_INTERRUPTED;
 	}
@@ -530,11 +530,11 @@ int Socket_close_only(int socket)
 		Socket_error("close", socket,rc);
 #else
 	if (shutdown(socket, SHUT_WR) == SOCKET_ERROR)
-		Socket_error("shutdown", socket);
+		Socket_error("shutdown", socket, SOCKET_ERROR);
 	if ((rc = recv(socket, NULL, (size_t)0, 0)) == SOCKET_ERROR)
-		Socket_error("shutdown", socket);
+		Socket_error("shutdown", socket, SOCKET_ERROR);
 	if ((rc = close(socket)) == SOCKET_ERROR)
-		Socket_error("close", socket);
+		Socket_error("close", socket, SOCKET_ERROR);
 #endif
 	FUNC_EXIT_RC(rc);
 	return rc;
