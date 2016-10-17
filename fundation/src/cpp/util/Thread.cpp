@@ -111,7 +111,7 @@ mutex_type Thread_create_mutex()
 	#if defined(WIN32) || defined(WIN64)
 		mutex = CreateMutex(NULL, 0, NULL);
 	#else
-		mutex = (mutex_type)malloc(sizeof(mutex_type));
+		mutex = (mutex_type)malloc(sizeof(pthread_mutex_t));
 		rc = pthread_mutex_init(mutex, NULL);
 	#endif
 	FUNC_EXIT_RC(rc);
