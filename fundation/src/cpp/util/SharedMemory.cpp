@@ -1,12 +1,19 @@
 #include "../../inc/util/SharedMemory.h"
 #include "../../inc/dep.h"
 
+#if BC_TARGET == BC_TARGET_LINUX
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#endif
+
+#define PROJECT_ID 0x1234
 
 bool SharedMemory::create(char* name, int size /*= 0*/)
 {
 #if BC_TARGET == BC_TARGET_LINUX
 	key_t msgkey;
-	if ((msgkey = ftok(name, proj_id)) == -1) {
+	if ((msgkey = ftok(name, PROJECT_ID)) == -1) {
 		perror("ftok error!\n");
 		return false;
 	}

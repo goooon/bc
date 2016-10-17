@@ -1,5 +1,11 @@
 #include "../../inc/util/Semaphore.h"
 
+#if BC_TARGET == BC_TARGET_LINUX
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#endif
+
 Semaphore::Semaphore(char* name, int curr /*= 0*/, int maxCount /*= 1*/)
 {
 #if BC_TARGET == BC_TARGET_LINUX
@@ -21,8 +27,8 @@ Semaphore::Semaphore(char* name, int curr /*= 0*/, int maxCount /*= 1*/)
 		struct semid_ds *buf;
 		ushort *array;
 	}sem_u;
-	sem_u.val = val;
-	semctl(semid, 0, SETVAL, sem_u);
+	sem_u.val = maxCount; /* TODO:  */
+	semctl(sid, 0, SETVAL, sem_u);
 #elif BC_TARGET == BC_TARGET_WIN
 	if (maxCount != 0) {
 		sid = CreateSemaphoreA(NULL, curr, maxCount, name);
@@ -38,9 +44,9 @@ ThreadEvent::WaitResult Semaphore::waitP(unsigned int millSecond)
 #if BC_TARGET == BC_TARGET_LINUX
 	struct sembuf sb;
 	sb.sem_num = 0;
-	sb.sem_op = -cnt;
+	sb.sem_op = -1; /* TODO: -cnt; */
 	sb.sem_flg = 0;
-	semop(semid, &sb, 1);
+	semop(sid, &sb, 1);
 #elif BC_TARGET == BC_TARGET_WIN
 	DWORD ret = WaitForSingleObject(sid, millSecond);//等待信号量>0  
 	if (ret == WAIT_TIMEOUT)return ThreadEvent::TimeOut;
@@ -58,7 +64,7 @@ bool Semaphore::finishV(int cnt /*= 1*/)
 	sb.sem_num = 0;
 	sb.sem_op = cnt;
 	sb.sem_flg = 0;
-	semop(semid, &sb, 1);
+	semop(sid, &sb, 1);
 	ret = true;
 #elif BC_TARGET == BC_TARGET_WIN
 	ret = ReleaseSemaphore(sid, cnt, NULL) ? true : false;//信号量++ 

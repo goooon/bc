@@ -111,7 +111,7 @@ mutex_type Thread_create_mutex()
 	#if defined(WIN32) || defined(WIN64)
 		mutex = CreateMutex(NULL, 0, NULL);
 	#else
-		mutex = malloc(sizeof(pthread_mutex_t));
+		mutex = (mutex_type)malloc(sizeof(mutex_type));
 		rc = pthread_mutex_init(mutex, NULL);
 	#endif
 	FUNC_EXIT_RC(rc);
@@ -250,7 +250,7 @@ sem_type Thread_create_sem()
     		}
     	}
 	#else
-		sem = malloc(sizeof(sem_t));
+		sem = (sem_type)malloc(sizeof(sem_t));
 		rc = sem_init(sem, 0, 0);
 	#endif
 	FUNC_EXIT_RC(rc);
@@ -402,7 +402,7 @@ cond_type Thread_create_cond()
 	int rc = 0;
 
 	FUNC_ENTRY;
-	condvar = malloc(sizeof(cond_type_struct));
+	condvar = (cond_type)malloc(sizeof(cond_type_struct));
 	rc = pthread_cond_init(&condvar->cond, NULL);
 	rc = pthread_mutex_init(&condvar->mutex, NULL);
 

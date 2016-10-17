@@ -11,11 +11,20 @@ typedef unsigned int    uint;
 
 typedef signed char     s8;
 typedef unsigned char   u8;
+#if BC_COMPILER == BC_COMPILER_GNU
+#include <stdint.h>
+typedef int16_t         s16;
+typedef uint16_t  u16;
+typedef int32_t          s32;
+typedef uint32_t u32;
+typedef u32				 b32;
+#else
 typedef __int16         s16;
 typedef unsigned __int16  u16;
 typedef __int32          s32;
 typedef unsigned __int32 u32;
 typedef u32				 b32;
+#endif
 #if BC_COMPILER == BC_COMPILER_GNU
 typedef long long          s64;
 typedef unsigned long long u64;

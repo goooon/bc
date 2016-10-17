@@ -1,6 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
+
+#if defined(WIN32) || defined(WIN64)
+#else
+#include <unistd.h>
+#define WINAPI
+#endif
 
 #if defined(WIN32)
 #define SPRINTF sprintf_s

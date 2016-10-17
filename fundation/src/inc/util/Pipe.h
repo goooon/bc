@@ -27,6 +27,7 @@ class Pipe
 {
 public:
 #if BC_TARGET == BC_TARGET_LINUX
+	typedef int ID;
 #elif BC_TARGET == BC_TARGET_WIN
 	typedef HANDLE ID;
 #endif
@@ -84,6 +85,7 @@ private:
 class NamedPipe
 {
 #if BC_TARGET == BC_TARGET_LINUX
+	typedef int ID;
 #elif BC_TARGET == BC_TARGET_WIN
 	typedef HANDLE ID;
 #endif

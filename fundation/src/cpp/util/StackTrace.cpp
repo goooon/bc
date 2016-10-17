@@ -65,7 +65,7 @@ static threadEntry *cur_thread = NULL;
 static mutex_type stack_mutex;
 #else
 static pthread_mutex_t stack_mutex_store = PTHREAD_MUTEX_INITIALIZER;
-static mutex_type stack_mutex;// = &stack_mutex_store;
+static mutex_type stack_mutex = &stack_mutex_store;
 #endif
 
 struct MutexGuard{

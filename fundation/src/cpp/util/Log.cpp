@@ -37,6 +37,7 @@
 #if !defined(WIN32) && !defined(WIN64)
 #include <syslog.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #define GETTIMEOFDAY 1
 #else
 #define snprintf _snprintf
