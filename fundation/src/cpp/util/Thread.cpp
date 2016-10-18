@@ -257,6 +257,20 @@ sem_type Thread_create_sem()
 	return sem;
 }
 
+static void timer_add_ms(struct timeval *a, unsigned int ms)
+{
+	if (gettimeofday(a, NULL) < 0) {
+		printf("gettimeofday failed\n");
+		return;
+	}
+
+    a->tv_usec += ms * 1000;
+    if (a->tv_usec >= 1000000)
+    {
+        a->tv_sec += a->tv_usec / 1000000;
+        a->tv_usec %= 1000000;
+    }
+}
 
 /**
  * Wait for a semaphore to be posted, or timeout.
@@ -300,16 +314,24 @@ int Thread_wait_sem(sem_type sem, int timeout)
 			}
 			usleep(interval); /* microseconds - .1 of a second */
 		}
+		if (rc == EAGAIN) {
+			rc = 1;
+		}
 	#else
 		if (clock_gettime(CLOCK_REALTIME, &ts) != -1)
 		{
-			ts.tv_sec += timeout;
+			struct timeval tv;
+			timer_add_ms(&tv, timeout);
+			ts.tv_sec = tv.tv_sec;
+			ts.tv_nsec = tv.tv_usec * 1000;
 			rc = sem_timedwait(sem, &ts);
 			if (rc == -1) {
 				if (errno == ETIMEDOUT) {
 					rc = 1;
 				}
 			}
+		} else {
+			printf("clock_gettime() failed\n");
 		}
 	#endif
 
