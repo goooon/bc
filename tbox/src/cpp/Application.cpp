@@ -76,7 +76,7 @@ void Application::loop()
 
 bool Application::onDebugCommand(char* cmd)
 {
-	LOG_P(cmd);LOG_P("\r\n");
+	LOG_P("%s\r\n", cmd);
 	if (!strcmp(cmd, "unlock")) {
 
 		return true;
@@ -198,7 +198,7 @@ void Application::broadcastEvent(AppEvent e, u32 param1, u32 param2, void* data)
 
 void Application::onMqttEvent(u32 param1, u32 param2, void* data)
 {
-	LOG_I("onMqttEvent(%d,%d,0x%x)",param1,param2,data);
+	LOG_I("onMqttEvent(%d,%d,%p)",param1,param2,data);
 	if (param2 == MqttClient::Subscribed) {
 		startTask(bc_new VehicleAuthTask(), false);
 	}

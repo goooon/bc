@@ -90,7 +90,6 @@ public:
 			head->next->prior = head;
 			bc_del temp;
 			length--;
-			data;
 			return true;
 		}
 	}

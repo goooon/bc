@@ -1,7 +1,7 @@
 #ifndef MQTT_GUARD_CmdParser_h__
 #define MQTT_GUARD_CmdParser_h__
 #include "../../../fundation/src/inc/fundation.h"
-#include "./Config.h"
+#include "../inc/Config.h"
 
 class CmdParser
 {

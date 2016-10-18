@@ -1,5 +1,15 @@
 #include "../inc/dep.h"
 #include "../inc/Application.h"
+
+unsigned int last_error(void)
+{
+#if defined(WIN32) || defined(WIN64)
+	return (unsigned int)GetLastError();
+#else
+	return -1;
+#endif
+}
+
 #ifdef ME_STDIO
 using namespace me;
 lua_State* g_state;

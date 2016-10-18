@@ -43,7 +43,7 @@ public:
 		}
 		else
 		{
-			DWORD e = GetLastError();
+			unsigned int e = last_error();
 			LOG_E("mutex.lock() failed %d", e);
 			return false;
 		}
@@ -63,7 +63,7 @@ public:
 		}
 		else
 		{
-			DWORD e = GetLastError();
+			unsigned int e = last_error();
 			LOG_E("mutex.lock() failed %d", e);
 			return false;
 		}
@@ -77,7 +77,7 @@ public:
 		}
 		else
 		{
-			DWORD e = GetLastError();
+			unsigned int e = last_error();
 			LOG_E("mutex.lock() failed %d", e);
 			return events.isEmpty();
 		}
@@ -91,7 +91,7 @@ public:
 		}
 		else
 		{
-			DWORD e = GetLastError();
+			unsigned int e = last_error();
 			LOG_E("mutex.lock() failed %d", e);
 			return events.isFull();
 		}

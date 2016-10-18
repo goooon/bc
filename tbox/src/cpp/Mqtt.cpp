@@ -1,3 +1,4 @@
+#include <string.h>
 #include "../inc/Mqtt.h"
 #include "../inc/Event.h"
 #include "../../../dep/paho/src/MQTTAsync.h"
