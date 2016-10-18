@@ -17,6 +17,8 @@ public:
 protected:
 	virtual void doTask() { 
 		while (loop) {
+			reqRemoteUnlock();
+			LOG_I("reqRemoteUnlock()");
 			ThreadEvent::WaitResult ret = msgQueue.wait(10000);
 			if (ret == ThreadEvent::TimeOut) {
 				reqRemoteUnlock();

@@ -33,7 +33,7 @@ public:
 	static MqttClient& getInstance();
 	MqttClient();
 	~MqttClient();
-	bool reqConnect(char* url, char* topic,int qos,int keepAliveInterval);;
+	bool reqConnect(char* url, char* topic,int qos,int keepAliveInterval,const char* clientId = "cliend id");;
 	ThreadEvent::WaitResult reqSendPackage(void* payload, int payloadlen, int qos,int millSec);
 	bool reqSendPackageAsync(void* payload, int payloadlen, int qos,void (*onResult)(bool));
 	bool reqDisconnect();

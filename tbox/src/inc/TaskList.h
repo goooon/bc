@@ -7,43 +7,60 @@ class TaskList
 {
 public:
 	TaskList():listHead(0){}
-	void in(Task* task){
-		mutex.lock();
-		if (listHead == nullptr) {
-			listHead = task;
-			task->prev = nullptr;
-			task->next = nullptr;
+	bool in(Task* task){
+		if (mutex.lock() == ThreadMutex::Succed) {
+			if (listHead == nullptr) {
+				listHead = task;
+				task->prev = nullptr;
+				task->next = nullptr;
+			}
+			else {
+				task->prev = nullptr;
+				task->next = listHead;
+				listHead->prev = task;
+				listHead = task;
+			}
+			mutex.unlock();
+			return true;
 		}
 		else {
-			task->prev = nullptr;
-			task->next = listHead;
-			listHead->prev = task;
-			listHead = task;
+			LOG_E("TaskList.in failed");
+			return false;
 		}
-		mutex.unlock();
 	}
-	void out(Task* task) {
-		mutex.lock();
-		if (listHead == task) { listHead = task->next;}
-		if (task->prev) { task->prev->next = task->next; }
-		if (task->next) { task->next->prev = task->prev; }
-		mutex.unlock();
+	bool out(Task* task) {
+		if (mutex.lock() == ThreadMutex::Succed) {
+			if (listHead == task) { listHead = task->next; }
+			if (task->prev) { task->prev->next = task->next; }
+			if (task->next) { task->next->prev = task->prev; }
+			mutex.unlock();
+			return true;
+		}
+		else {
+			LOG_E("TaskList.out failed");
+			return false;
+		}
 	}
 	Task* getNextTask(Task* prev) {
 		if (prev)return prev->next;
 		return listHead;
 	}
 	void abortTask(u32 applicationID) {
-		mutex.lock();
-		Task* t = getNextTask(nullptr);
-		while (t) {
-			if (t->getApplicationId() == applicationID)t->onEvent(AppEvent::AbortTask, 0, 0, 0);
-			t = getNextTask(t);
+		if (mutex.lock() == ThreadMutex::Succed) {
+			Task* t = getNextTask(nullptr);
+			while (t) {
+				if (t->getApplicationId() == applicationID)t->onEvent(AppEvent::AbortTask, 0, 0, 0);
+				t = getNextTask(t);
+			}
+			mutex.unlock();
 		}
-		mutex.unlock();
+		else {
+			LOG_E("abortTask failed");
+		}
 	}
 	Task* findTask(u32 appid) {
-		if (mutex.lock()) {
+		ThreadMutex::Result r = mutex.lock();
+		if ( r == ThreadMutex::Succed) {
 			Task* t = getNextTask(nullptr);
 			while (t) {
 				if (t->getApplicationId() == appid) {
@@ -53,6 +70,9 @@ public:
 				t = getNextTask(t);
 			}
 			mutex.unlock();
+		}
+		else {
+			LOG_E("findTask failed");
 		}
 		return nullptr;
 	}

@@ -87,7 +87,7 @@ bool Application::onDebugCommand(char* cmd)
 		return true;
 	}
 	if (!strcmp(cmd, "connMqtt")) {
-		mqtt.reqConnect(config.mqttServer, config.topics, 0,config.keepAliveInterval);
+		mqtt.reqConnect(config.mqttServer, config.topics, 0,config.keepAliveInterval,config.clientid);
 		return true;
 	}
 	if (!strcmp(cmd, "discMqtt")) {
@@ -223,7 +223,7 @@ void Application::onMqttEvent(u32 param1, u32 param2, void* data)
 void Application::onNetConnected()
 {
 	LOG_I("onNetConnected");
-	mqtt.reqConnect(config.mqttServer, config.topics,0,config.keepAliveInterval);
+	mqtt.reqConnect(config.mqttServer, config.topics,0,config.keepAliveInterval,config.clientid);
 }
 
 void Application::onNetDisconnected()

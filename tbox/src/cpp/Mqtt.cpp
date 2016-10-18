@@ -149,7 +149,7 @@ void Mqtt_onConnected(void* context, MQTTAsync_successData* response)
 	c->onConnected(true);
 }
 
-bool MqttClient::reqConnect(char* url, char* topic,int qos,int keepAliveInterval)
+bool MqttClient::reqConnect(char* url, char* topic,int qos,int keepAliveInterval,const char* clientId)
 {
 	if (!changeState(Connecting)) {
 		return false;
@@ -159,7 +159,7 @@ bool MqttClient::reqConnect(char* url, char* topic,int qos,int keepAliveInterval
 
 	MQTTAsync_connectOptions opts = MQTTAsync_connectOptions_initializer;
 
-	int rc = MQTTAsync_create(&client, url, "async test topic",
+	int rc = MQTTAsync_create(&client, url, clientId,
 		MQTTCLIENT_PERSISTENCE_DEFAULT, NULL);
 	
 	if (rc != MQTTASYNC_SUCCESS)
@@ -231,6 +231,10 @@ void SendPackageAsync_onFailure(void* context, MQTTAsync_failureData* response)
 
 bool MqttClient::reqSendPackageAsync(void* payload, int payloadlen, int qos, void(*onResult)(bool))
 {
+	if (!isConnected()) {
+		LOG_E("mqtt is disconnected");
+		return false;
+	}
 	int retained = 0;
 	MQTTAsync_responseOptions ropts = MQTTAsync_responseOptions_initializer;
 	ropts.onSuccess = SendPackageAsync_onSuccess;

@@ -17,6 +17,12 @@ public:
 		strncpy(topics, "topics", sizeof(topics));
 		keepAliveInterval = 20;
 		isServer = true;
+		if (isServer) {
+			strncpy(clientid, "serverid", sizeof(clientid));
+		}
+		else {
+			strncpy(clientid, "clientid", sizeof(clientid));
+		}
 		return true;
 	}
 private:
@@ -27,5 +33,6 @@ public:
 	bool isServer;
 	char topics[32];
 	char mqttServer[256];
+	char clientid[32];
 };
 #endif // GUARD_Config_h__
