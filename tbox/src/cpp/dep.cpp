@@ -1,12 +1,12 @@
 #include "../inc/dep.h"
 #include "../inc/Application.h"
-
+#include <errno.h>
 unsigned int last_error(void)
 {
 #if defined(WIN32) || defined(WIN64)
 	return (unsigned int)GetLastError();
 #else
-	return -1;
+	return errno;
 #endif
 }
 
