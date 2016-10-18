@@ -1,6 +1,7 @@
 #include "../inc/Application.h"
-#include "../inc/RemoteUnlockTask.h"
-#include "../inc/VehicleAuthTask.h"
+#include "../tasks/RemoteUnlockTask.h"
+#include "../tasks/VehicleAuthTask.h"
+#include "../test/RemoteUnlockTest.h"
 static Application* g_inst;
 Application& Application::getInstance()
 {
@@ -82,7 +83,7 @@ bool Application::onDebugCommand(char* cmd)
 		return true;
 	}
 	if (!strcmp(cmd, "lock")) {
-		PostEvent(AppEvent::AddTask, 0, 0, bc_new RemoteUnlockTask(1, 2, true));
+		PostEvent(AppEvent::AddTask, 0, 0, bc_new RemoteUnlockTask(1, 2, 0));
 		return true;
 	}
 	if (!strcmp(cmd, "connMqtt")) {
@@ -91,6 +92,10 @@ bool Application::onDebugCommand(char* cmd)
 	}
 	if (!strcmp(cmd, "discMqtt")) {
 		mqtt.reqDisconnect();
+		return true;
+	}
+	if (!strcmp(cmd, "reqUnlock")) {
+		PostEvent(AppEvent::AddTask, 0, 0, bc_new RemoteUnlockTest(1, 1));
 		return true;
 	}
 	if (mqtt.onDebugCommand(cmd))return true;
@@ -200,11 +205,18 @@ void Application::broadcastEvent(AppEvent e, u32 param1, u32 param2, void* data)
 	}
 }
 
+Task* Application::findTask(u32 applicationId)
+{
+	return tasksWorking.findTask(applicationId);
+}
+
 void Application::onMqttEvent(u32 param1, u32 param2, void* data)
 {
 	LOG_I("onMqttEvent(%d,%d,%p)",param1,param2,data);
 	if (param2 == MqttClient::Subscribed) {
-		startTask(bc_new VehicleAuthTask(), false);
+		if (!config.isServer) { 
+			startTask(bc_new VehicleAuthTask(), false); 
+		}
 	}
 }
 

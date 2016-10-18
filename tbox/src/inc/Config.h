@@ -16,6 +16,7 @@ public:
 		strncpy(mqttServer, "139.219.238.66:1883", sizeof(mqttServer));
 		strncpy(topics, "topics", sizeof(topics));
 		keepAliveInterval = 20;
+		isServer = true;
 		return true;
 	}
 private:
@@ -23,6 +24,7 @@ public:
 	u32 ip;
 	u16 port;
 	int keepAliveInterval;
+	bool isServer;
 	char topics[32];
 	char mqttServer[256];
 };

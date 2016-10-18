@@ -2,6 +2,8 @@
 #include "../inc/Mqtt.h"
 #include "../inc/Event.h"
 #include "../../../dep/paho/src/MQTTAsync.h"
+#include "../inc/Application.h"
+#include "../tasks/RemoteUnlockTask.h"
 #undef TAG
 #define TAG "MQTT"
 void trace_callback(enum MQTTASYNC_TRACE_LEVELS level, char* message)
@@ -365,13 +367,16 @@ bool MqttClient::onRecvPackage(void* data, int len)
 		return false;
 	}
 	//	找到applicationID, session对应的task,
-	//task = find(applicationID, sessionID);
+	task = Application::getInstance().findTask(applicationID);
 	if (task != nullptr) {
 		bool done = task->handlePackage(p);
 		if (!done) {
 			//创建新的任务，放入队列
 			::PostEvent(AppEvent::AbortTask, applicationID, 0, 0);
 		}
+	}
+	else {
+		::PostEvent(AppEvent::AddTask, 0, 0, bc_new RemoteUnlockTask(1, 1, p));
 	}
 	return true;
 }

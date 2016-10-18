@@ -28,7 +28,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\cpp\CmdParser.h" />
-    <ClInclude Include="..\src\cpp\Config.h" />
     <ClInclude Include="..\src\inc\Application.h" />
     <ClInclude Include="..\src\inc\CycleQueue.h" />
     <ClInclude Include="..\src\inc\dep.h" />
@@ -36,13 +35,15 @@
     <ClInclude Include="..\src\inc\List.h" />
     <ClInclude Include="..\src\inc\Message.h" />
     <ClInclude Include="..\src\inc\Mqtt.h" />
-    <ClInclude Include="..\src\inc\RemoteUnlockTask.h" />
     <ClInclude Include="..\src\inc\State.h" />
     <ClInclude Include="..\src\inc\Task.h" />
     <ClInclude Include="..\src\inc\TaskList.h" />
     <ClInclude Include="..\src\inc\TaskQueue.h" />
     <ClInclude Include="..\src\inc\Vehicle.h" />
-    <ClInclude Include="..\src\inc\VehicleAuthTask.h" />
+    <ClInclude Include="..\src\tasks\RemoteUnlockTask.h" />
+    <ClInclude Include="..\src\tasks\VehicleAuthTask.h" />
+    <ClInclude Include="..\src\test\RemoteUnlockTest.h" />
+    <ClInclude Include="..\src\test\VehicleAuthTest.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

@@ -23,6 +23,7 @@ public:
 public:
 	bool connectServer();
 	void disconnectServer();
+	Task* findTask(u32 applicationId);
 protected:
 	//thread running for tasks
 	virtual void run()override;
@@ -31,6 +32,7 @@ private:
 	void onEvent(AppEvent e, u32 param1, u32 param2, void* data);
 	bool postAppEvent(AppEvent e, u32 param1, u32 param2, void* data);
 	void broadcastEvent(AppEvent e, u32 param1, u32 param2, void* data);
+	
 protected:
 	void onMqttEvent(u32 param1, u32 param2, void* data);
 	void onNetConnected();

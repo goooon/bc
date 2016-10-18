@@ -1,8 +1,8 @@
 #ifndef GUARD_VehicleAuthTask_h__
 #define GUARD_VehicleAuthTask_h__
 
-#include "./Task.h"
-#include "./Mqtt.h"
+#include "../inc/Task.h"
+#include "../inc/Mqtt.h"
 
 class VehicleAuthTask : public Task {
 public:

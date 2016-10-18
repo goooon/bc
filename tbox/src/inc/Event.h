@@ -15,6 +15,8 @@ enum AppEvent
 	MqttStateChanged,		//param1 is Mqtt::State currState,param2 is Mqtt::State nextState
 	AutoStateChanged,		//param1 Vehicle::State
 	SensorEvent,
+
+	TestEvent				//for only debug test
 };
 
 bool PostEvent(AppEvent e, u32 param1, u32 param2, void* data);

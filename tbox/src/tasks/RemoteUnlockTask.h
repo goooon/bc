@@ -1,13 +1,13 @@
 #ifndef MQTT_GUARD_RemoteUnlockTask_h__
 #define MQTT_GUARD_RemoteUnlockTask_h__
 
-#include "./Task.h"
-#include "./Mqtt.h"
+#include "../inc/Task.h"
+#include "../inc/Mqtt.h"
 
 
 class RemoteUnlockTask : public Task {
 public:
-	RemoteUnlockTask(u16 appId, u8 sessionId,bool async):Task(appId,sessionId,async){}
+	RemoteUnlockTask(u16 appId, u8 sessionId, bcp_packet_t* pkg):Task(appId,sessionId,true),pkg(pkg){}
 	void sendResponseError(){
 	}
 	void sendResponseTimeOut() {
@@ -98,5 +98,6 @@ public:
 private:
 	u32         duringTime;
 	MessageQueue msgQueue;
+	bcp_packet_t* pkg;
 };
 #endif // GUARD_RemoteUnlockTask_h__

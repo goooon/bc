@@ -42,6 +42,20 @@ public:
 		}
 		mutex.unlock();
 	}
+	Task* findTask(u32 appid) {
+		if (mutex.lock()) {
+			Task* t = getNextTask(nullptr);
+			while (t) {
+				if (t->getApplicationId() == appid) {
+					mutex.unlock();
+					return t;
+				}
+				t = getNextTask(t);
+			}
+			mutex.unlock();
+		}
+		return nullptr;
+	}
 private:
 	Task* listHead;
 	ThreadMutex  mutex;
