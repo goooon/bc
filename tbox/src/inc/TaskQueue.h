@@ -52,6 +52,24 @@ public:
 			return tasks.isEmpty();
 		}
 	}
+	void abortTask(u32 applicationId) {
+		if (mutex.lock() == ThreadMutex::Succed)
+		{
+			int i = 0;
+			Task* t = tasks.getDataAt(i);
+			while (t) {
+				if (t->getApplicationId() == applicationId) {
+					t->onEvent(AppEvent::AbortTask, 0, 0, 0);
+				}
+				i++;
+			}
+			mutex.unlock();
+		}
+		else {
+			unsigned int e = last_error();
+			LOG_E("mutex.lock() failed %d", e);
+		}
+	}
 	bool isFull() {
 		if (mutex.lock() == ThreadMutex::Succed)
 		{

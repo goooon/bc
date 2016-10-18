@@ -11,6 +11,7 @@ public:
 	void sendResponseError(){
 	}
 	void sendResponseTimeOut() {
+
 	}
 	void sendResponseUnlocked() {
 	}
@@ -30,9 +31,17 @@ public:
 			sendResponseTimeOut();
 		}
 		else if (wr == ThreadEvent::EventOk) {
-			LOG_I("Unlock door ...");
-			unlockDoor();
-			sendResponseUnlocked();
+			MessageQueue::Args args;
+			if (msgQueue.out(args)) {
+				if (args.e == AppEvent::Customized) {
+					LOG_I("Unlock door ...");
+					unlockDoor();
+					sendResponseUnlocked();
+				}
+				else if (args.e == AppEvent::AbortTask) {
+					return;
+				}
+			}
 		}
 		else {
 			LOG_I("waitForKnobTrigger Error %d",wr);

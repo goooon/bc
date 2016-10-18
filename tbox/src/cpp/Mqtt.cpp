@@ -370,6 +370,7 @@ bool MqttClient::onRecvPackage(void* data, int len)
 		bool done = task->handlePackage(p);
 		if (!done) {
 			//创建新的任务，放入队列
+			::PostEvent(AppEvent::AbortTask, applicationID, 0, 0);
 		}
 	}
 	return true;

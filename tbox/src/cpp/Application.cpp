@@ -149,6 +149,10 @@ void Application::onEvent(AppEvent e, u32 param1, u32 param2, void* data)
 		LOG_A(data, "should not be null");
 		startTask((Task*)data, true);
 		break;
+	case AbortTask:
+		tasksWaiting.abortTask(param1);
+		tasksWorking.abortTask(param1);
+		break;
 	case DelTask:
 		LOG_A(data,"should not be null");
 		tasksWorking.out((Task*)data);

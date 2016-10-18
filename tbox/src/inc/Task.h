@@ -10,6 +10,13 @@ private:
 	ThreadEvent event;
 	EventQueue  eventArgs;
 public:
+	struct Args
+	{
+		AppEvent e;
+		u32 param1;
+		u32 param2;
+		void* data;
+	};
 	bool post(AppEvent e, u32 param1, u32 param2, void* data)
 	{
 		bool ret = eventArgs.in(e, param1, param2, data);
@@ -22,6 +29,9 @@ public:
 			return false;
 		}
 		return true;
+	}
+	bool out(Args& args) {
+		return eventArgs.out(args.e, args.param1, args.param2, args.data);
 	}
 	bool out(AppEvent& e, u32& param1, u32& param2, void*& data) {
 		return eventArgs.out(e, param1, param2, data);

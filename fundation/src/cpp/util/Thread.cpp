@@ -24,7 +24,7 @@
  * Used to create platform independent threading functions
  */
 
-
+#include "../../inc/core/Types.h"
 #include "../../inc/util/Thread.h"
 #if defined(THREAD_UNIT_TESTS)
 #define NOSTACKTRACE
@@ -259,11 +259,14 @@ sem_type Thread_create_sem()
 
 static void timer_add_ms(struct timeval *a, unsigned int ms)
 {
+#if BC_TARGET == BC_TARGET_LINUX
 	if (gettimeofday(a, NULL) < 0) {
 		printf("gettimeofday failed\n");
 		return;
 	}
+#else
 
+#endif
     a->tv_usec += ms * 1000;
     if (a->tv_usec >= 1000000)
     {

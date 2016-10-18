@@ -54,5 +54,9 @@ public:
 		m_front = (m_front + 1) % m_size;
 		return true;
 	}
+	T getDataAt(unsigned int idx) {
+		if (idx >= (m_size + m_rear - m_front) % m_size)return nullptr;
+		return m_data[(idx + m_front) % m_size];
+	}
 };
 #endif // GUARD_CycleQueue_h__

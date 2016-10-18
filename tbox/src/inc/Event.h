@@ -8,6 +8,7 @@ enum AppEvent
 {
 	Customized,
 	AddTask,
+	AbortTask,				//param1 applicationID
 	DelTask,
 	NetConnected,
 	NetDisconnected,

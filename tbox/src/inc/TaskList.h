@@ -33,6 +33,15 @@ public:
 		if (prev)return prev->next;
 		return listHead;
 	}
+	void abortTask(u32 applicationID) {
+		mutex.lock();
+		Task* t = getNextTask(nullptr);
+		while (t) {
+			if (t->getApplicationId() == applicationID)t->onEvent(AppEvent::AbortTask, 0, 0, 0);
+			t = getNextTask(t);
+		}
+		mutex.unlock();
+	}
 private:
 	Task* listHead;
 	ThreadMutex  mutex;
