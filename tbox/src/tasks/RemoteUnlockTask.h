@@ -15,7 +15,7 @@ public:
 	}
 	void sendResponseUnlocked() {
 	}
-	virtual void doTask()override
+	virtual void doTask()OVERRIDE
 	{
 		LOG_I("RemoteUnlockTask(%d,%lld) run...", appID, seqID);
 
@@ -70,12 +70,12 @@ public:
 	void onPackageArrived() {
 
 	}
-	virtual bool handlePackage(bcp_packet_t* pkg)override
+	virtual bool handlePackage(bcp_packet_t* pkg)OVERRIDE
 	{
 		duringTime = 10000;
 		return msgQueue.post(AppEvent::Customized, 0, duringTime,0);
 	}
-	virtual void onEvent(AppEvent e, u32 param1, u32 param2, void* data)override
+	virtual void onEvent(AppEvent::e e, u32 param1, u32 param2, void* data)OVERRIDE
 	{
 		msgQueue.post(e, param1, param2, data);
 	}

@@ -15,7 +15,7 @@ class LinkedList {
 	Node<Any> * getNode(int index) {
 		//获得index位置的结点数据
 		if (index<0 || index>length) {
-			return nullptr;
+			return NULL;
 		}
 		else {
 			Node<Any> *temp = head->next;
@@ -28,12 +28,12 @@ public:
 	{
 		head = bc_new Node<Any>;
 		tail = bc_new Node<Any>;
-		head->data = nullptr;
+		head->data = NULL;
 		head->next = tail;
-		head->prior = nullptr;
-		tail->data = nullptr;
+		head->prior = NULL;
+		tail->data = NULL;
 		tail->prior = head;
-		tail->next = nullptr;
+		tail->next = NULL;
 		length = 0;
 	}
 	~LinkedList()
@@ -57,7 +57,7 @@ public:
 	bool addFirst(Any& data)//向链表头部添加一条数据
 	{
 		Node<Any> * node = bc_new Node<Any>;
-		if (node == nullptr)return false;
+		if (node == NULL)return false;
 		node->data = data;
 		node->prior = head;;
 		node->next = head->next;
@@ -69,7 +69,7 @@ public:
 	bool addLast(Any& data)//向链表尾部添加一条数据
 	{
 		Node<Any> * node = bc_new Node<Any>;
-		if (node == nullptr)return false;
+		if (node == NULL)return false;
 		node->data = data;
 		node->next = tail;
 		node->prior = tail->prior;

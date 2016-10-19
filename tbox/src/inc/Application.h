@@ -20,18 +20,19 @@ public:
 	//main loop process for app event
 	void loop();
 	bool onDebugCommand(char* cmd);
+	bool postAppEvent(AppEvent::e e, u32 param1, u32 param2, void* data);
+	Config *getConfig(void);
 public:
 	bool connectServer();
 	void disconnectServer();
 	Task* findTask(u32 applicationId);
 protected:
 	//thread running for tasks
-	virtual void run()override;
+	virtual void run()OVERRIDE;
 private:
 	bool startTask(Task* task, bool runAsThread);
-	void onEvent(AppEvent e, u32 param1, u32 param2, void* data);
-	bool postAppEvent(AppEvent e, u32 param1, u32 param2, void* data);
-	void broadcastEvent(AppEvent e, u32 param1, u32 param2, void* data);
+	void onEvent(AppEvent::e e, u32 param1, u32 param2, void* data);
+	void broadcastEvent(AppEvent::e e, u32 param1, u32 param2, void* data);
 	
 protected:
 	void onMqttEvent(u32 param1, u32 param2, void* data);

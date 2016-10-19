@@ -67,7 +67,7 @@ public:
 	{
 		startThread(this);
 	}
-	virtual void run()override{}
+	virtual void run(){}
 private:
 	thread_type thread;
 };

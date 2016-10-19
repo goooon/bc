@@ -43,7 +43,8 @@ SET(common_src
 	src/cpp/crc32.cpp
     )
 
-set (MY_CXX_FLAGS "-fpermissive -std=gnu++11 -Wwrite-strings")
+##-std=gnu++11 
+set (MY_CXX_FLAGS "-fpermissive -Wwrite-strings")
 SET( CMAKE_CXX_FLAGS  "${MY_CXX_FLAGS} ${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
 SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
 

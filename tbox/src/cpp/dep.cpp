@@ -18,10 +18,10 @@ Application* getApp() {
 	return &Application::getInstance();
 }
 void conned() {
-	PostEvent(AppEvent::NetConnected, 0, 0, 0);
+	PostEvent(NetConnected, 0, 0, 0);
 }
 void disced() {
-	PostEvent(AppEvent::NetDisconnected, 0, 0, 0);
+	PostEvent(NetDisconnected, 0, 0, 0);
 }
 void* initDebugLib()
 {

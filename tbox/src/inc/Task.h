@@ -12,12 +12,12 @@ private:
 public:
 	struct Args
 	{
-		AppEvent e;
+		AppEvent::e e;
 		u32 param1;
 		u32 param2;
 		void* data;
 	};
-	bool post(AppEvent e, u32 param1, u32 param2, void* data)
+	bool post(AppEvent::e e, u32 param1, u32 param2, void* data)
 	{
 		bool ret = eventArgs.in(e, param1, param2, data);
 		if (!ret) {
@@ -33,7 +33,7 @@ public:
 	bool out(Args& args) {
 		return eventArgs.out(args.e, args.param1, args.param2, args.data);
 	}
-	bool out(AppEvent& e, u32& param1, u32& param2, void*& data) {
+	bool out(AppEvent::e& e, u32& param1, u32& param2, void*& data) {
 		return eventArgs.out(e, param1, param2, data);
 	}
 	ThreadEvent::WaitResult wait(u32 millSecond) {
@@ -47,8 +47,8 @@ class Task : public Thread
 	friend class TaskList;
 public:
 	Task(u16 appId,u64 sessionId,bool async):
-		prev(nullptr),
-		next(nullptr),
+		prev(NULL),
+		next(NULL),
 		appID(appId),
 		seqID(seqID),
 		isAsync(async){}
@@ -61,13 +61,13 @@ public:
 	virtual bool handlePackage(bcp_packet_t* pkg) {
 		return false;
 	}
-	virtual void onEvent(AppEvent e, u32 param1, u32 param2, void* data);
+	virtual void onEvent(AppEvent::e e, u32 param1, u32 param2, void* data);
 protected:
 	//the function should be override by its subclass
 	virtual void doTask(){return;}
 private:
 	//called by Application
-	virtual void run()override;
+	virtual void run()OVERRIDE;
 private:
 	////list node in refList//////////////////////////////////////////////////////////////////////
 	Task* prev;

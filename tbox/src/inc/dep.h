@@ -3,6 +3,14 @@
 
 #include "../../../fundation/src/inc/fundation.h"
 
+#if defined(WIN32) || defined(WIN64)
+#define OVERRIDE override
+#define NULLPTR	nullptr
+#else
+#define OVERRIDE
+#define NULLPTR NULL
+#endif
+
 unsigned int last_error(void);
 
 void* initDebugLib();

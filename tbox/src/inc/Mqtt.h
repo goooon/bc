@@ -2,6 +2,7 @@
 #define GUARD_Mqtt_h__
 #include "./dep.h"
 #include "./Task.h"
+#include "Config.h"
 class IMqttHandler
 {
 public:
@@ -33,6 +34,7 @@ public:
 	static MqttClient& getInstance();
 	MqttClient();
 	~MqttClient();
+	void setConfig(Config *c);
 	bool reqConnect(char* url, char* topic,int qos,int keepAliveInterval,const char* clientId = "cliend id");;
 	ThreadEvent::WaitResult reqSendPackage(void* payload, int payloadlen, int qos,int millSec);
 	bool reqSendPackageAsync(void* payload, int payloadlen, int qos,void (*onResult)(bool));
@@ -43,15 +45,15 @@ public:
 private:
 	bool changeState(State next);
 public:
-	virtual void onConnected(bool succ)override;
-	virtual void onSubscribed()override;
-	virtual void onDisconnected()override;
-	virtual bool onRecvPackage(void* data, int len)override;
-	virtual void onDeliveryComplete()override;
-	virtual void onError(u32 ecode, char* emsg)override;
+	virtual void onConnected(bool succ)OVERRIDE;
+	virtual void onSubscribed()OVERRIDE;
+	virtual void onDisconnected()OVERRIDE;
+	virtual bool onRecvPackage(void* data, int len)OVERRIDE;
+	virtual void onDeliveryComplete()OVERRIDE;
+	virtual void onError(u32 ecode, char* emsg)OVERRIDE;
 private:
 	State state;
 	void* client;
-	const char* topicName;
+	char *topicName;
 };
 #endif // GUARD_Mqtt_h__

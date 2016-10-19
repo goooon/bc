@@ -2,7 +2,7 @@
 #include "../inc/TaskList.h"
 #include "../inc/Event.h"
 
-void Task::onEvent(AppEvent e, u32 param1, u32 param2, void* data)
+void Task::onEvent(AppEvent::e e, u32 param1, u32 param2, void* data)
 {
 
 }

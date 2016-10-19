@@ -26,7 +26,7 @@ public:
 	{ 
 		if (mutex.lock() == ThreadMutex::Succed)
 		{
-			Task* t = nullptr;
+			Task* t = NULL;
 			tasks.pop(t);
 			mutex.unlock();
 			return t;
@@ -35,7 +35,7 @@ public:
 		{
 			unsigned int e = last_error();
 			LOG_E("mutex.lock() failed %d", e);
-			return nullptr;
+			return NULL;
 		}
 	}
 	bool isEmpty() { 

@@ -4,34 +4,37 @@
 #include "./dep.h"
 #include "./CycleQueue.h"
 
-enum AppEvent
+class AppEvent
 {
-	Customized,
-	AddTask,
-	AbortTask,				//param1 applicationID
-	DelTask,
-	NetConnected,
-	NetDisconnected,
-	MqttStateChanged,		//param1 is Mqtt::State currState,param2 is Mqtt::State nextState
-	AutoStateChanged,		//param1 Vehicle::State
-	SensorEvent,
+public:
+	enum e{
+		Customized,
+		AddTask,
+		AbortTask,				//param1 applicationID
+		DelTask,
+		NetConnected,
+		NetDisconnected,
+		MqttStateChanged,		//param1 is Mqtt::State currState,param2 is Mqtt::State nextState
+		AutoStateChanged,		//param1 Vehicle::State
+		SensorEvent,
 
-	TestEvent				//for only debug test
+		TestEvent				//for only debug test
+	};
 };
 
-bool PostEvent(AppEvent e, u32 param1, u32 param2, void* data);
+bool PostEvent(AppEvent::e e, u32 param1, u32 param2, void* data);
 class EventQueue
 {
 	struct Node
 	{
-		AppEvent e;
+		AppEvent::e e;
 		u32 param1;
 		u32 param2;
 		void* data;
 	};
 public:
 	EventQueue() :events(100) {}
-	bool in(AppEvent e, u32 param1, u32 param2, void* data)
+	bool in(AppEvent::e e, u32 param1, u32 param2, void* data)
 	{
 		if (mutex.lock() == ThreadMutex::Succed)
 		{
@@ -51,7 +54,7 @@ public:
 			return false;
 		}
 	}
-	bool out(AppEvent& type, u32& param1, u32& param2,void*& data)
+	bool out(AppEvent::e& type, u32& param1, u32& param2,void*& data)
 	{
 		if (mutex.lock() == ThreadMutex::Succed)
 		{

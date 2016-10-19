@@ -29,10 +29,14 @@
     defined(__ia64__)       || defined(__s390__)    || \
     defined(__s390x__)
 # define BC_ARCH BC_ARCH_64
-//static_assert(sizeof(void *) == 8, "void*_should_be_8");
+#if defined(WIN32) || defined(WIN64)
+static_assert(sizeof(void *) == 8, "void*_should_be_8");
+#endif
 #else
 #define BC_ARCH BC_ARCH_32
+#if defined(WIN32) || defined(WIN64)
 static_assert(sizeof(void *) == 4, "void*_should_be_4");
+#endif
 #endif
 
 #define BC_ENDIAN_LITTLE    1

@@ -55,7 +55,7 @@ public:
 		return true;
 	}
 	T getDataAt(unsigned int idx) {
-		if (idx >= (m_size + m_rear - m_front) % m_size)return nullptr;
+		if (idx >= (m_size + m_rear - m_front) % m_size)return NULL;
 		return m_data[(idx + m_front) % m_size];
 	}
 };

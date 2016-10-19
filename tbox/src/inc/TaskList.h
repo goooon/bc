@@ -9,13 +9,13 @@ public:
 	TaskList():listHead(0){}
 	bool in(Task* task){
 		if (mutex.lock() == ThreadMutex::Succed) {
-			if (listHead == nullptr) {
+			if (listHead == NULL) {
 				listHead = task;
-				task->prev = nullptr;
-				task->next = nullptr;
+				task->prev = NULL;
+				task->next = NULL;
 			}
 			else {
-				task->prev = nullptr;
+				task->prev = NULL;
 				task->next = listHead;
 				listHead->prev = task;
 				listHead = task;
@@ -47,7 +47,7 @@ public:
 	}
 	void abortTask(u32 applicationID) {
 		if (mutex.lock() == ThreadMutex::Succed) {
-			Task* t = getNextTask(nullptr);
+			Task* t = getNextTask(NULL);
 			while (t) {
 				if (t->getApplicationId() == applicationID)t->onEvent(AppEvent::AbortTask, 0, 0, 0);
 				t = getNextTask(t);
@@ -61,7 +61,7 @@ public:
 	Task* findTask(u32 appid) {
 		ThreadMutex::Result r = mutex.lock();
 		if ( r == ThreadMutex::Succed) {
-			Task* t = getNextTask(nullptr);
+			Task* t = getNextTask(NULL);
 			while (t) {
 				if (t->getApplicationId() == appid) {
 					mutex.unlock();
@@ -74,7 +74,7 @@ public:
 		else {
 			LOG_E("findTask failed");
 		}
-		return nullptr;
+		return NULL;
 	}
 private:
 	Task* listHead;

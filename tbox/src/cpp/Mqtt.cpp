@@ -73,7 +73,7 @@ MqttClient& MqttClient::getInstance()
 	return *g_client;
 }
 
-MqttClient::MqttClient() :state(Disconnected), client(0), topicName("async test topic")
+MqttClient::MqttClient() :state(Disconnected), client(0)
 {
 	MQTTAsync_nameValue* info = MQTTAsync_getVersionInfo();
 	MQTTAsync_setTraceCallback(trace_callback);
@@ -116,11 +116,11 @@ void Mqtt_onSubscribFailed(void* context, MQTTAsync_failureData* response)
 	
 	if (response) {
 		LOG_W("Mqtt_onConnectFailed %p %d %d %s", c,response->code,response->token,response->message);
-		c->onError(MqttClient::ErrorCode::SubscribFailed, response->message);
+		c->onError(MqttClient::SubscribFailed, response->message);
 	}
 	else {
 		LOG_W("Mqtt_onConnectFailed %p", c);
-		c->onError(MqttClient::ErrorCode::SubscribFailed, "Mqtt_onConnectFailed");
+		c->onError(MqttClient::SubscribFailed, "Mqtt_onConnectFailed");
 	}
 }
 void Mqtt_onSubscribed(void* context, MQTTAsync_successData* response)
@@ -147,6 +147,11 @@ void Mqtt_onConnected(void* context, MQTTAsync_successData* response)
 {
 	MqttClient* c = (MqttClient*)context;
 	c->onConnected(true);
+}
+
+void MqttClient::setConfig(Config *c)
+{
+	topicName = c->pub_topic;
 }
 
 bool MqttClient::reqConnect(char* url, char* topic,int qos,int keepAliveInterval,const char* clientId)
@@ -197,7 +202,7 @@ ThreadEvent::WaitResult MqttClient::reqSendPackage(void* payload, int payloadlen
 	int rc = MQTTAsync_send(client, topicName, payloadlen, payload, qos, retained, &ropts);
 	if (MQTTASYNC_SUCCESS != rc) {
 		LOG_E("reqSendPackage() failed %d", rc);
-		return ThreadEvent::WaitResult::Errors;
+		return ThreadEvent::Errors;
 	}
 	LOG_I("Token was %d", ropts.token);
 	rc = MQTTAsync_waitForCompletion(client, ropts.token, millSec);
@@ -205,14 +210,14 @@ ThreadEvent::WaitResult MqttClient::reqSendPackage(void* payload, int payloadlen
 		rc = MQTTAsync_isComplete(client, ropts.token);
 		if (MQTTASYNC_TRUE != rc) {
 			LOG_W("MQTTAsync_waitForCompletion() timeout %d", rc);
-			return ThreadEvent::WaitResult::TimeOut;
+			return ThreadEvent::TimeOut;
 		}
 		else {
 			LOG_W("MQTTAsync_waitForCompletion() failed %d", rc);
-			return ThreadEvent::WaitResult::Errors;
+			return ThreadEvent::Errors;
 		}
 	}
-	return ThreadEvent::WaitResult::EventOk;
+	return ThreadEvent::EventOk;
 }
 
 void SendPackageAsync_onSuccess(void* context, MQTTAsync_successData* response)
@@ -299,7 +304,7 @@ const char* MqttClient::getTopicName() const
 
 bool MqttClient::changeState(State next)
 {
-	const static bool st[State::Size][State::Size] = {
+	const static bool st[MqttClient::Size][MqttClient::Size] = {
 	//Disconnected,Connecting,Connected,Unsubscribed,Subscribing,Subscribed,Disconnecting,
 		{false,    true,      /*false,*/    false,       false,      false,     false},
 		{true,     false,     /*true, */    true,        false,      false,     false},
@@ -364,7 +369,7 @@ bool MqttClient::onRecvPackage(void* data, int len)
 {
 	u16 sessionID = 0;
 	u16 applicationID = 0;
-	Task* task = nullptr;
+	Task* task = NULL;
 	bcp_packet_t *p;
 	if (bcp_packet_unserialize((u8*)data, (u32)len, &p) < 0) {
 		LOG_E("bcp_packet_unserialize failed");
@@ -372,7 +377,7 @@ bool MqttClient::onRecvPackage(void* data, int len)
 	}
 	//	找到applicationID, session对应的task,
 	task = Application::getInstance().findTask(applicationID);
-	if (task != nullptr) {
+	if (task != NULL) {
 		bool done = task->handlePackage(p);
 		if (!done) {
 			//创建新的任务，放入队列

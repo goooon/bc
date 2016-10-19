@@ -8,7 +8,7 @@ class VehicleAuthTask : public Task {
 public:
 	VehicleAuthTask() :Task(1, 2, true) {}
 protected:
-	//the function should be override by its subclass
+	//the function should be OVERRIDE by its subclass
 	virtual void doTask() { 
 		reqAuth();
 		ThreadEvent::WaitResult wr = msgQueue.wait(5000);
@@ -18,7 +18,7 @@ protected:
 			return;
 		}
 		else if (wr == ThreadEvent::EventOk) {
-			AppEvent e;
+			AppEvent::e e;
 			u32 param1;
 			u32 param2;
 			void* data;
@@ -37,7 +37,7 @@ protected:
 			LOG_E("taskMessage.wait(5000) failed %d",wr);
 		}
 	}
-	virtual bool handlePackage(bcp_packet_t* pkg)override
+	virtual bool handlePackage(bcp_packet_t* pkg)OVERRIDE
 	{
 		bool succ = false;
 		return msgQueue.post(AppEvent::AutoStateChanged, Vehicle::Authed, 0, 0);
