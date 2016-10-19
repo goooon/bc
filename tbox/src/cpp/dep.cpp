@@ -1,5 +1,6 @@
 #include "../inc/dep.h"
 #include "../inc/Application.h"
+#include "../inc/Event.h"
 #include <errno.h>
 unsigned int last_error(void)
 {
@@ -18,10 +19,10 @@ Application* getApp() {
 	return &Application::getInstance();
 }
 void conned() {
-	PostEvent(NetConnected, 0, 0, 0);
+	PostEvent(AppEvent::NetConnected, 0, 0, 0);
 }
 void disced() {
-	PostEvent(NetDisconnected, 0, 0, 0);
+	PostEvent(AppEvent::NetDisconnected, 0, 0, 0);
 }
 void* initDebugLib()
 {

@@ -47,8 +47,8 @@ class Task : public Thread
 	friend class TaskList;
 public:
 	Task(u16 appId,u64 sessionId,bool async):
-		prev(NULL),
-		next(NULL),
+		prev(nullptr),
+		next(nullptr),
 		appID(appId),
 		seqID(seqID),
 		isAsync(async){}
@@ -56,9 +56,12 @@ public:
 		LOG_I("Task(%d,%lld) released", appID, seqID);
 	}
 	u16  getApplicationId() { return appID; }
-	u16  getSessionId() { return seqID; }
+	u16  getSequenceId() { return seqID; }
 public:
 	virtual bool handlePackage(bcp_packet_t* pkg) {
+		if (pkg != nullptr) {
+			free(pkg);
+		}
 		return false;
 	}
 	virtual void onEvent(AppEvent::e e, u32 param1, u32 param2, void* data);
@@ -67,7 +70,7 @@ protected:
 	virtual void doTask(){return;}
 private:
 	//called by Application
-	virtual void run()OVERRIDE;
+	virtual void run()override;
 private:
 	////list node in refList//////////////////////////////////////////////////////////////////////
 	Task* prev;

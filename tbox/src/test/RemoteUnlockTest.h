@@ -10,15 +10,18 @@ public:
 	RemoteUnlockTest(u32 appid,u32 seqid):loop(true),Task(appid,seqid,false){
 
 	}
+	~RemoteUnlockTest() {
+		LOG_I("RemoteUnlockTest Deleted!");
+	}
 	void stopTest(){
 		loop = false;
 		msgQueue.post(AppEvent::AbortTask, 0, 0, 0);
 	}
 protected:
 	virtual void doTask() { 
+		
 		while (loop) {
-			reqRemoteUnlock();
-			LOG_I("reqRemoteUnlock()");
+			//LOG_I("reqRemoteUnlock()");
 			ThreadEvent::WaitResult ret = msgQueue.wait(10000);
 			if (ret == ThreadEvent::TimeOut) {
 				reqRemoteUnlock();
@@ -72,7 +75,8 @@ private:
 		u32 len;
 		if (bcp_packet_serialize(pkg, &buf, &len) >= 0)
 		{
-			MqttClient::getInstance().reqSendPackage(buf, len, 0, 5000);
+			Config& cfg = Config::getInstance();
+			MqttClient::getInstance().reqSendPackage(cfg.pub_topic, buf, len, 0, 5000);
 		}
 		bcp_packet_destroy(pkg);
 	}

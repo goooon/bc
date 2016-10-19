@@ -21,7 +21,9 @@ public:
 	void loop();
 	bool onDebugCommand(char* cmd);
 	bool postAppEvent(AppEvent::e e, u32 param1, u32 param2, void* data);
-	Config *getConfig(void);
+	Config& getConfig(void) {
+		return config;
+	};
 public:
 	bool connectServer();
 	void disconnectServer();

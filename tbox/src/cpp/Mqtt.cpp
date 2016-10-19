@@ -160,6 +160,7 @@ bool MqttClient::reqConnect(char* url, char* topic,int qos,int keepAliveInterval
 		return false;
 	}
 
+	topicName = topic;
 	LOG_I("MqttHandler::reqConnect(%s,%s,%d,%d)",url,topic,qos, keepAliveInterval);
 
 	MQTTAsync_connectOptions opts = MQTTAsync_connectOptions_initializer;
@@ -195,16 +196,16 @@ bool MqttClient::reqConnect(char* url, char* topic,int qos,int keepAliveInterval
 	return true;
 }
 
-ThreadEvent::WaitResult MqttClient::reqSendPackage(void* payload, int payloadlen, int qos, int millSec)
+ThreadEvent::WaitResult MqttClient::reqSendPackage(char* publish, void* payload, int payloadlen, int qos, int millSec)
 {
 	int retained = 0;
 	MQTTAsync_responseOptions ropts = MQTTAsync_responseOptions_initializer;
-	int rc = MQTTAsync_send(client, topicName, payloadlen, payload, qos, retained, &ropts);
+	LOG_I("reqSendPackage \"%s\" qos:%d Token was %d", publish, qos, ropts.token);
+	int rc = MQTTAsync_send(client, publish, payloadlen, payload, qos, retained, &ropts);
 	if (MQTTASYNC_SUCCESS != rc) {
 		LOG_E("reqSendPackage() failed %d", rc);
 		return ThreadEvent::Errors;
 	}
-	LOG_I("Token was %d", ropts.token);
 	rc = MQTTAsync_waitForCompletion(client, ropts.token, millSec);
 	if (MQTTASYNC_SUCCESS != rc) {
 		rc = MQTTAsync_isComplete(client, ropts.token);
@@ -381,7 +382,7 @@ bool MqttClient::onRecvPackage(void* data, int len)
 		bool done = task->handlePackage(p);
 		if (!done) {
 			//创建新的任务，放入队列
-			::PostEvent(AppEvent::AbortTask, applicationID, 0, 0);
+			::PostEvent(AppEvent::AbortTask, applicationID, 0, p);
 		}
 	}
 	else {

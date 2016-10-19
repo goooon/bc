@@ -2,7 +2,6 @@
 #include "../tasks/RemoteUnlockTask.h"
 #include "../tasks/VehicleAuthTask.h"
 #include "../test/RemoteUnlockTest.h"
-
 static Application* g_inst;
 Application& Application::getInstance()
 {
@@ -17,7 +16,6 @@ void Application::init(int argc, char** argv)
 		LOG_I("    %s", argv[i]);
 	})
 	config.parse(argc, argv);
-	mqtt.setConfig(getConfig());
 	//launch thread to do branch task
 	Thread::startThread(this);
 }
@@ -30,9 +28,9 @@ bool Application::startTask(Task* task,bool runAsThread)
 		return true;
 	}
 	if (tasksWaiting.in(task)) {
-		ThreadEvent::PostResult pr = taskEvent.post();
+		auto pr = taskEvent.post();
 		if (ThreadEvent::PostOk == pr) {
-			LOG_I("startTask(%d,%d)", task->getApplicationId(), task->getSessionId());
+			LOG_I("startTask(%d,%d)", task->getApplicationId(), task->getSequenceId());
 			return true;
 		}
 		else {
@@ -48,11 +46,11 @@ bool Application::startTask(Task* task,bool runAsThread)
 
 void Application::loop()
 {
-	onDebugCommand("connMqtt");
+	//onDebugCommand("connMqtt");
 	loopID = Thread::getCurrentThreadId();
 	while (true) {
 		LOG_V("Application loop...");
-		ThreadEvent::WaitResult wr = appEvent.wait(500);
+		auto wr = appEvent.wait(500);
 		if (wr == ThreadEvent::EventOk) {
 			while (!appEventQueue.isEmpty()) {
 				AppEvent::e e;
@@ -90,7 +88,7 @@ bool Application::onDebugCommand(char* cmd)
 		return true;
 	}
 	if (!strcmp(cmd, "connMqtt")) {
-		mqtt.reqConnect(config.mqttServer, config.pub_topic, 0,config.keepAliveInterval,config.clientid);
+		mqtt.reqConnect(config.mqttServer, config.sub_topic, 0,config.keepAliveInterval,config.clientid);
 		return true;
 	}
 	if (!strcmp(cmd, "discMqtt")) {
@@ -98,7 +96,9 @@ bool Application::onDebugCommand(char* cmd)
 		return true;
 	}
 	if (!strcmp(cmd, "reqUnlock")) {
-		PostEvent(AppEvent::AddTask, 0, 0, bc_new RemoteUnlockTest(1, 1));
+		Task* t = bc_new RemoteUnlockTest(1, 0);
+		::PostEvent(AppEvent::AbortTask, t->getApplicationId(), 0, 0);
+		::PostEvent(AppEvent::AddTask, 0, 0, t);
 		return true;
 	}
 	if (mqtt.onDebugCommand(cmd))return true;
@@ -120,11 +120,11 @@ void Application::run()
 {
 	while (true) {
 		LOG_V("tasks run...");
-		ThreadEvent::WaitResult wr = taskEvent.wait(500);
+		auto wr = taskEvent.wait(500);
 		if (wr == ThreadEvent::EventOk) {
 			while (!tasksWaiting.isEmpty()) {
 				Task* task = tasksWaiting.out();
-				if (task != NULL) {
+				if (task != nullptr) {
 					tasksWorking.in(task);
 					if (!task->isAsync) {
 						task->run();
@@ -185,11 +185,6 @@ void Application::onEvent(AppEvent::e e, u32 param1, u32 param2, void* data)
 	broadcastEvent(e, param1, param2, data);
 }
 
-Config *Application::getConfig(void)
-{
-	return &config;
-}
-
 bool Application::postAppEvent(AppEvent::e e, u32 param1, u32 param2, void* data)
 {
 	bool ret = appEventQueue.in(e, param1,param2, data);
@@ -206,7 +201,7 @@ bool Application::postAppEvent(AppEvent::e e, u32 param1, u32 param2, void* data
 
 void Application::broadcastEvent(AppEvent::e e, u32 param1, u32 param2, void* data)
 {
-	Task* t = tasksWorking.getNextTask(NULL);
+	Task* t = tasksWorking.getNextTask(nullptr);
 	while (t) {
 		t->onEvent(e, param1, param2, data);
 		t = tasksWorking.getNextTask(t);

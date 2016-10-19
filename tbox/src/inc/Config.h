@@ -7,10 +7,7 @@
 class Config
 {
 public:
-	static Config& getInstance() {
-		static Config cfg;
-		return cfg;
-	}
+	static Config& getInstance();
 public:
 	bool parse(int argc, char** argv) {
 		strncpy(mqttServer, "139.219.238.66:1883", sizeof(mqttServer));

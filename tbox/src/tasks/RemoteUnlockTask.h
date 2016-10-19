@@ -73,6 +73,7 @@ public:
 	virtual bool handlePackage(bcp_packet_t* pkg)OVERRIDE
 	{
 		duringTime = 10000;
+		Task::handlePackage(pkg);
 		return msgQueue.post(AppEvent::Customized, 0, duringTime,0);
 	}
 	virtual void onEvent(AppEvent::e e, u32 param1, u32 param2, void* data)OVERRIDE
@@ -91,7 +92,7 @@ public:
 		u32 len;
 		if (bcp_packet_serialize(pkg, &buf, &len) >= 0)
 		{
-			MqttClient::getInstance().reqSendPackage(buf, len,0,5000);
+			MqttClient::getInstance().reqSendPackage(Config::getInstance().pub_topic,buf, len,0,5000);
 		}
 		bcp_packet_destroy(pkg);
 	}
