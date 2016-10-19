@@ -46,7 +46,7 @@ bool Application::startTask(Task* task,bool runAsThread)
 
 void Application::loop()
 {
-	//onDebugCommand("connMqtt");
+	if(!config.isServer)onDebugCommand("connMqtt");
 	loopID = Thread::getCurrentThreadId();
 	while (true) {
 		LOG_V("Application loop...");
