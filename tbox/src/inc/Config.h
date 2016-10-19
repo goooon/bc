@@ -15,15 +15,15 @@ public:
 	bool parse(int argc, char** argv) {
 		strncpy(mqttServer, "139.219.238.66:1883", sizeof(mqttServer));
 		keepAliveInterval = 20;
-		isServer = true;
+		isServer = false;
 		if (isServer) {
-			strncpy(pub_topic, "beecloud-server", sizeof(pub_topic));
-			strncpy(sub_topic, "beecloud-clientid", sizeof(sub_topic));
+			strncpy(pub_topic, "beecloud-clientid", sizeof(pub_topic));
+			strncpy(sub_topic, "beecloud-server", sizeof(sub_topic));
 			strncpy(clientid, "serverid", sizeof(clientid));
 		}
 		else {
-			strncpy(pub_topic, "beecloud-clientid", sizeof(pub_topic));
-			strncpy(sub_topic, "beecloud-server", sizeof(sub_topic));
+			strncpy(pub_topic, "beecloud-server", sizeof(pub_topic));
+			strncpy(sub_topic, "beecloud-clientid", sizeof(sub_topic));
 			strncpy(clientid, "clientid", sizeof(clientid));
 		}
 		return true;
