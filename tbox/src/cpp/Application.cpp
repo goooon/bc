@@ -17,6 +17,7 @@ void Application::init(int argc, char** argv)
 		LOG_I("    %s", argv[i]);
 	})
 	config.parse(argc, argv);
+	mqtt.setConfig(getConfig());
 	//launch thread to do branch task
 	Thread::startThread(this);
 }

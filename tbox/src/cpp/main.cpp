@@ -23,7 +23,6 @@ int main(int argc, char* argv[]) {
 
 	Application app;
 	app.init(argc, argv);
-	app.mqtt.setConfig(app.getConfig());
 	
 	if (lc) {
 		MainLoop loop(app);
