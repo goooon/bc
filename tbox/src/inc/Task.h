@@ -47,8 +47,8 @@ class Task : public Thread
 	friend class TaskList;
 public:
 	Task(u16 appId,u64 sessionId,bool async):
-		prev(nullptr),
-		next(nullptr),
+		prev(NULLPTR),
+		next(NULLPTR),
 		appID(appId),
 		seqID(seqID),
 		isAsync(async){}
@@ -59,18 +59,18 @@ public:
 	u16  getSequenceId() { return seqID; }
 public:
 	virtual bool handlePackage(bcp_packet_t* pkg) {
-		if (pkg != nullptr) {
+		if (pkg != NULLPTR) {
 			free(pkg);
 		}
 		return false;
 	}
 	virtual void onEvent(AppEvent::e e, u32 param1, u32 param2, void* data);
 protected:
-	//the function should be override by its subclass
+	//the function should be OVERRIDE by its subclass
 	virtual void doTask(){return;}
 private:
 	//called by Application
-	virtual void run()override;
+	virtual void run()OVERRIDE;
 private:
 	////list node in refList//////////////////////////////////////////////////////////////////////
 	Task* prev;

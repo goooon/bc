@@ -28,7 +28,7 @@ bool Application::startTask(Task* task,bool runAsThread)
 		return true;
 	}
 	if (tasksWaiting.in(task)) {
-		auto pr = taskEvent.post();
+		ThreadEvent::PostResult pr = taskEvent.post();
 		if (ThreadEvent::PostOk == pr) {
 			LOG_I("startTask(%d,%d)", task->getApplicationId(), task->getSequenceId());
 			return true;
@@ -50,7 +50,7 @@ void Application::loop()
 	loopID = Thread::getCurrentThreadId();
 	while (true) {
 		LOG_V("Application loop...");
-		auto wr = appEvent.wait(500);
+		ThreadEvent::WaitResult wr = appEvent.wait(500);
 		if (wr == ThreadEvent::EventOk) {
 			while (!appEventQueue.isEmpty()) {
 				AppEvent::e e;
@@ -120,11 +120,11 @@ void Application::run()
 {
 	while (true) {
 		LOG_V("tasks run...");
-		auto wr = taskEvent.wait(500);
+		ThreadEvent::WaitResult wr = taskEvent.wait(500);
 		if (wr == ThreadEvent::EventOk) {
 			while (!tasksWaiting.isEmpty()) {
 				Task* task = tasksWaiting.out();
-				if (task != nullptr) {
+				if (task != NULLPTR) {
 					tasksWorking.in(task);
 					if (!task->isAsync) {
 						task->run();
@@ -201,7 +201,7 @@ bool Application::postAppEvent(AppEvent::e e, u32 param1, u32 param2, void* data
 
 void Application::broadcastEvent(AppEvent::e e, u32 param1, u32 param2, void* data)
 {
-	Task* t = tasksWorking.getNextTask(nullptr);
+	Task* t = tasksWorking.getNextTask(NULLPTR);
 	while (t) {
 		t->onEvent(e, param1, param2, data);
 		t = tasksWorking.getNextTask(t);
