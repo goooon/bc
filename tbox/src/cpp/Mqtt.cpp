@@ -78,7 +78,7 @@ MqttClient::MqttClient() :state(Disconnected), client(0)
 	MQTTAsync_nameValue* info = MQTTAsync_getVersionInfo();
 	MQTTAsync_setTraceCallback(trace_callback);
 	LOG_I("Mqtt name:%s value:%s", info->name, info->value);
-	MQTTAsync_setTraceLevel(MQTTASYNC_TRACE_MAXIMUM);
+	MQTTAsync_setTraceLevel(MQTTASYNC_TRACE_ERROR);
 	g_client = this;
 }
 

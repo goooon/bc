@@ -46,10 +46,10 @@ bool Application::startTask(Task* task,bool runAsThread)
 
 void Application::loop()
 {
+	LOG_V("Application loop...");
 	if(!config.isServer)onDebugCommand("connMqtt");
 	loopID = Thread::getCurrentThreadId();
 	while (true) {
-		LOG_V("Application loop...");
 		ThreadEvent::WaitResult wr = appEvent.wait(500);
 		if (wr == ThreadEvent::EventOk) {
 			while (!appEventQueue.isEmpty()) {
@@ -118,8 +118,8 @@ void Application::disconnectServer()
 
 void Application::run()
 {
+	LOG_V("tasks run...");
 	while (true) {
-		LOG_V("tasks run...");
 		ThreadEvent::WaitResult wr = taskEvent.wait(500);
 		if (wr == ThreadEvent::EventOk) {
 			while (!tasksWaiting.isEmpty()) {
