@@ -1,9 +1,24 @@
 #ifndef MQTT_GUARD_RemoteUnlockTask_h__
 #define MQTT_GUARD_RemoteUnlockTask_h__
 
+#include <stdio.h>
+
+#if defined(WIN32) || defined(WIN64)
+#else
+#include <termios.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#endif
+
 #include "../inc/Task.h"
 #include "../inc/Mqtt.h"
 
+#define PWM_IOCTL_SET_FREQ 1
+#define PWM_IOCTL_STOP 0
 
 class RemoteUnlockTask : public Task {
 public:
@@ -15,11 +30,29 @@ public:
 	}
 	void sendResponseUnlocked() {
 	}
+	void set_tips(int on) {
+#if defined(WIN32) || defined(WIN64)
+#else
+		int fd = open("/dev/pwm", 0);
+		if (fd < 0) {
+			printf("open pwm_buzzer device");
+			return;
+		}
+		if (on) {
+			ioctl(fd, PWM_IOCTL_SET_FREQ, 10);
+		} else {
+			ioctl(fd, PWM_IOCTL_STOP);
+			ioctl(fd, 2);
+		}
+		close(fd);
+#endif
+	}
 	virtual void doTask()OVERRIDE
 	{
 		LOG_I("RemoteUnlockTask(%d,%lld) run...", appID, seqID);
 
 		sendAck();
+		set_tips(1);
 
 		if (!isCurrentStateReady()) {
 			LOG_I("Current State Not Ready For Unlock");
@@ -47,6 +80,7 @@ public:
 			LOG_I("waitForKnobTrigger Error %d",wr);
 			sendResponseError();
 		}
+		set_tips(0);
 		return;
 	}
 	ThreadEvent::WaitResult waitForKnobTrigger(u32 millSeconds)
@@ -57,6 +91,7 @@ public:
 		stopWaitForKnobTrigger();
 		return ret;
 	}
+
 	void stopWaitForKnobTrigger() {
 
 	}

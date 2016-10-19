@@ -41,6 +41,7 @@ set(SRC_LIST
 		src/cpp/Config.cpp
 		src/cpp/main.cpp
 		src/cpp/Event.cpp
+		src/tasks/set_tips.cpp
 	)
 add_executable(tbox ${SRC_LIST})
 TARGET_LINK_LIBRARIES(tbox pthread ${LIBS_SYSTEM}) 
