@@ -43,7 +43,8 @@ struct Memory
 #define bc_del delete
 #define bc_alloc malloc
 #define bc_free  free
-LoopCallback debugMain(int argc, char* argv[]);;
+LoopCallback debugMain(int argc, char* argv[]);
 void onCommand(char* cmd);
+
 #endif
 #endif // GUARD_dep_h__

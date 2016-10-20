@@ -11,6 +11,7 @@ unsigned int last_error(void)
 #endif
 }
 
+#ifdef ME_DEBUGUI
 #ifdef ME_STDIO
 using namespace me;
 lua_State* g_state;
@@ -93,13 +94,28 @@ void onCommand(char* cmd)
 		}
 	}
 }
+#include "../../console/dxmain.cpp"
 #else
 void* initDebugLib() { return 0; }
-void uninitDebugLib(void* lib){}
-#include "../../console/dxmain.cpp"
+void uninitDebugLib(void* lib) {}
+
+
+
 void onCommand(char* cmd)
 {
 	if (Application::getInstance().onDebugCommand(cmd))return;
 }
+#include "../../console/dxmain.cpp"
+#endif
+#else
+void* initDebugLib() { return 0; }
+void uninitDebugLib(void* lib) {}
 
+
+
+void onCommand(char* cmd)
+{
+	if (Application::getInstance().onDebugCommand(cmd))return;
+}
+LoopCallback debugMain(int argc, char* argv[]) { return 0; }
 #endif
