@@ -96,15 +96,10 @@ void onCommand(char* cmd)
 #else
 void* initDebugLib() { return 0; }
 void uninitDebugLib(void* lib){}
-
-LoopCallback debugMain(int argc, char* argv[])
-{
-	return 0;
-}
-
+#include "../../console/dxmain.cpp"
 void onCommand(char* cmd)
 {
-	//g_papp->onCommand(cmd);
+	if (Application::getInstance().onDebugCommand(cmd))return;
 }
 
 #endif
