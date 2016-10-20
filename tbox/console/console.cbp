@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="foundation" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="DebugUI Win32">
+				<Option output="console" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-DWIN32" />
+					<Add option="-DWIN" />
+					<Add option="-DME_DEBUGUI" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_LIB" />
+				</Compiler>
+				<Linker>
+					<Add library="foundation.lib" />
+					<Add directory="$(SolutionDir)../../../goooon/svn/lib/win32/Con Debug" />
+					<Add directory="$(SolutionDir)lib/$(Platform)/$(Configuration)/" />
+				</Linker>
+			</Target>
+			<Target title="Debug x64">
+				<Option output="console" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-D_DEBUG" />
+					<Add option="-D_LIB" />
+				</Compiler>
+			</Target>
+			<Target title="Release x64">
+				<Option output="console" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-DNDEBUG" />
+					<Add option="-D_LIB" />
+				</Compiler>
+			</Target>
+			<Target title="Release Win32">
+				<Option output="console" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_LIB" />
+				</Compiler>
+			</Target>
+			<Target title="DebugUI x64">
+				<Option output="console" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-D_DEBUG" />
+					<Add option="-D_LIB" />
+				</Compiler>
+			</Target>
+			<Target title="Debug Win32">
+				<Option output="console" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-DWIN32" />
+					<Add option="-DWIN" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_LIB" />
+				</Compiler>
+				<Linker>
+					<Add library="foundation.lib" />
+					<Add directory="$(SolutionDir)../../../goooon/svn/lib/win32/Con Debug" />
+					<Add directory="$(SolutionDir)lib/$(Platform)/$(Configuration)/" />
+				</Linker>
+			</Target>
+		</Build>
+		<Unit filename=".travis.yml" />
+		<Unit filename="README.md" />
+		<Unit filename="dxmain.cpp" />
+		<Unit filename="imconfig.h" />
+		<Unit filename="imgui.cpp" />
+		<Unit filename="imgui.h" />
+		<Unit filename="imgui_demo.cpp" />
+		<Unit filename="imgui_draw.cpp" />
+		<Unit filename="imgui_impl_dx11.cpp" />
+		<Unit filename="imgui_impl_dx11.h" />
+		<Unit filename="imgui_internal.h" />
+		<Unit filename="stb_rect_pack.h" />
+		<Unit filename="stb_textedit.h" />
+		<Unit filename="stb_truetype.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

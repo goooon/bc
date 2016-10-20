@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{0e8f159e-a244-4f1b-8a6a-c89c97ad7351}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".travis.yml">
+      <Filter>src</Filter>
+    </None>
+    <None Include="README.md">
+      <Filter>src</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dxmain.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_demo.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_draw.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_impl_dx11.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="imconfig.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_dx11.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_internal.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_rect_pack.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_textedit.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_truetype.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
