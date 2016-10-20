@@ -29,6 +29,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\cpp\CmdParser.h" />
     <ClInclude Include="..\src\inc\Application.h" />
+    <ClInclude Include="..\src\inc\Config.h" />
     <ClInclude Include="..\src\inc\CycleQueue.h" />
     <ClInclude Include="..\src\inc\dep.h" />
     <ClInclude Include="..\src\inc\Event.h" />
@@ -40,7 +41,11 @@
     <ClInclude Include="..\src\inc\TaskList.h" />
     <ClInclude Include="..\src\inc\TaskQueue.h" />
     <ClInclude Include="..\src\inc\Vehicle.h" />
+    <ClInclude Include="..\src\tasks\BCMessage.h" />
+    <ClInclude Include="..\src\tasks\Element.h" />
+    <ClInclude Include="..\src\tasks\ErrorCode.h" />
     <ClInclude Include="..\src\tasks\RemoteUnlockTask.h" />
+    <ClInclude Include="..\src\tasks\TaskTable.h" />
     <ClInclude Include="..\src\tasks\VehicleAuthTask.h" />
     <ClInclude Include="..\src\test\RemoteUnlockTest.h" />
     <ClInclude Include="..\src\test\VehicleAuthTest.h" />
@@ -57,6 +62,7 @@
     <ClCompile Include="..\src\cpp\main.cpp" />
     <ClCompile Include="..\src\cpp\Mqtt.cpp" />
     <ClCompile Include="..\src\cpp\Task.cpp" />
+    <ClCompile Include="..\src\tasks\TaskTable.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A0138B76-5EFE-41DD-9941-2DE724A03109}</ProjectGuid>

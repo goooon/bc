@@ -16,18 +16,21 @@
 
 #include "../inc/Task.h"
 #include "../inc/Mqtt.h"
-
-#define PWM_IOCTL_SET_FREQ 1
-#define PWM_IOCTL_STOP 0
-
+#include "../inc/Vehicle.h"
+#include "./ErrorCode.h"
+#include "./BCMessage.h"
+#include "./TaskTable.h"
 class RemoteUnlockTask : public Task {
 public:
-	RemoteUnlockTask(u16 appId, u8 sessionId, bcp_packet_t* pkg):Task(appId,sessionId,true),pkg(pkg){}
+	static Task* Create()
+	{
+		return bc_new RemoteUnlockTask();
+	}
+	RemoteUnlockTask():Task(APPID_REMOTE_UNLOCK,true),pkg(pkg){}
+	
 	void sendResponseError(){
 	}
-	void sendResponseTimeOut() {
-
-	}
+	
 	void sendResponseUnlocked() {
 	}
 	void set_tips(int on) {
@@ -50,7 +53,6 @@ public:
 	virtual void doTask()OVERRIDE
 	{
 		LOG_I("RemoteUnlockTask(%d,%lld) run...", appID, seqID);
-
 		sendAck();
 		set_tips(1);
 
@@ -105,35 +107,28 @@ public:
 	void onPackageArrived() {
 
 	}
-	virtual bool handlePackage(bcp_packet_t* pkg)OVERRIDE
-	{
-		duringTime = 10000;
-		Task::handlePackage(pkg);
-		return msgQueue.post(AppEvent::Customized, 0, duringTime,0);
-	}
+	
 	virtual void onEvent(AppEvent::e e, u32 param1, u32 param2, void* data)OVERRIDE
 	{
 		msgQueue.post(e, param1, param2, data);
 	}
 	void sendAck() {
-		u8 ack = 1;
-		bcp_packet_t *pkg = bcp_packet_create();
-		bcp_message_t *msg = bcp_message_create(appID,1, seqID);
-		bcp_message_append(pkg, msg);
-		bcp_element_t *ele = bcp_element_create(&ack, 1);
-		bcp_element_append(msg, ele);
-
-		u8* buf;
-		u32 len;
-		if (bcp_packet_serialize(pkg, &buf, &len) >= 0)
-		{
-			MqttClient::getInstance().reqSendPackage(Config::getInstance().pub_topic,buf, len,0,5000);
+		BCPackage pkg;
+		BCMessage msg = pkg.appendMessage(appID, 1, seqID);
+		msg.appendAck(1);
+		if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
+			LOG_E("req Auth failed");
 		}
-		bcp_packet_destroy(pkg);
+		else {
+			PostEvent(AppEvent::AutoStateChanged, Vehicle::Authing, 0, 0);
+		}
+	}
+	void sendResponseTimeOut() {
+		
 	}
 private:
 	u32         duringTime;
-	MessageQueue msgQueue;
+	
 	bcp_packet_t* pkg;
 };
 #endif // GUARD_RemoteUnlockTask_h__

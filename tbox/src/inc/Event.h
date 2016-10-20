@@ -11,6 +11,7 @@ public:
 		Customized,
 		AddTask,
 		AbortTask,				//param1 applicationID
+		HandlePackage,			//data is bcp_packet_t*
 		DelTask,
 		NetConnected,
 		NetDisconnected,

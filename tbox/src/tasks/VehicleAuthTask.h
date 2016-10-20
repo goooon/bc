@@ -3,10 +3,15 @@
 
 #include "../inc/Task.h"
 #include "../inc/Mqtt.h"
-
+#include "./BCMessage.h"
+#include "./TaskTable.h"
 class VehicleAuthTask : public Task {
 public:
-	VehicleAuthTask() :Task(1, 2, true) {}
+	VehicleAuthTask() :Task(APPID_AUTHENTICATION, true) {}
+	static Task* Create()
+	{
+		return bc_new RemoteUnlockTask();
+	}
 protected:
 	//the function should be OVERRIDE by its subclass
 	virtual void doTask() { 
@@ -37,16 +42,21 @@ protected:
 			LOG_E("taskMessage.wait(5000) failed %d",wr);
 		}
 	}
-	virtual bool handlePackage(bcp_packet_t* pkg)OVERRIDE
-	{
-		bool succ = false;
-		Task::handlePackage(pkg);
-		return msgQueue.post(AppEvent::AutoStateChanged, Vehicle::Authed, 0, 0);
-	}
 private:
 	void reqAuth() {
 		LOG_I("reqAuth()");
-		PostEvent(AppEvent::AutoStateChanged, Vehicle::Authing, 0, 0);
+		BCPackage pkg;
+		BCMessage msg = pkg.appendMessage(appID, 1, seqID);
+		msg.appendVehicleDesc();
+		msg.appendAuthentication();
+		msg.appendTimeStamp();
+
+		if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
+			LOG_E("req Auth failed");
+		}
+		else {
+			PostEvent(AppEvent::AutoStateChanged, Vehicle::Authing, 0, 0);
+		}
 	}
 private:
 	MessageQueue msgQueue;

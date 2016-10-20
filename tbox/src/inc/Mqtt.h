@@ -11,7 +11,7 @@ public:
 	virtual void onDisconnected() {}
 	virtual bool onRecvPackage(void* data, int len) { return true; }
 	virtual void onDeliveryComplete(){}
-	virtual void onError(u32 ecode, char* emsg){}
+	virtual void onError(u32 ecode, const char* emsg){}
 };
 class MqttClient : public IMqttHandler
 {
@@ -50,7 +50,7 @@ public:
 	virtual void onDisconnected()OVERRIDE;
 	virtual bool onRecvPackage(void* data, int len)OVERRIDE;
 	virtual void onDeliveryComplete()OVERRIDE;
-	virtual void onError(u32 ecode, char* emsg)OVERRIDE;
+	virtual void onError(u32 ecode, const char* emsg)OVERRIDE;
 private:
 	State state;
 	void* client;

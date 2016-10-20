@@ -1,7 +1,7 @@
 #ifndef MQTT_GUARD_Application_h__
 #define MQTT_GUARD_Application_h__
 
-#include "./Message.h"
+//#include "./Message.h"
 #include "./Config.h"
 #include "./TaskQueue.h"
 #include "./TaskList.h"

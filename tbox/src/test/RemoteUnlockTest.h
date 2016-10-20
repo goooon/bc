@@ -3,11 +3,12 @@
 
 #include "../inc/Task.h"
 #include "../inc/Mqtt.h"
+#include "../tasks/TaskTable.h"
 class RemoteUnlockTest : public Task
 {
 	u64 seqId;
 public:
-	RemoteUnlockTest(u32 appid,u32 seqid):loop(true),Task(appid,seqid,false){
+	RemoteUnlockTest():loop(true),Task(APPID_REMOTE_UNLOCK,false){
 
 	}
 	~RemoteUnlockTest() {
@@ -19,7 +20,6 @@ public:
 	}
 protected:
 	virtual void doTask() { 
-		
 		while (loop) {
 			//LOG_I("reqRemoteUnlock()");
 			ThreadEvent::WaitResult ret = msgQueue.wait(10000);
@@ -47,6 +47,13 @@ protected:
 		}
 		return;
 	}
+	virtual bool handlePackage(bcp_packet_t* pkg) {
+		if (pkg != NULLPTR) {
+			free(pkg);
+		}
+		LOG_I("RemoteUnlockTest received pkg");
+		return true;
+	}
 private:
 	void reqRemoteUnlock() {
 		u8 ack = 1;
@@ -58,16 +65,7 @@ private:
 		bcp_element_t *ele = bcp_element_create(&ack, 1);
 		bcp_element_append(msg, ele);
 
-		struct TimeStamp
-		{
-			u8 len[2];
-			u8 year;
-			u8 month;
-			u8 day;
-			u8 hour;
-			u8 min;
-			u8 sec;
-		}ts;
+		TimeStamp ts;
 		bcp_element_t *tse = bcp_element_create((u8*)&ts, sizeof(ts));
 		bcp_element_append(msg, tse);
 

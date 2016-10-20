@@ -78,7 +78,7 @@ MqttClient::MqttClient() :state(Disconnected), client(0)
 	MQTTAsync_nameValue* info = MQTTAsync_getVersionInfo();
 	MQTTAsync_setTraceCallback(trace_callback);
 	LOG_I("Mqtt name:%s value:%s", info->name, info->value);
-	MQTTAsync_setTraceLevel(MQTTASYNC_TRACE_ERROR);
+	MQTTAsync_setTraceLevel(MQTTASYNC_TRACE_MAXIMUM);
 	g_client = this;
 }
 
@@ -245,7 +245,7 @@ bool MqttClient::reqSendPackageAsync(void* payload, int payloadlen, int qos, voi
 	MQTTAsync_responseOptions ropts = MQTTAsync_responseOptions_initializer;
 	ropts.onSuccess = SendPackageAsync_onSuccess;
 	ropts.onFailure = SendPackageAsync_onFailure;
-	ropts.context = onResult;
+	ropts.context = (void*)onResult;
 	int rc = MQTTAsync_send(client, topicName, payloadlen, payload, qos, retained, &ropts);
 	if (MQTTASYNC_SUCCESS != rc) {
 		LOG_E("reqSendPackage() failed %d", rc);
@@ -295,7 +295,7 @@ bool MqttClient::reqDisconnect()
 
 bool MqttClient::isConnected()
 {
-	return true == MQTTAsync_isConnected(client);
+	return 1 == MQTTAsync_isConnected(client);
 }
 
 const char* MqttClient::getTopicName() const
@@ -361,7 +361,7 @@ void MqttClient::onConnected(bool succ)
 	}
 }
 
-void MqttClient::onError(u32 ecode,char* emsg)
+void MqttClient::onError(u32 ecode,const char* emsg)
 {
 	LOG_E("Error:%d,%s", ecode, emsg);
 }
@@ -377,16 +377,24 @@ bool MqttClient::onRecvPackage(void* data, int len)
 		return false;
 	}
 	//	找到applicationID, session对应的task,
-	task = Application::getInstance().findTask(applicationID);
-	if (task != NULL) {
-		bool done = task->handlePackage(p);
-		if (!done) {
-			//创建新的任务，放入队列
-			::PostEvent(AppEvent::AbortTask, applicationID, 0, p);
+	bcp_message_t *m = NULL;
+	bcp_element_t *e = NULL;
+
+	//bcp_messages_foreach(p, bcp_message_foreach_callback, NULL);
+
+	while ((m = bcp_next_message(p, m)) != NULL) {
+		applicationID = m->hdr.id;
+		task = Application::getInstance().findTask(applicationID);
+		if (task != NULL) {
+			bool done = task->handlePackage(p);
+			if (!done) {
+				//创建新的任务，放入队列
+				::PostEvent(AppEvent::AbortTask, applicationID, 0, p);
+			}
 		}
-	}
-	else {
-		::PostEvent(AppEvent::AddTask, 0, 0, bc_new RemoteUnlockTask(1, 1, p));
+		else {
+			::PostEvent(AppEvent::AddTask, 0, 0, TaskCreate(applicationID,p));
+		}
 	}
 	return true;
 }

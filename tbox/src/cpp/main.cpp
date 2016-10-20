@@ -1,4 +1,4 @@
-#include "../inc/Message.h"
+//#include "../inc/Message.h"
 #include "../inc/dep.h"
 #include "./CmdParser.h"
 #include "../inc/Application.h"

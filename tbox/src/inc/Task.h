@@ -1,7 +1,7 @@
 #ifndef MQTT_GUARD_Task_h__
 #define MQTT_GUARD_Task_h__
 
-#include "./Message.h"
+//#include "./Message.h"
 #include "./Event.h"
 
 class MessageQueue
@@ -46,22 +46,28 @@ class Task : public Thread
 	friend class Application;
 	friend class TaskList;
 public:
-	Task(u16 appId,u64 sessionId,bool async):
+	Task(u16 appId,bool async):
 		prev(NULLPTR),
 		next(NULLPTR),
 		appID(appId),
-		seqID(seqID),
+		seqID(1),
 		isAsync(async){}
 	~Task() {
+		MessageQueue::Args args;
+		while (msgQueue.out(args)) {
+			if (args.e == AppEvent::HandlePackage) {
+				if (args.data != NULL) {
+					bcp_packet_destroy((bcp_packet_t*)args.data);
+				}
+			}
+		}
 		LOG_I("Task(%d,%lld) released", appID, seqID);
 	}
 	u16  getApplicationId() { return appID; }
-	u16  getSequenceId() { return seqID; }
+	u64  getSequenceId() { return seqID; }
 public:
-	virtual bool handlePackage(bcp_packet_t* pkg) {
-		if (pkg != NULLPTR) {
-			free(pkg);
-		}
+	bool handlePackage(bcp_packet_t* pkg) {
+		msgQueue.post(AppEvent::HandlePackage, 0, 0, (void*)pkg);
 		return false;
 	}
 	virtual void onEvent(AppEvent::e e, u32 param1, u32 param2, void* data);
@@ -79,5 +85,6 @@ protected:
 	u16  appID;	//ref in bcp
 	u64  seqID; //ref in bcp
 	bool isAsync;
+	MessageQueue msgQueue;
 };
 #endif // GUARD_Task_h__

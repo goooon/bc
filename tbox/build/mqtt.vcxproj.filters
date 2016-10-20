@@ -75,6 +75,21 @@
     <ClInclude Include="..\src\test\VehicleAuthTest.h">
       <Filter>src\test</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\Config.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\ErrorCode.h">
+      <Filter>src\tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\Element.h">
+      <Filter>src\tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\BCMessage.h">
+      <Filter>src\tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\TaskTable.h">
+      <Filter>src\tasks</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -103,6 +118,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cpp\Event.cpp">
       <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\TaskTable.cpp">
+      <Filter>src\tasks</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
