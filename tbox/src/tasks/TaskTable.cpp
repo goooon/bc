@@ -9,8 +9,8 @@ struct TaskTable
 };
 
 static TaskTable tt[] = {
-	{1,RemoteUnlockTask::Create },
-	{2,VehicleAuthTask::Create},
+	{ APPID_REMOTE_UNLOCK,RemoteUnlockTask::Create },
+	{ APPID_AUTHENTICATION,VehicleAuthTask::Create},
 	{-1,0}
 };
 Task* TaskCreate(u16 appId, bcp_packet_t* pkg)
@@ -18,11 +18,12 @@ Task* TaskCreate(u16 appId, bcp_packet_t* pkg)
 	TaskTable* t = &tt[0];
 	while (t->creator) {
 		if (t->idx == appId) {
-			LOG_I("TaskCreate(%d,0x%x)", appId,  (void*)pkg);
+			LOG_I("TaskCreate(%d,0x%x)", appId,  pkg);
 			Task* task = (*t->creator)();
 			task->handlePackage(pkg);
 		}
+		t++;
 	}
-	LOG_E("Can't create Task %d 0x%x", appId,(void*)pkg);
-	return NULL;
+	LOG_E("Can't create Task %d 0x%x", appId,pkg);
+	return nullptr;
 }

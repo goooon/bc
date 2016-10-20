@@ -14,21 +14,18 @@ public:
 	}
 	bool appendVehicleDesc() {
 		VehicleDesc desc;
-		desc.lenghth16 = sizeof(VehicleDesc);
 		bcp_element_t *e = bcp_element_create((u8*)&desc, sizeof(VehicleDesc));
 		bcp_element_append(msg, e);
 		return true;
 	}
 	bool appendAuthToken() {
 		AuthToken token;
-		token.length16 = sizeof(AuthToken);
 		bcp_element_t *e = bcp_element_create((u8*)&token, sizeof(AuthToken));
 		bcp_element_append(msg, e);
 		return true;
 	}
 	bool appendErrorElement(u8 ec) {
 		ErrorElement ele;
-		ele.length16 = sizeof(ErrorElement);
 		ele.errorcode = ec;
 		bcp_element_t *e = bcp_element_create((u8*)&ele, sizeof(ErrorElement));
 		bcp_element_append(msg, e);
@@ -36,21 +33,18 @@ public:
 	}
 	bool appendTimeStamp() {
 		TimeStamp ts;
-		ts.length16 = sizeof(TimeStamp);
 		bcp_element_t *e = bcp_element_create((u8*)&ts, sizeof(TimeStamp));
 		bcp_element_append(msg, e);
 		return true;
 	}
 	bool appendAuthentication() {
 		Authentication auth;
-		auth.length16 = sizeof(Authentication);
 		bcp_element_t *e = bcp_element_create((u8*)&auth, sizeof(Authentication));
 		bcp_element_append(msg, e);
 		return true;
 	}
 	bool appendRemoteControl( u8 cmd) {
 		RemoteControl rc;
-		rc.length16 = sizeof(RemoteControl);
 		rc.command = cmd;
 		bcp_element_t *e = bcp_element_create((u8*)&rc, sizeof(RemoteControl));
 		bcp_element_append(msg, e);

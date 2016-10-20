@@ -23,7 +23,7 @@ void Application::init(int argc, char** argv)
 
 bool Application::startTask(Task* task,bool runAsThread)
 {
-	if (task == NULL) {
+	if (task == nullptr) {
 		LOG_E("startTask is null");
 		return false;
 	}
@@ -35,7 +35,7 @@ bool Application::startTask(Task* task,bool runAsThread)
 	if (tasksWaiting.in(task)) {
 		ThreadEvent::PostResult pr = taskEvent.post();
 		if (ThreadEvent::PostOk == pr) {
-			LOG_I("startTask(%d,%d)", task->getApplicationId(), task->getSequenceId());
+			LOG_I("startTask(%d,%lld)", task->getApplicationId(), task->getSequenceId());
 			return true;
 		}
 		else {

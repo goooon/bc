@@ -75,11 +75,14 @@
 #define DECL_MSC_ALIGN(n) __declspec(align(n))
 #define DECL_GNU_ALIGNED_CLASS(c,n) 
 #define DECL_GNU_ALIGN(n) 
+#define DECL_GNU_PACKED
+
 #elif BC_COMPILER == BC_COMPILER_GNU
 #define DECL_MSC_ALIGNED_CLASS(c,n) 
 #define DECL_MSC_ALIGN(n) 
 #define DECL_GNU_ALIGNED_CLASS(c,n) c __attribute__ ((packed,aligned (n)))	
 #define DECL_GNU_ALIGN(n) __attribute__ ((packed,aligned (n)))
+#define DECL_GNU_PACKED __attribute__ ((packed))
 #else
 #define DECL_MSC_ALIGNED_CLASS(c,n) 
 #define DECL_MSC_ALIGN(n) 
