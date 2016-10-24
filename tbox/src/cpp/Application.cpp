@@ -23,7 +23,7 @@ void Application::init(int argc, char** argv)
 
 bool Application::startTask(Task* task,bool runAsThread)
 {
-	if (task == nullptr) {
+	if (task == NULL) {
 		LOG_E("startTask is null");
 		return false;
 	}
@@ -202,6 +202,11 @@ bool Application::postAppEvent(AppEvent::e e, u32 param1, u32 param2, void* data
 		appEvent.post();
 	}
 	return ret;
+}
+
+Config& Application::getConfig(void)
+{
+	return config;
 }
 
 void Application::broadcastEvent(AppEvent::e e, u32 param1, u32 param2, void* data)

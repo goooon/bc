@@ -1,0 +1,367 @@
+<!DOCTYPE Project SYSTEM "http://www.slickedit.com/dtd/vse/10.0/vpj.dtd">
+<Project
+    Version="10.0"
+    VendorName="SlickEdit"
+    TemplateName="GNU C/C++"
+    WorkingDir="."
+    BuildSystem="automakefile"
+    BuildMakeFile="%rp%rn.mak">
+    <Config
+        Name="Debug"
+        Type="gnuc"
+        DebugCallbackName="gdb"
+        Version="1"
+        OutputFile="%bdTBox_Slick"
+        CompilerConfigName="Latest Version">
+        <Menu>
+            <Target
+                Name="Compile"
+                MenuCaption="&amp;Compile"
+                Dialog="_gnuc_options_form Compile"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                OutputExts="*.o"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw">
+                <Exec CmdLine='g++ -c %xup  %defd -g -o "%bd%n%oe" %i "%f"'/>
+            </Target>
+            <Target
+                Name="Link"
+                MenuCaption="&amp;Link"
+                ShowOnMenu="Never"
+                Dialog="_gnuc_options_form Link"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw">
+                <Exec CmdLine='g++ %xup -g -o "%o" %f %libs'/>
+            </Target>
+            <Target
+                Name="Build"
+                MenuCaption="&amp;Build"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='make -f "%rp%rn.mak" CFG=%b'/>
+            </Target>
+            <Target
+                Name="Rebuild"
+                MenuCaption="&amp;Rebuild"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='make -f "%rp%rn.mak" rebuild CFG=%b'/>
+            </Target>
+            <Target
+                Name="Debug"
+                MenuCaption="&amp;Debug"
+                Dialog="_gnuc_options_form Run/Debug"
+                BuildFirst="1"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec CmdLine='vsdebugio -prog "%o"'/>
+            </Target>
+            <Target
+                Name="Execute"
+                MenuCaption="E&amp;xecute"
+                Dialog="_gnuc_options_form Run/Debug"
+                BuildFirst="1"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='"%o"'/>
+            </Target>
+            <Target
+                Name="dash"
+                MenuCaption="-"
+                Deletable="0">
+                <Exec/>
+            </Target>
+            <Target
+                Name="GNU C Options"
+                MenuCaption="GNU C &amp;Options..."
+                ShowOnMenu="HideIfNoCmdLine"
+                Deletable="0"
+                SaveOption="SaveNone">
+                <Exec
+                    CmdLine="gnucoptions"
+                    Type="Slick-C"/>
+            </Target>
+        </Menu>
+        <Rules Name="Compile">
+            <Rule
+                InputExts="*.ada"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gnat -g -c -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.adb"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gnat -g -c -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.f"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gfortran -c -g -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.f90"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gfortran -c -g -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.d"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gdc -c -g -o "%bd%n.o" "%f"'/>
+            </Rule>
+        </Rules>
+        <List Name="GNUC Options">
+            <Item
+                Name="LinkerOutputType"
+                Value="Executable"/>
+        </List>
+    </Config>
+    <Config
+        Name="Release"
+        Type="gnuc"
+        DebugCallbackName="gdb"
+        Version="1"
+        OutputFile="%bdTBox_Slick"
+        CompilerConfigName="Latest Version">
+        <Menu>
+            <Target
+                Name="Compile"
+                MenuCaption="&amp;Compile"
+                Dialog="_gnuc_options_form Compile"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                OutputExts="*.o"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw">
+                <Exec CmdLine='g++ -c %xup %defd -o "%bd%n%oe" %i "%f"'/>
+            </Target>
+            <Target
+                Name="Link"
+                MenuCaption="&amp;Link"
+                ShowOnMenu="Never"
+                Dialog="_gnuc_options_form Link"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveCurrent"
+                RunFromDir="%rw">
+                <Exec CmdLine='g++ %xup -o "%o" %f %libs'/>
+            </Target>
+            <Target
+                Name="Build"
+                MenuCaption="&amp;Build"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='make -f "%rp%rn.mak" CFG=%b'/>
+            </Target>
+            <Target
+                Name="Rebuild"
+                MenuCaption="&amp;Rebuild"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='make -f "%rp%rn.mak" rebuild CFG=%b'/>
+            </Target>
+            <Target
+                Name="Debug"
+                MenuCaption="&amp;Debug"
+                Dialog="_gnuc_options_form Run/Debug"
+                BuildFirst="1"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveNone"
+                RunFromDir="%rw">
+                <Exec CmdLine='vsdebugio -prog "%o"'/>
+            </Target>
+            <Target
+                Name="Execute"
+                MenuCaption="E&amp;xecute"
+                Dialog="_gnuc_options_form Run/Debug"
+                BuildFirst="1"
+                CaptureOutputWith="ProcessBuffer"
+                Deletable="0"
+                SaveOption="SaveWorkspaceFiles"
+                RunFromDir="%rw">
+                <Exec CmdLine='"%o"'/>
+            </Target>
+            <Target
+                Name="dash"
+                MenuCaption="-"
+                Deletable="0">
+                <Exec/>
+            </Target>
+            <Target
+                Name="GNU C Options"
+                MenuCaption="GNU C &amp;Options..."
+                ShowOnMenu="HideIfNoCmdLine"
+                Deletable="0"
+                SaveOption="SaveNone">
+                <Exec
+                    CmdLine="gnucoptions"
+                    Type="Slick-C"/>
+            </Target>
+        </Menu>
+        <Rules Name="Compile">
+            <Rule
+                InputExts="*.ada"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gnat -O -c -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.adb"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gnat -O -c -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.f"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gfortran -O -g -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.f90"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gfortran -O -g -o "%bd%n.o" "%f"'/>
+            </Rule>
+            <Rule
+                InputExts="*.d"
+                OutputExts="*.o"
+                LinkObject="1">
+                <Exec CmdLine='gdc -c -g -o "%bd%n.o" "%f"'/>
+            </Rule>
+        </Rules>
+        <List Name="GNUC Options">
+            <Item
+                Name="LinkerOutputType"
+                Value="Executable"/>
+        </List>
+    </Config>
+    <Files>
+        <Folder
+            Name="cpp"
+            Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go"
+            GUID="{2E754A27-C2F7-4F95-9CD3-865CE5BC47B1}">
+            <F N="tbox/src/cpp/Application.cpp"/>
+            <F N="tbox/src/cpp/CmdParser.cpp"/>
+            <F N="tbox/src/cpp/CmdParser.h"/>
+            <F N="tbox/src/cpp/Config.cpp"/>
+            <F N="tbox/src/cpp/dep.cpp"/>
+            <F N="tbox/src/cpp/Event.cpp"/>
+            <F N="tbox/src/cpp/main.cpp"/>
+            <F N="tbox/src/cpp/Mqtt.cpp"/>
+            <F N="tbox/src/cpp/readme.txt"/>
+            <F N="tbox/src/cpp/Task.cpp"/>
+        </Folder>
+        <Folder
+            Name="inc"
+            Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.h++;*.inc;*.sh;*.cpy;*.if"
+            GUID="{B73FFF92-C119-4905-B0A4-2B1AD686083D}">
+            <F N="tbox/src/inc/Application.h"/>
+            <F N="tbox/src/inc/Config.h"/>
+            <F N="tbox/src/inc/CycleQueue.h"/>
+            <F N="tbox/src/inc/dep.h"/>
+            <F N="tbox/src/inc/Event.h"/>
+            <F N="tbox/src/inc/Event.h2"/>
+            <F N="tbox/src/inc/incdebug.h"/>
+            <F N="tbox/src/inc/LinkedList.h"/>
+            <F N="tbox/src/inc/List.h"/>
+            <F N="tbox/src/inc/Mqtt.h"/>
+            <F N="tbox/src/inc/State.h"/>
+            <F N="tbox/src/inc/Task.h"/>
+            <F N="tbox/src/inc/TaskList.h"/>
+            <F N="tbox/src/inc/TaskQueue.h"/>
+            <F N="tbox/src/inc/Thread.h"/>
+            <F N="tbox/src/inc/Vehicle.h"/>
+        </Folder>
+        <Folder
+            Name="make"
+            Filters=""
+            GUID="{A59DE4CB-152F-4287-BF8C-6AF5F7A6CEEC}">
+            <F
+                N="TBox_Slick.mak"
+                Type="Makefile"/>
+        </Folder>
+        <Folder
+            Name="dep"
+            Filters=""
+            GUID="{7BD2FFC4-66FC-458D-9D21-40D1ED20793D}">
+            <Folder
+                Name="cpp"
+                Filters=""
+                GUID="{DB512306-CBFD-4E22-A677-C571A2391CEE}">
+                <Folder
+                    Name="core"
+                    Filters=""
+                    GUID="{00C65894-F99D-49AC-91BE-0D5F69F75867}">
+                    <F N="fundation/src/cpp/core/Types.cpp"/>
+                </Folder>
+                <Folder
+                    Name="utils"
+                    Filters=""
+                    GUID="{0DEB26A7-FD4A-4CA6-9C54-D1D6C89F4648}"/>
+                <F N="fundation/src/cpp/bcp.cpp"/>
+                <F N="fundation/src/cpp/bcp_comm.cpp"/>
+                <F N="fundation/src/cpp/bcp_packet.cpp"/>
+                <F N="fundation/src/cpp/binary_formater.cpp"/>
+                <F N="fundation/src/cpp/crc32.cpp"/>
+            </Folder>
+            <Folder
+                Name="inc"
+                Filters=""
+                GUID="{52632376-DAFF-4640-9967-1AE625D55F85}">
+                <Folder
+                    Name="core"
+                    Filters=""
+                    GUID="{38274736-C7BD-4BE6-A1A9-3F6216686A49}">
+                    <F N="fundation/src/inc/core/Arch.h"/>
+                    <F N="fundation/src/inc/core/Compiler.h"/>
+                    <F N="fundation/src/inc/core/Make.h"/>
+                    <F N="fundation/src/inc/core/Types.h"/>
+                </Folder>
+                <Folder
+                    Name="utils"
+                    Filters=""
+                    GUID="{754A2EEE-B344-481A-A7AF-8B249EB0159F}">
+                    <F N="fundation/src/inc/util/Heap.h"/>
+                    <F N="fundation/src/inc/util/LinkedList.h"/>
+                    <F N="fundation/src/inc/util/Log.h"/>
+                    <F N="fundation/src/inc/util/Pipe.h"/>
+                    <F N="fundation/src/inc/util/Semaphore.h"/>
+                    <F N="fundation/src/inc/util/SharedMemory.h"/>
+                    <F N="fundation/src/inc/util/StackTrace.h"/>
+                    <F N="fundation/src/inc/util/Thread.h"/>
+                    <F N="fundation/src/inc/util/Tree.h"/>
+                </Folder>
+                <F N="fundation/src/inc/bcp.h"/>
+                <F N="fundation/src/inc/bcp_comm.h"/>
+                <F N="fundation/src/inc/bcp_packet.h"/>
+                <F N="fundation/src/inc/binary_formater.h"/>
+                <F N="fundation/src/inc/crc32.h"/>
+                <F N="fundation/src/inc/dep.h"/>
+                <F N="fundation/src/inc/fundation.h"/>
+                <F N="fundation/src/inc/MQTTAsync.h"/>
+                <F N="fundation/src/inc/MQTTClientPersistence.h"/>
+            </Folder>
+        </Folder>
+    </Files>
+</Project>

@@ -25,5 +25,5 @@ Task* TaskCreate(u16 appId, bcp_packet_t* pkg)
 		t++;
 	}
 	LOG_E("Can't create Task %d 0x%x", appId,pkg);
-	return nullptr;
+	return NULL;
 }

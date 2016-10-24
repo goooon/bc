@@ -22,7 +22,7 @@ public:
 		TestEvent				//for only debug test
 	};
 };
-
+//global api for application event
 bool PostEvent(AppEvent::e e, u32 param1, u32 param2, void* data);
 class EventQueue
 {

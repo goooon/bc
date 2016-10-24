@@ -14,9 +14,10 @@
 unsigned int last_error(void);
 
 void* initDebugLib();
-void uninitDebugLib(void* lib);
+void  uninitDebugLib(void* lib);
 typedef void (*CmdCallback)(char* cmd);
 typedef void (*LoopCallback)(CmdCallback onCommand);
+
 #ifdef ME_DEBUGUI
 #include "./incdebug.h"
 #define bc_new new
