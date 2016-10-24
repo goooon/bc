@@ -35,8 +35,8 @@ ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
 	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o 
 
-COMPILE=g++ -c    -g -o "$(OUTDIR)/$(*F).o" $(CFG_INC) "$<"
-LINK=g++  -g -o "$(OUTFILE)" $(OBJ) $(CFG_LIB)
+COMPILE=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc -c   -g -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
+LINK=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc  -g -o "$(OUTFILE)" $(ALL_OBJ)
 COMPILE_ADA=gnat -g -c -o "$(OUTDIR)/$(*F).o" "$<"
 COMPILE_ADB=gnat -g -c -o "$(OUTDIR)/$(*F).o" "$<"
 COMPILE_F=gfortran -c -g -o "$(OUTDIR)/$(*F).o" "$<"
@@ -140,8 +140,8 @@ ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
 	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o 
 
-COMPILE=g++ -c   -o "$(OUTDIR)/$(*F).o" $(CFG_INC) "$<"
-LINK=g++  -o "$(OUTFILE)" $(OBJ) $(CFG_LIB)
+COMPILE=g++ -c   -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
+LINK=g++  -o "$(OUTFILE)" $(ALL_OBJ)
 COMPILE_ADA=gnat -O -c -o "$(OUTDIR)/$(*F).o" "$<"
 COMPILE_ADB=gnat -O -c -o "$(OUTDIR)/$(*F).o" "$<"
 COMPILE_F=gfortran -O -g -o "$(OUTDIR)/$(*F).o" "$<"

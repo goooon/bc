@@ -53,7 +53,7 @@ void ListZero(List* newl)
  */
 List* ListInitialize(void)
 {
-	List* newl = malloc(sizeof(List));
+	List* newl = (List*)malloc(sizeof(List));
 	ListZero(newl);
 	return newl;
 }
@@ -90,7 +90,7 @@ void ListAppendNoMalloc(List* aList, void* content, ListElement* newel, size_t s
  */
 void ListAppend(List* aList, void* content, size_t size)
 {
-	ListElement* newel = malloc(sizeof(ListElement));
+	ListElement* newel = (ListElement*)malloc(sizeof(ListElement));
 	ListAppendNoMalloc(aList, content, newel, size);
 }
 
@@ -105,7 +105,7 @@ void ListAppend(List* aList, void* content, size_t size)
  */
 void ListInsert(List* aList, void* content, size_t size, ListElement* index)
 {
-	ListElement* newel = malloc(sizeof(ListElement));
+	ListElement* newel = (ListElement*)malloc(sizeof(ListElement));
 
 	if ( index == NULL )
 		ListAppendNoMalloc(aList, content, newel, size);

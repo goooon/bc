@@ -144,13 +144,13 @@ void* mymalloc(char* file, int line, size_t size)
 
 	Thread_lock_mutex(heap_mutex);
 	size = Heap_roundup(size);
-	if ((s = malloc(sizeof(storageElement))) == NULL)
+	if ((s = (storageElement*)malloc(sizeof(storageElement))) == NULL)
 	{
 		Log(LOG_ERROR, 13, errmsg);
 		return NULL;
 	}
 	s->size = size; /* size without eyecatchers */
-	if ((s->file = malloc(filenamelen)) == NULL)
+	if ((s->file = (char*)malloc(filenamelen)) == NULL)
 	{
 		Log(LOG_ERROR, 13, errmsg);
 		free(s);
@@ -277,7 +277,7 @@ void *myrealloc(char* file, int line, void* p, size_t size)
 	storageElement* s = NULL;
 	
 	Thread_lock_mutex(heap_mutex);
-	s = TreeRemoveKey(&heap, ((int*)p)-1);
+	s = (storageElement*)TreeRemoveKey(&heap, ((int*)p)-1);
 	if (s == NULL)
 		Log(LOG_ERROR, 13, "Failed to reallocate heap item at file %s line %d", file, line);
 	else
@@ -300,7 +300,7 @@ void *myrealloc(char* file, int line, void* p, size_t size)
 		*(int*)(((char*)(s->ptr)) + (sizeof(int) + size)) = eyecatcher; /* end eyecatcher */
 		s->size = size;
 		space -= strlen(s->file);
-		s->file = realloc(s->file, filenamelen);
+		s->file = (char*)realloc(s->file, filenamelen);
 		space += filenamelen;
 		strcpy(s->file, file);
 		s->line = line;

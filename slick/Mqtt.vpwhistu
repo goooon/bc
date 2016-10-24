@@ -1,0 +1,8 @@
+[Global]
+CurrentProject=../TBox_Slick.vpj
+[ProjectDates]
+Mqtt.vpj=20161024025945000
+../TBox_Slick.vpj=20161024030452000
+[ActiveConfig]
+Mqtt.vpj=,Debug
+../TBox_Slick.vpj=,Debug

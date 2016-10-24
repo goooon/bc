@@ -11,7 +11,7 @@
         Type="gnuc"
         DebugCallbackName="gdb"
         Version="1"
-        OutputFile="%bdTBox_Slick"
+        OutputFile="%bdMqtt.so"
         CompilerConfigName="arm-linux-gcc"
         Defines="">
         <Menu>
@@ -24,7 +24,7 @@
                 OutputExts="*.o"
                 SaveOption="SaveCurrent"
                 RunFromDir="%rw">
-                <Exec CmdLine='/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc -c %xup %defd -g -o "%bd%n%oe" %i %f'/>
+                <Exec CmdLine='/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc -c %xup %defd -g -fPIC -o "%bd%n%oe" %i %f'/>
             </Target>
             <Target
                 Name="Link"
@@ -35,7 +35,7 @@
                 Deletable="0"
                 SaveOption="SaveCurrent"
                 RunFromDir="%rw">
-                <Exec CmdLine='/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc %xup -g -o "%o" %objs'/>
+                <Exec CmdLine='/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc %xup -g -shared -fPIC -o "%o" %objs'/>
             </Target>
             <Target
                 Name="Build"
@@ -64,7 +64,7 @@
                 Deletable="0"
                 SaveOption="SaveNone"
                 RunFromDir="%rw">
-                <Exec CmdLine='vsdebugio -prog "%o"'/>
+                <Exec CmdLine='%o "%o"'/>
             </Target>
             <Target
                 Name="Execute"
@@ -129,18 +129,17 @@
         <List Name="GNUC Options">
             <Item
                 Name="LinkerOutputType"
-                Value="Executable"/>
+                Value="SharedLibrary"/>
         </List>
         <Includes/>
-        <Libs PreObjects="0">
-        </Libs>
+        <Libs PreObjects="0"/>
     </Config>
     <Config
         Name="Release"
         Type="gnuc"
         DebugCallbackName="gdb"
         Version="1"
-        OutputFile="%bdTBox_Slick"
+        OutputFile="%bdMqtt.so"
         CompilerConfigName="arm-linux-gcc"
         Defines="">
         <Menu>
@@ -153,7 +152,7 @@
                 OutputExts="*.o"
                 SaveOption="SaveCurrent"
                 RunFromDir="%rw">
-                <Exec CmdLine='g++ -c %xup %defd -o "%bd%n%oe" %i %f'/>
+                <Exec CmdLine='g++ -c %xup %defd -fPIC -o "%bd%n%oe" %i %f'/>
             </Target>
             <Target
                 Name="Link"
@@ -164,7 +163,7 @@
                 Deletable="0"
                 SaveOption="SaveCurrent"
                 RunFromDir="%rw">
-                <Exec CmdLine='g++ %xup -o "%o" %objs'/>
+                <Exec CmdLine='g++ %xup -shared -fPIC -o "%o" %objs'/>
             </Target>
             <Target
                 Name="Build"
@@ -193,7 +192,7 @@
                 Deletable="0"
                 SaveOption="SaveNone"
                 RunFromDir="%rw">
-                <Exec CmdLine='vsdebugio -prog "%o"'/>
+                <Exec CmdLine='%o "%o"'/>
             </Target>
             <Target
                 Name="Execute"
@@ -258,118 +257,80 @@
         <List Name="GNUC Options">
             <Item
                 Name="LinkerOutputType"
-                Value="Executable"/>
+                Value="SharedLibrary"/>
         </List>
         <Includes/>
-        <Libs PreObjects="0">
-        </Libs>
+        <Libs PreObjects="0"/>
     </Config>
     <Files>
         <Folder
             Name="cpp"
             Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go"
-            GUID="{2E754A27-C2F7-4F95-9CD3-865CE5BC47B1}">
-            <F N="tbox/src/cpp/Application.cpp"/>
-            <F N="tbox/src/cpp/CmdParser.cpp"/>
-            <F N="tbox/src/cpp/CmdParser.h"/>
-            <F N="tbox/src/cpp/Config.cpp"/>
-            <F N="tbox/src/cpp/dep.cpp"/>
-            <F N="tbox/src/cpp/Event.cpp"/>
-            <F N="tbox/src/cpp/main.cpp"/>
-            <F N="tbox/src/cpp/Mqtt.cpp"/>
-            <F N="tbox/src/cpp/readme.txt"/>
-            <F N="tbox/src/cpp/Task.cpp"/>
+            GUID="{49010FFB-4BBC-4DFC-BB73-0542A0E99E46}">
+            <F N="../dep/paho/src/Clients.c"/>
+            <F N="../dep/paho/src/Clients.h"/>
+            <F N="../dep/paho/src/Heap.c"/>
+            <F N="../dep/paho/src/Heap.h"/>
+            <F N="../dep/paho/src/LinkedList.c"/>
+            <F N="../dep/paho/src/LinkedList.h"/>
+            <F N="../dep/paho/src/Log.c"/>
+            <F N="../dep/paho/src/Log.h"/>
+            <F N="../dep/paho/src/Messages.c"/>
+            <F N="../dep/paho/src/Messages.h"/>
+            <F N="../dep/paho/src/MQTTAsync.c"/>
+            <F N="../dep/paho/src/MQTTAsync.h"/>
+            <F N="../dep/paho/src/MQTTClient.h"/>
+            <F N="../dep/paho/src/MQTTClientPersistence.h"/>
+            <F N="../dep/paho/src/MQTTPacket.c"/>
+            <F N="../dep/paho/src/MQTTPacket.h"/>
+            <F N="../dep/paho/src/MQTTPacketOut.c"/>
+            <F N="../dep/paho/src/MQTTPacketOut.h"/>
+            <F N="../dep/paho/src/MQTTPersistence.c"/>
+            <F N="../dep/paho/src/MQTTPersistence.h"/>
+            <F N="../dep/paho/src/MQTTPersistenceDefault.c"/>
+            <F N="../dep/paho/src/MQTTPersistenceDefault.h"/>
+            <F N="../dep/paho/src/MQTTProtocol.h"/>
+            <F N="../dep/paho/src/MQTTProtocolClient.c"/>
+            <F N="../dep/paho/src/MQTTProtocolClient.h"/>
+            <F N="../dep/paho/src/MQTTProtocolOut.c"/>
+            <F N="../dep/paho/src/MQTTProtocolOut.h"/>
+            <F N="../dep/paho/src/MQTTVersion.c"/>
+            <F N="../dep/paho/src/Socket.c"/>
+            <F N="../dep/paho/src/Socket.h"/>
+            <F N="../dep/paho/src/SocketBuffer.c"/>
+            <F N="../dep/paho/src/SocketBuffer.h"/>
+            <F N="../dep/paho/src/SSLSocket.c"/>
+            <F N="../dep/paho/src/SSLSocket.h"/>
+            <F N="../dep/paho/src/StackTrace.c"/>
+            <F N="../dep/paho/src/StackTrace.h"/>
+            <F N="../dep/paho/src/Thread.c"/>
+            <F N="../dep/paho/src/Thread.h"/>
+            <F N="../dep/paho/src/Tree.c"/>
+            <F N="../dep/paho/src/Tree.h"/>
+            <F N="../dep/paho/src/utf-8.c"/>
+            <F N="../dep/paho/src/utf-8.h"/>
+            <F N="../dep/paho/src/VersionInfo.h"/>
+            <F N="../dep/paho/src/VersionInfo.h.in"/>
         </Folder>
         <Folder
             Name="inc"
             Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.h++;*.inc;*.sh;*.cpy;*.if"
-            GUID="{B73FFF92-C119-4905-B0A4-2B1AD686083D}">
-            <F N="tbox/src/inc/Application.h"/>
-            <F N="tbox/src/inc/Config.h"/>
-            <F N="tbox/src/inc/CycleQueue.h"/>
-            <F N="tbox/src/inc/dep.h"/>
-            <F N="tbox/src/inc/Event.h"/>
-            <F N="tbox/src/inc/Event.h2"/>
-            <F N="tbox/src/inc/incdebug.h"/>
-            <F N="tbox/src/inc/LinkedList.h"/>
-            <F N="tbox/src/inc/List.h"/>
-            <F N="tbox/src/inc/Mqtt.h"/>
-            <F N="tbox/src/inc/State.h"/>
-            <F N="tbox/src/inc/Task.h"/>
-            <F N="tbox/src/inc/TaskList.h"/>
-            <F N="tbox/src/inc/TaskQueue.h"/>
-            <F N="tbox/src/inc/Thread.h"/>
-            <F N="tbox/src/inc/Vehicle.h"/>
-        </Folder>
+            GUID="{1D786663-A5E0-481D-A427-71C36383096B}"/>
         <Folder
-            Name="make"
+            Name="Resource Files"
+            Filters="*.ico;*.cur;*.dlg"
+            GUID="{64924639-B2E4-4C3B-8D6A-CBBEF41F6645}"/>
+        <Folder
+            Name="Bitmaps"
+            Filters="*.bmp"
+            GUID="{99D59C68-DE8D-4E27-AAE0-036C291AB15B}"/>
+        <Folder
+            Name="Other Files"
             Filters=""
-            GUID="{A59DE4CB-152F-4287-BF8C-6AF5F7A6CEEC}">
+            GUID="{710AF634-5847-45A4-BE32-4E07A70035D7}">
             <F
-                N="TBox_Slick.mak"
+                N="Mqtt.mak"
                 Type="Makefile"/>
-        </Folder>
-        <Folder
-            Name="dep"
-            Filters=""
-            GUID="{7BD2FFC4-66FC-458D-9D21-40D1ED20793D}">
-            <Folder
-                Name="cpp"
-                Filters=""
-                GUID="{DB512306-CBFD-4E22-A677-C571A2391CEE}">
-                <Folder
-                    Name="core"
-                    Filters=""
-                    GUID="{00C65894-F99D-49AC-91BE-0D5F69F75867}">
-                    <F N="fundation/src/cpp/core/Types.cpp"/>
-                </Folder>
-                <Folder
-                    Name="utils"
-                    Filters=""
-                    GUID="{0DEB26A7-FD4A-4CA6-9C54-D1D6C89F4648}"/>
-                <F N="fundation/src/cpp/bcp.cpp"/>
-                <F N="fundation/src/cpp/bcp_comm.cpp"/>
-                <F N="fundation/src/cpp/bcp_packet.cpp"/>
-                <F N="fundation/src/cpp/binary_formater.cpp"/>
-                <F N="fundation/src/cpp/crc32.cpp"/>
-            </Folder>
-            <Folder
-                Name="inc"
-                Filters=""
-                GUID="{52632376-DAFF-4640-9967-1AE625D55F85}">
-                <Folder
-                    Name="core"
-                    Filters=""
-                    GUID="{38274736-C7BD-4BE6-A1A9-3F6216686A49}">
-                    <F N="fundation/src/inc/core/Arch.h"/>
-                    <F N="fundation/src/inc/core/Compiler.h"/>
-                    <F N="fundation/src/inc/core/Make.h"/>
-                    <F N="fundation/src/inc/core/Types.h"/>
-                </Folder>
-                <Folder
-                    Name="utils"
-                    Filters=""
-                    GUID="{754A2EEE-B344-481A-A7AF-8B249EB0159F}">
-                    <F N="fundation/src/inc/util/Heap.h"/>
-                    <F N="fundation/src/inc/util/LinkedList.h"/>
-                    <F N="fundation/src/inc/util/Log.h"/>
-                    <F N="fundation/src/inc/util/Pipe.h"/>
-                    <F N="fundation/src/inc/util/Semaphore.h"/>
-                    <F N="fundation/src/inc/util/SharedMemory.h"/>
-                    <F N="fundation/src/inc/util/StackTrace.h"/>
-                    <F N="fundation/src/inc/util/Thread.h"/>
-                    <F N="fundation/src/inc/util/Tree.h"/>
-                </Folder>
-                <F N="fundation/src/inc/bcp.h"/>
-                <F N="fundation/src/inc/bcp_comm.h"/>
-                <F N="fundation/src/inc/bcp_packet.h"/>
-                <F N="fundation/src/inc/binary_formater.h"/>
-                <F N="fundation/src/inc/crc32.h"/>
-                <F N="fundation/src/inc/dep.h"/>
-                <F N="fundation/src/inc/fundation.h"/>
-                <F N="fundation/src/inc/MQTTAsync.h"/>
-                <F N="fundation/src/inc/MQTTClientPersistence.h"/>
-            </Folder>
         </Folder>
     </Files>
 </Project>
