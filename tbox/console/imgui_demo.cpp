@@ -2122,8 +2122,10 @@ struct ExampleAppConsole : public me::Tracer
 		if (ImGui::SmallButton("reqUnlock")) { func("reqUnlock"); } ImGui::SameLine();
 		if (ImGui::SmallButton("authProc")) { func("authProc"); } ImGui::Separator();
 
+		if (ImGui::SmallButton("memory")) { func("memory"); } ImGui::SameLine();
 		if (ImGui::SmallButton("clear")) { ClearLog();func("clear"); } ImGui::SameLine();
         if (ImGui::SmallButton("Scroll to bottom")) ScrollToBottom = true;
+
         //static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddLog("Spam %f", t); }
 
         ImGui::Separator();

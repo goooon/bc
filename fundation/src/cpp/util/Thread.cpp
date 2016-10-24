@@ -51,6 +51,7 @@
 DWORD WINAPI  PTHREAD_START_ROUTINE_IMP(LPVOID lpThreadParameter)
 {
 	Runnable* t = (Runnable*)lpThreadParameter;
+	thread_id_type id = Thread_getid();
 	t->run();
 	return 0;
 }

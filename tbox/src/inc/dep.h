@@ -20,7 +20,7 @@ typedef void (*LoopCallback)(CmdCallback onCommand);
 
 #ifdef ME_DEBUGUI
 #include "./incdebug.h"
-#define bc_new new
+#define bc_new new(__LINE__,__FILE__)
 #define bc_del delete
 #define bc_alloc malloc
 #define bc_free  free

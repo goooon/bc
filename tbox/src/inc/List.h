@@ -1,8 +1,9 @@
 #ifndef GUARD_List_h__
 #define GUARD_List_h__
-
+#include "./dep.h"
 template<class Any>
-struct Node {
+struct Node : public BCMemory
+{
 	Node<Any> * prior;
 	Any data;
 	Node<Any> * next;
@@ -45,7 +46,7 @@ public:
 			if (data != NULL) {
 				bc_del data;
 			}*/
-			bc_del temp;
+			bc_del(temp);
 		}
 	}
 	//list

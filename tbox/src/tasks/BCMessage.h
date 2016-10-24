@@ -60,7 +60,12 @@ public:
 		pkg = bcp_packet_create();
 	}
 	BCMessage appendMessage(u16 appid,u8 stepid, u64 seqid) {
-		return bcp_message_create(appid, stepid, seqid);
+		bcp_message_t* msg = bcp_message_create(appid, stepid, seqid);
+		if (msg == nullptr) {
+			LOG_E("bcp_message_create failed");
+		}
+		bcp_message_append(pkg, msg);
+		return msg;
 	}
 	bool post(char* publish, int qos, int millSec) {
 		u8* buf;

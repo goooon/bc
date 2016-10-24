@@ -59,8 +59,6 @@ void uninitDebugLib(void* lib)
 	Memory::dispalyInfo();
 	Memory::checkMemory(vTrue);
 }
-#include "../../console/dxmain.cpp"
-
 void onCommand(char* cmd)
 {
 	if (me::Tool::isEqual(cmd, "v")) {
@@ -81,6 +79,11 @@ void onCommand(char* cmd)
 	}
 	if (me::Tool::isEqual(cmd, "clear")) {
 		con.clear();
+		return;
+	}
+	if (me::Tool::isEqual(cmd,"memory")) {
+		heap_info*  info =Heap_get_info();
+		LOG_I("curr size %d,max size %d", info->current_size, info->max_size);
 		return;
 	}
 	if (Application::getInstance().onDebugCommand(cmd))return;

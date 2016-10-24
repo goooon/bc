@@ -52,4 +52,30 @@ typedef const achar*    castr;
 typedef const wchar*    cwstr;
 typedef u32             color;
 
+#if BC_COMPILER == BC_COMPILER_GNU
+#if BC_TARGET == BC_TARGET_APPLE_IOS
+#define bc_size unsigned long
+#else
+#define bc_size size_t
+#endif
+
+#else
+#define bc_size size_t
+
+#endif
+
+struct BCMemory
+{
+	void* operator new(bc_size size);
+	//void* operator new(me_size size,void* p);
+	void* operator new(bc_size size, int line, const char file[]);
+	void* operator new(bc_size size, int line, const char* file, const char* info);
+	//void* operator delete(me_size size,void* p);
+	void  operator delete(void* p);
+	void  operator delete(void* p, int line, const char *func);
+	void  operator delete(void* p, int line, const char *func, const char* ext) {};
+	//void  operator delete(void* p,const char* fmt,...){}
+	void* operator new[](bc_size size);
+	void  operator delete[](void* p);
+};
 #endif // GUARD_Types_h__

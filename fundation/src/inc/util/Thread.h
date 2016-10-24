@@ -18,7 +18,7 @@
 
 #if !defined(THREAD_H)
 #define THREAD_H
-
+#include "../core/Types.h"
 #if defined(WIN32) || defined(WIN64)
 	#include <windows.h>
 	#define thread_type HANDLE
@@ -49,7 +49,7 @@
 
 thread_type Thread_start(thread_fn, void*);
 thread_id_type Thread_getid();
-class Runnable
+class Runnable : public BCMemory
 {
 public:
 	virtual void run() = 0;

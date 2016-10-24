@@ -21,7 +21,7 @@ ifeq "$(CFG)" "Debug"
 OUTDIR=Debug
 OUTFILE=$(OUTDIR)/TBox_Slick
 CFG_INC=
-CFG_LIB=-ldl -lpthread -lMqtt -lsupc++ 
+CFG_LIB=-ldl -lpthread -lMqtt -lstdc++ 
 CFG_OBJ=
 COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
@@ -42,7 +42,7 @@ ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
 	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o -ldl -lpthread -lMqtt \
-	-lsupc++ 
+	-lstdc++ 
 
 COMPILE=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc -c   -g -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
 LINK=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc  -g -o "$(OUTFILE)" $(ALL_OBJ)
@@ -171,7 +171,7 @@ ifeq "$(CFG)" "Release"
 OUTDIR=Release
 OUTFILE=$(OUTDIR)/TBox_Slick
 CFG_INC=
-CFG_LIB=-ldl -lpthread -lMqtt -lsupc++ 
+CFG_LIB=-ldl -lpthread -lMqtt -lstdc++ 
 CFG_OBJ=
 COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
@@ -192,7 +192,7 @@ ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
 	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o -ldl -lpthread -lMqtt \
-	-lsupc++ 
+	-lstdc++ 
 
 COMPILE=g++ -c   -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
 LINK=g++  -o "$(OUTFILE)" $(ALL_OBJ)

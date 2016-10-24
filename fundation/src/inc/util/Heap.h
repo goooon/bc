@@ -63,7 +63,7 @@ typedef struct
 
 void* mymalloc(char*, int, size_t size);
 void* myrealloc(char*, int, void* p, size_t size);
-void myfree(char*, int, void* p);
+void  myfree(char*, int, void* p);
 
 void Heap_scan(FILE* file);
 int Heap_initialize(void);

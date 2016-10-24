@@ -29,7 +29,7 @@ class Task : public Thread
 	friend class TaskList;
 public:
 	Task(u16 appId,bool async);
-	~Task();
+	virtual ~Task();
 	u16  getApplicationId() { return appID; }
 	u64  getSequenceId() { return seqID; }
 public:

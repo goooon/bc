@@ -10,7 +10,7 @@ public:
 	VehicleAuthTask() :Task(APPID_AUTHENTICATION, true) {}
 	static Task* Create()
 	{
-		return bc_new RemoteUnlockTask();
+		return bc_new VehicleAuthTask();
 	}
 protected:
 	//the function should be OVERRIDE by its subclass

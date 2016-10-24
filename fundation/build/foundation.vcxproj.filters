@@ -99,6 +99,9 @@
     <ClInclude Include="..\src\inc\util\Semaphore.h">
       <Filter>src\inc\util</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\binary_formater.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cpp\util\Heap.cpp">
@@ -139,6 +142,12 @@
     </ClCompile>
     <ClCompile Include="..\src\cpp\util\Semaphore.cpp">
       <Filter>src\cpp\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\binary_formater.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\core\Types.cpp">
+      <Filter>src\cpp\core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

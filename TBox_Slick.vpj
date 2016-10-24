@@ -136,7 +136,7 @@
             <Lib File="-ldl"/>
             <Lib File="-lpthread"/>
             <Lib File="-lMqtt"/>
-            <Lib File="-lsupc++"/>
+            <Lib File="-lstdc++"/>
         </Libs>
     </Config>
     <Config
@@ -269,7 +269,7 @@
             <Lib File="-ldl"/>
             <Lib File="-lpthread"/>
             <Lib File="-lMqtt"/>
-            <Lib File="-lsupc++"/>
+            <Lib File="-lstdc++"/>
         </Libs>
     </Config>
     <Files>

@@ -169,7 +169,7 @@ void Application::onEvent(AppEvent::e e, u32 param1, u32 param2, void* data)
 	case AppEvent::DelTask:
 		LOG_A(data,"should not be null");
 		tasksWorking.out((Task*)data);
-		bc_del(Task*)data;
+		bc_del((Task*)data);
 		break;
 	case AppEvent::NetConnected:
 		onNetConnected();

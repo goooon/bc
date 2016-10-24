@@ -112,13 +112,14 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 #pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib,"dxgi.lib")
 
-namespace me
-{
-	class Tracer {
+//namespace me
+//{
+//	class Tracer {
+//
+//	};
+//	typedef bool b32;
+//}
 
-	};
-	typedef bool b32;
-}
 me::Tracer*  ShowExampleAppConsole(bool* p_open,bool draw,void(*)(char*));
 WNDCLASSEX wc;
 void loopCallback(void(*onCommand)(char*) )

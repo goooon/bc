@@ -21,6 +21,7 @@ Task* TaskCreate(u16 appId, bcp_packet_t* pkg)
 			LOG_I("TaskCreate(%d,0x%x)", appId,  pkg);
 			Task* task = (*t->creator)();
 			task->handlePackage(pkg);
+			return task;
 		}
 		t++;
 	}
