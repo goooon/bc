@@ -133,6 +133,10 @@
         </List>
         <Includes/>
         <Libs PreObjects="0">
+            <Lib File="-ldl"/>
+            <Lib File="-lpthread"/>
+            <Lib File="-lMqtt"/>
+            <Lib File="-lsupc++"/>
         </Libs>
     </Config>
     <Config
@@ -262,6 +266,10 @@
         </List>
         <Includes/>
         <Libs PreObjects="0">
+            <Lib File="-ldl"/>
+            <Lib File="-lpthread"/>
+            <Lib File="-lMqtt"/>
+            <Lib File="-lsupc++"/>
         </Libs>
     </Config>
     <Files>
@@ -270,15 +278,22 @@
             Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go"
             GUID="{2E754A27-C2F7-4F95-9CD3-865CE5BC47B1}">
             <F N="tbox/src/cpp/Application.cpp"/>
+            <F N="tbox/src/tasks/BCMessage.h"/>
             <F N="tbox/src/cpp/CmdParser.cpp"/>
             <F N="tbox/src/cpp/CmdParser.h"/>
             <F N="tbox/src/cpp/Config.cpp"/>
             <F N="tbox/src/cpp/dep.cpp"/>
+            <F N="tbox/src/tasks/Element.h"/>
+            <F N="tbox/src/tasks/ErrorCode.h"/>
             <F N="tbox/src/cpp/Event.cpp"/>
             <F N="tbox/src/cpp/main.cpp"/>
             <F N="tbox/src/cpp/Mqtt.cpp"/>
             <F N="tbox/src/cpp/readme.txt"/>
+            <F N="tbox/src/tasks/RemoteUnlockTask.h"/>
             <F N="tbox/src/cpp/Task.cpp"/>
+            <F N="tbox/src/tasks/TaskTable.cpp"/>
+            <F N="tbox/src/tasks/TaskTable.h"/>
+            <F N="tbox/src/tasks/VehicleAuthTask.h"/>
         </Folder>
         <Folder
             Name="inc"
@@ -326,7 +341,17 @@
                 <Folder
                     Name="utils"
                     Filters=""
-                    GUID="{0DEB26A7-FD4A-4CA6-9C54-D1D6C89F4648}"/>
+                    GUID="{0DEB26A7-FD4A-4CA6-9C54-D1D6C89F4648}">
+                    <F N="fundation/src/cpp/util/Heap.cpp"/>
+                    <F N="fundation/src/cpp/util/LinkedList.cpp"/>
+                    <F N="fundation/src/cpp/util/Log.cpp"/>
+                    <F N="fundation/src/cpp/util/Pipe.cpp"/>
+                    <F N="fundation/src/cpp/util/Semaphore.cpp"/>
+                    <F N="fundation/src/cpp/util/SharedMemory.cpp"/>
+                    <F N="fundation/src/cpp/util/StackTrace.cpp"/>
+                    <F N="fundation/src/cpp/util/Thread.cpp"/>
+                    <F N="fundation/src/cpp/util/Tree.cpp"/>
+                </Folder>
                 <F N="fundation/src/cpp/bcp.cpp"/>
                 <F N="fundation/src/cpp/bcp_comm.cpp"/>
                 <F N="fundation/src/cpp/bcp_packet.cpp"/>
