@@ -136,7 +136,7 @@ void Heap_check(char* string, void* ptr)
  * @param size the size of the item to be allocated
  * @return pointer to the allocated item, or NULL if there was an error
  */
-void* mymalloc(char* file, int line, size_t size)
+void* mymalloc(const char* file, int line, size_t size)
 {
 	storageElement* s = NULL;
 	size_t space = sizeof(storageElement);
@@ -235,7 +235,7 @@ int Internal_heap_unlink(char* file, int line, void* p)
  * @param line use the __LINE__ macro to indicate which line this item was allocated at
  * @param p pointer to the item to be freed
  */
-void myfree(char* file, int line, void* p)
+void myfree(const char* file, int line, void* p)
 {
 	Thread_lock_mutex(heap_mutex);
 	if (Internal_heap_unlink(file, line, p))
@@ -271,7 +271,7 @@ void Heap_unlink(char* file, int line, void* p)
  * @param size the new size of the item
  * @return pointer to the allocated item, or NULL if there was an error
  */
-void *myrealloc(char* file, int line, void* p, size_t size)
+void *myrealloc(const char* file, int line, void* p, size_t size)
 {
 	void* rc = NULL;
 	storageElement* s = NULL;

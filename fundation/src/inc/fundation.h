@@ -3,6 +3,7 @@
 
 #include "./core/Types.h"
 #include "./util/Thread.h"
+#include "./util/Log.h"
 #include "./util/Heap.h"
 #include "./bcp_packet.h"
 #endif // GUARD_fundation_h__

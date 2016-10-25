@@ -104,7 +104,7 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 	switch (ul_reason_for_call)
 	{
 		case DLL_PROCESS_ATTACH:
-			Log(TRACE_MAX, -1, "DLL process attach");
+			Log(TRACE_MAX, -1, "MQTT DLL process attach");
 			if (mqttasync_mutex == NULL)
 			{
 				mqttasync_mutex = CreateMutex(NULL, 0, NULL);
@@ -121,11 +121,11 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 				socket_mutex = CreateMutex(NULL, 0, NULL);
 			}
 		case DLL_THREAD_ATTACH:
-			Log(TRACE_MAX, -1, "DLL thread attach");
+			Log(TRACE_MAX, -1, "MQTT DLL thread attach");
 		case DLL_THREAD_DETACH:
-			Log(TRACE_MAX, -1, "DLL thread detach");
+			Log(TRACE_MAX, -1, "MQTT DLL thread detach");
 		case DLL_PROCESS_DETACH:
-			Log(TRACE_MAX, -1, "DLL process detach");
+			Log(TRACE_MAX, -1, "MQTT DLL process detach");
 	}
 	return TRUE;
 }

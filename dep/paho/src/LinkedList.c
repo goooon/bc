@@ -46,7 +46,6 @@ void ListZero(List* newl)
 	newl->count = newl->size = 0;*/
 }
 
-
 /**
  * Allocates and initializes a new list structure.
  * @return a pointer to the new list structure
@@ -250,8 +249,8 @@ int ListDetach(List* aList, void* content)
 int ListRemove(List* aList, void* content)
 {
 	return ListUnlink(aList, content, NULL, 1);
-}
 
+}
 
 /**
  * Removes and frees an the first item in a list.

@@ -16,8 +16,8 @@
  *    Ian Craggs - change size types from int to size_t
  *******************************************************************************/
 
-#if !defined(LINKEDLIST_H)
-#define LINKEDLIST_H
+#if !defined(LINKEDLIST_HH)
+#define LINKEDLIST_HH
 
 #include <stdlib.h> // for size_t definition
 

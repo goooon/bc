@@ -44,8 +44,8 @@ ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o -ldl -lpthread -lMqtt \
 	-lstdc++ 
 
-COMPILE=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc -c   -g -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
-LINK=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc  -g -o "$(OUTFILE)" $(ALL_OBJ)
+COMPILE=g++ -c   -g -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
+LINK=g++  -g -o "$(OUTFILE)" $(ALL_OBJ)
 COMPILE_ADA=gnat -g -c -o "$(OUTDIR)/$(*F).o" "$<"
 COMPILE_ADB=gnat -g -c -o "$(OUTDIR)/$(*F).o" "$<"
 COMPILE_F=gfortran -c -g -o "$(OUTDIR)/$(*F).o" "$<"
@@ -200,6 +200,156 @@ COMPILE_ADA=gnat -O -c -o "$(OUTDIR)/$(*F).o" "$<"
 COMPILE_ADB=gnat -O -c -o "$(OUTDIR)/$(*F).o" "$<"
 COMPILE_F=gfortran -O -g -o "$(OUTDIR)/$(*F).o" "$<"
 COMPILE_F90=gfortran -O -g -o "$(OUTDIR)/$(*F).o" "$<"
+COMPILE_D=gdc -c -g -o "$(OUTDIR)/$(*F).o" "$<"
+
+# Pattern rules
+$(OUTDIR)/%.o : tbox/src/tasks/%.cpp
+	$(COMPILE)
+
+$(OUTDIR)/%.o : fundation/src/cpp/core/%.cpp
+	$(COMPILE)
+
+$(OUTDIR)/%.o : tbox/src/cpp/%.cpp
+	$(COMPILE)
+
+$(OUTDIR)/%.o : fundation/src/cpp/%.cpp
+	$(COMPILE)
+
+$(OUTDIR)/%.o : fundation/src/cpp/util/%.cpp
+	$(COMPILE)
+
+$(OUTDIR)/%.o : tbox/src/tasks/%.ada
+	$(COMPILE_ADA)
+
+$(OUTDIR)/%.o : fundation/src/cpp/core/%.ada
+	$(COMPILE_ADA)
+
+$(OUTDIR)/%.o : tbox/src/cpp/%.ada
+	$(COMPILE_ADA)
+
+$(OUTDIR)/%.o : fundation/src/cpp/%.ada
+	$(COMPILE_ADA)
+
+$(OUTDIR)/%.o : fundation/src/cpp/util/%.ada
+	$(COMPILE_ADA)
+
+$(OUTDIR)/%.o : tbox/src/tasks/%.d
+	$(COMPILE_D)
+
+$(OUTDIR)/%.o : fundation/src/cpp/core/%.d
+	$(COMPILE_D)
+
+$(OUTDIR)/%.o : tbox/src/cpp/%.d
+	$(COMPILE_D)
+
+$(OUTDIR)/%.o : fundation/src/cpp/%.d
+	$(COMPILE_D)
+
+$(OUTDIR)/%.o : fundation/src/cpp/util/%.d
+	$(COMPILE_D)
+
+$(OUTDIR)/%.o : tbox/src/tasks/%.adb
+	$(COMPILE_ADB)
+
+$(OUTDIR)/%.o : fundation/src/cpp/core/%.adb
+	$(COMPILE_ADB)
+
+$(OUTDIR)/%.o : tbox/src/cpp/%.adb
+	$(COMPILE_ADB)
+
+$(OUTDIR)/%.o : fundation/src/cpp/%.adb
+	$(COMPILE_ADB)
+
+$(OUTDIR)/%.o : fundation/src/cpp/util/%.adb
+	$(COMPILE_ADB)
+
+$(OUTDIR)/%.o : tbox/src/tasks/%.f90
+	$(COMPILE_F90)
+
+$(OUTDIR)/%.o : fundation/src/cpp/core/%.f90
+	$(COMPILE_F90)
+
+$(OUTDIR)/%.o : tbox/src/cpp/%.f90
+	$(COMPILE_F90)
+
+$(OUTDIR)/%.o : fundation/src/cpp/%.f90
+	$(COMPILE_F90)
+
+$(OUTDIR)/%.o : fundation/src/cpp/util/%.f90
+	$(COMPILE_F90)
+
+$(OUTDIR)/%.o : tbox/src/tasks/%.f
+	$(COMPILE_F)
+
+$(OUTDIR)/%.o : fundation/src/cpp/core/%.f
+	$(COMPILE_F)
+
+$(OUTDIR)/%.o : tbox/src/cpp/%.f
+	$(COMPILE_F)
+
+$(OUTDIR)/%.o : fundation/src/cpp/%.f
+	$(COMPILE_F)
+
+$(OUTDIR)/%.o : fundation/src/cpp/util/%.f
+	$(COMPILE_F)
+
+# Build rules
+all: $(OUTFILE)
+
+$(OUTFILE): $(OUTDIR)  $(OBJ)
+	$(LINK)
+
+$(OUTDIR):
+	$(MKDIR) -p "$(OUTDIR)"
+
+# Rebuild this project
+rebuild: cleanall all
+
+# Clean this project
+clean:
+	$(RM) -f $(OUTFILE)
+	$(RM) -f $(OBJ)
+
+# Clean this project and all dependencies
+cleanall: clean
+endif
+
+#
+# Configuration: ArmDebug
+#
+ifeq "$(CFG)" "ArmDebug"
+OUTDIR=ArmDebug
+OUTFILE=$(OUTDIR)/TBox_Slick
+CFG_INC=
+CFG_LIB=-ldl -lpthread -lMqtt -lstdc++ 
+CFG_OBJ=
+COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
+	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
+	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o \
+	$(OUTDIR)/TaskTable.o $(OUTDIR)/Types.o $(OUTDIR)/Heap.o \
+	$(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o $(OUTDIR)/Pipe.o \
+	$(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
+	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
+	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
+	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o 
+OBJ=$(COMMON_OBJ) $(CFG_OBJ)
+ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
+	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
+	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o \
+	$(OUTDIR)/TaskTable.o $(OUTDIR)/Types.o $(OUTDIR)/Heap.o \
+	$(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o $(OUTDIR)/Pipe.o \
+	$(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
+	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
+	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
+	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o -ldl -lpthread -lMqtt \
+	-lstdc++ 
+
+COMPILE=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc -c   -g -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
+LINK=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc  -g -o "$(OUTFILE)" $(ALL_OBJ)
+COMPILE_ADA=gnat -g -c -o "$(OUTDIR)/$(*F).o" "$<"
+COMPILE_ADB=gnat -g -c -o "$(OUTDIR)/$(*F).o" "$<"
+COMPILE_F=gfortran -c -g -o "$(OUTDIR)/$(*F).o" "$<"
+COMPILE_F90=gfortran -c -g -o "$(OUTDIR)/$(*F).o" "$<"
 COMPILE_D=gdc -c -g -o "$(OUTDIR)/$(*F).o" "$<"
 
 # Pattern rules

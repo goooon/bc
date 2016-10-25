@@ -126,7 +126,7 @@ int Log_initialize(Log_nameValue* info)
 	int rc = -1;
 	char* envval = NULL;
 
-	if ((trace_queue = malloc(sizeof(traceEntry) * trace_settings.max_trace_entries)) == NULL)
+	if ((trace_queue = (traceEntry*)malloc(sizeof(traceEntry) * trace_settings.max_trace_entries)) == NULL)
 		return rc;
 	trace_queue_size = trace_settings.max_trace_entries;
 
@@ -136,9 +136,9 @@ int Log_initialize(Log_nameValue* info)
 			trace_destination = stdout;
 		else
 		{
-			trace_destination_name = malloc(strlen(envval) + 1);
+			trace_destination_name = (char*)malloc(strlen(envval) + 1);
 			strcpy(trace_destination_name, envval);
-			trace_destination_backup_name = malloc(strlen(envval) + 3);
+			trace_destination_backup_name = (char*)malloc(strlen(envval) + 3);
 			sprintf(trace_destination_backup_name, "%s.0", trace_destination_name);
 		}
 	}
@@ -254,7 +254,7 @@ static traceEntry* Log_pretrace()
 
 	if (trace_queue_size != trace_settings.max_trace_entries)
 	{
-		traceEntry* new_trace_queue = malloc(sizeof(traceEntry) * trace_settings.max_trace_entries);
+		traceEntry* new_trace_queue = (traceEntry*)malloc(sizeof(traceEntry) * trace_settings.max_trace_entries);
 
 		memcpy(new_trace_queue, trace_queue, min(trace_queue_size, trace_settings.max_trace_entries) * sizeof(traceEntry));
 		free(trace_queue);

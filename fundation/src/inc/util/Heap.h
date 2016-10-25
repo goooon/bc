@@ -65,7 +65,7 @@ void* mymalloc(char*, int, size_t size);
 void* myrealloc(char*, int, void* p, size_t size);
 void  myfree(char*, int, void* p);
 
-void Heap_scan(FILE* file);
+void Heap_scan(int log_level);
 int Heap_initialize(void);
 void Heap_terminate(void);
 heap_info* Heap_get_info(void);

@@ -333,7 +333,7 @@ void* Heap_findItem(void* p)
  * Scans the heap and reports any items currently allocated.
  * To be used at shutdown if any heap items have not been freed.
  */
-void HeapScan(int log_level)
+void Heap_scan(int log_level)
 {
 	Node* current = NULL;
 	
@@ -370,7 +370,7 @@ void Heap_terminate()
 	if (state.current_size > 20) /* One log list is freed after this function is called */
 	{
 		Log(LOG_ERROR, -1, "Some memory not freed at shutdown, possible memory leak");
-		HeapScan(LOG_ERROR);
+		Heap_scan(LOG_ERROR);
 	}
 }
 

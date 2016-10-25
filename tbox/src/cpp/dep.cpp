@@ -25,6 +25,10 @@ void conned() {
 void disced() {
 	PostEvent(AppEvent::NetDisconnected, 0, 0, 0);
 }
+void log_traceCallback(enum LOG_LEVELS level, char* message)
+{
+	if(level >= 4)LOG_I("%d,%s", level, message);
+}
 void* initDebugLib()
 {
 	using namespace luabridge;
@@ -47,10 +51,18 @@ void* initDebugLib()
 			.addFunction("disconnect", &Application::disconnectServer)
 			.endClass();
 	}
+
+	Log_setTraceCallback(log_traceCallback);
+	Log_nameValue lnv[2];
+	lnv[0].name = "logname";
+	lnv[0].value = "logvalue";
+	lnv[1].name = 0;
+	Log_initialize(lnv);
 	return &con;
 }
 void uninitDebugLib(void* lib)
 {
+	Log_terminate();
 	if (g_state) {
 		lua_close(g_state);
 	}
@@ -84,6 +96,10 @@ void onCommand(char* cmd)
 	if (me::Tool::isEqual(cmd,"memory")) {
 		heap_info*  info =Heap_get_info();
 		LOG_I("curr size %d,max size %d", info->current_size, info->max_size);
+		return;
+	}
+	if (me::Tool::isEqual(cmd, "memscan")) {
+		Heap_scan(TRACE_PROTOCOL);
 		return;
 	}
 	if (Application::getInstance().onDebugCommand(cmd))return;

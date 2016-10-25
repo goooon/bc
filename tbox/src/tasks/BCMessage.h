@@ -61,7 +61,7 @@ public:
 	}
 	BCMessage appendMessage(u16 appid,u8 stepid, u64 seqid) {
 		bcp_message_t* msg = bcp_message_create(appid, stepid, seqid);
-		if (msg == nullptr) {
+		if (msg == NULL) {
 			LOG_E("bcp_message_create failed");
 		}
 		bcp_message_append(pkg, msg);
