@@ -410,51 +410,43 @@
             Name="cpp"
             Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl;*.d;*.m;*.mm;*.go"
             GUID="{2E754A27-C2F7-4F95-9CD3-865CE5BC47B1}">
-            <F N="tbox/src/cpp/Application.cpp"/>
-            <F N="tbox/src/tasks/BCMessage.h"/>
-            <F N="tbox/src/cpp/CmdParser.cpp"/>
-            <F N="tbox/src/cpp/CmdParser.h"/>
-            <F N="tbox/src/cpp/Config.cpp"/>
-            <F N="tbox/src/cpp/dep.cpp"/>
-            <F N="tbox/src/tasks/Element.h"/>
-            <F N="tbox/src/tasks/ErrorCode.h"/>
-            <F N="tbox/src/cpp/Event.cpp"/>
-            <F N="tbox/src/cpp/main.cpp"/>
-            <F N="tbox/src/cpp/Mqtt.cpp"/>
-            <F N="tbox/src/cpp/readme.txt"/>
-            <F N="tbox/src/tasks/RemoteUnlockTask.h"/>
-            <F N="tbox/src/cpp/Task.cpp"/>
-            <F N="tbox/src/tasks/TaskTable.cpp"/>
-            <F N="tbox/src/tasks/TaskTable.h"/>
-            <F N="tbox/src/tasks/VehicleAuthTask.h"/>
+            <F N="../tbox/src/cpp/Application.cpp"/>
+            <F N="../tbox/src/cpp/CmdParser.cpp"/>
+            <F N="../tbox/src/cpp/CmdParser.h"/>
+            <F N="../tbox/src/cpp/Config.cpp"/>
+            <F N="../tbox/src/cpp/dep.cpp"/>
+            <F N="../tbox/src/cpp/Event.cpp"/>
+            <F N="../tbox/src/cpp/main.cpp"/>
+            <F N="../tbox/src/cpp/Mqtt.cpp"/>
+            <F N="../tbox/src/cpp/Task.cpp"/>
         </Folder>
         <Folder
             Name="inc"
             Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.h++;*.inc;*.sh;*.cpy;*.if"
             GUID="{B73FFF92-C119-4905-B0A4-2B1AD686083D}">
-            <F N="tbox/src/inc/Application.h"/>
-            <F N="tbox/src/inc/Config.h"/>
-            <F N="tbox/src/inc/CycleQueue.h"/>
-            <F N="tbox/src/inc/dep.h"/>
-            <F N="tbox/src/inc/Event.h"/>
-            <F N="tbox/src/inc/Event.h2"/>
-            <F N="tbox/src/inc/incdebug.h"/>
-            <F N="tbox/src/inc/LinkedList.h"/>
-            <F N="tbox/src/inc/List.h"/>
-            <F N="tbox/src/inc/Mqtt.h"/>
-            <F N="tbox/src/inc/State.h"/>
-            <F N="tbox/src/inc/Task.h"/>
-            <F N="tbox/src/inc/TaskList.h"/>
-            <F N="tbox/src/inc/TaskQueue.h"/>
-            <F N="tbox/src/inc/Thread.h"/>
-            <F N="tbox/src/inc/Vehicle.h"/>
+            <F N="../tbox/src/inc/Application.h"/>
+            <F N="../tbox/src/inc/Config.h"/>
+            <F N="../tbox/src/inc/CycleQueue.h"/>
+            <F N="../tbox/src/inc/dep.h"/>
+            <F N="../tbox/src/inc/Event.h"/>
+            <F N="../tbox/src/inc/Event.h2"/>
+            <F N="../tbox/src/inc/incdebug.h"/>
+            <F N="../tbox/src/inc/LinkedList.h"/>
+            <F N="../tbox/src/inc/List.h"/>
+            <F N="../tbox/src/inc/Mqtt.h"/>
+            <F N="../tbox/src/inc/State.h"/>
+            <F N="../tbox/src/inc/Task.h"/>
+            <F N="../tbox/src/inc/TaskList.h"/>
+            <F N="../tbox/src/inc/TaskQueue.h"/>
+            <F N="../tbox/src/inc/Thread.h"/>
+            <F N="../tbox/src/inc/Vehicle.h"/>
         </Folder>
         <Folder
             Name="make"
             Filters=""
             GUID="{A59DE4CB-152F-4287-BF8C-6AF5F7A6CEEC}">
             <F
-                N="TBox_Slick.mak"
+                N="TBox.mak"
                 Type="Makefile"/>
         </Folder>
         <Folder
@@ -469,27 +461,27 @@
                     Name="core"
                     Filters=""
                     GUID="{00C65894-F99D-49AC-91BE-0D5F69F75867}">
-                    <F N="fundation/src/cpp/core/Types.cpp"/>
+                    <F N="../fundation/src/cpp/core/Types.cpp"/>
                 </Folder>
                 <Folder
                     Name="utils"
                     Filters=""
                     GUID="{0DEB26A7-FD4A-4CA6-9C54-D1D6C89F4648}">
-                    <F N="fundation/src/cpp/util/Heap.cpp"/>
-                    <F N="fundation/src/cpp/util/LinkedList.cpp"/>
-                    <F N="fundation/src/cpp/util/Log.cpp"/>
-                    <F N="fundation/src/cpp/util/Pipe.cpp"/>
-                    <F N="fundation/src/cpp/util/Semaphore.cpp"/>
-                    <F N="fundation/src/cpp/util/SharedMemory.cpp"/>
-                    <F N="fundation/src/cpp/util/StackTrace.cpp"/>
-                    <F N="fundation/src/cpp/util/Thread.cpp"/>
-                    <F N="fundation/src/cpp/util/Tree.cpp"/>
+                    <F N="../fundation/src/cpp/util/Heap.cpp"/>
+                    <F N="../fundation/src/cpp/util/LinkedList.cpp"/>
+                    <F N="../fundation/src/cpp/util/Log.cpp"/>
+                    <F N="../fundation/src/cpp/util/Pipe.cpp"/>
+                    <F N="../fundation/src/cpp/util/Semaphore.cpp"/>
+                    <F N="../fundation/src/cpp/util/SharedMemory.cpp"/>
+                    <F N="../fundation/src/cpp/util/StackTrace.cpp"/>
+                    <F N="../fundation/src/cpp/util/Thread.cpp"/>
+                    <F N="../fundation/src/cpp/util/Tree.cpp"/>
                 </Folder>
-                <F N="fundation/src/cpp/bcp.cpp"/>
-                <F N="fundation/src/cpp/bcp_comm.cpp"/>
-                <F N="fundation/src/cpp/bcp_packet.cpp"/>
-                <F N="fundation/src/cpp/binary_formater.cpp"/>
-                <F N="fundation/src/cpp/crc32.cpp"/>
+                <F N="../fundation/src/cpp/bcp.cpp"/>
+                <F N="../fundation/src/cpp/bcp_comm.cpp"/>
+                <F N="../fundation/src/cpp/bcp_packet.cpp"/>
+                <F N="../fundation/src/cpp/binary_formater.cpp"/>
+                <F N="../fundation/src/cpp/crc32.cpp"/>
             </Folder>
             <Folder
                 Name="inc"
@@ -499,35 +491,47 @@
                     Name="core"
                     Filters=""
                     GUID="{38274736-C7BD-4BE6-A1A9-3F6216686A49}">
-                    <F N="fundation/src/inc/core/Arch.h"/>
-                    <F N="fundation/src/inc/core/Compiler.h"/>
-                    <F N="fundation/src/inc/core/Make.h"/>
-                    <F N="fundation/src/inc/core/Types.h"/>
+                    <F N="../fundation/src/inc/core/Arch.h"/>
+                    <F N="../fundation/src/inc/core/Compiler.h"/>
+                    <F N="../fundation/src/inc/core/Make.h"/>
+                    <F N="../fundation/src/inc/core/Types.h"/>
                 </Folder>
                 <Folder
                     Name="utils"
                     Filters=""
                     GUID="{754A2EEE-B344-481A-A7AF-8B249EB0159F}">
-                    <F N="fundation/src/inc/util/Heap.h"/>
-                    <F N="fundation/src/inc/util/LinkedList.h"/>
-                    <F N="fundation/src/inc/util/Log.h"/>
-                    <F N="fundation/src/inc/util/Pipe.h"/>
-                    <F N="fundation/src/inc/util/Semaphore.h"/>
-                    <F N="fundation/src/inc/util/SharedMemory.h"/>
-                    <F N="fundation/src/inc/util/StackTrace.h"/>
-                    <F N="fundation/src/inc/util/Thread.h"/>
-                    <F N="fundation/src/inc/util/Tree.h"/>
+                    <F N="../fundation/src/inc/util/Heap.h"/>
+                    <F N="../fundation/src/inc/util/LinkedList.h"/>
+                    <F N="../fundation/src/inc/util/Log.h"/>
+                    <F N="../fundation/src/inc/util/Pipe.h"/>
+                    <F N="../fundation/src/inc/util/Semaphore.h"/>
+                    <F N="../fundation/src/inc/util/SharedMemory.h"/>
+                    <F N="../fundation/src/inc/util/StackTrace.h"/>
+                    <F N="../fundation/src/inc/util/Thread.h"/>
+                    <F N="../fundation/src/inc/util/Tree.h"/>
                 </Folder>
-                <F N="fundation/src/inc/bcp.h"/>
-                <F N="fundation/src/inc/bcp_comm.h"/>
-                <F N="fundation/src/inc/bcp_packet.h"/>
-                <F N="fundation/src/inc/binary_formater.h"/>
-                <F N="fundation/src/inc/crc32.h"/>
-                <F N="fundation/src/inc/dep.h"/>
-                <F N="fundation/src/inc/fundation.h"/>
-                <F N="fundation/src/inc/MQTTAsync.h"/>
-                <F N="fundation/src/inc/MQTTClientPersistence.h"/>
+                <F N="../fundation/src/inc/bcp.h"/>
+                <F N="../fundation/src/inc/bcp_comm.h"/>
+                <F N="../fundation/src/inc/bcp_packet.h"/>
+                <F N="../fundation/src/inc/binary_formater.h"/>
+                <F N="../fundation/src/inc/crc32.h"/>
+                <F N="../fundation/src/inc/dep.h"/>
+                <F N="../fundation/src/inc/fundation.h"/>
+                <F N="../fundation/src/inc/MQTTAsync.h"/>
+                <F N="../fundation/src/inc/MQTTClientPersistence.h"/>
             </Folder>
+        </Folder>
+        <Folder
+            Name="tasks"
+            Filters=""
+            GUID="{89375B1F-F992-4F75-8028-55A41BF269D4}">
+            <F N="../tbox/src/tasks/BCMessage.h"/>
+            <F N="../tbox/src/tasks/Element.h"/>
+            <F N="../tbox/src/tasks/ErrorCode.h"/>
+            <F N="../tbox/src/tasks/RemoteUnlockTask.h"/>
+            <F N="../tbox/src/tasks/TaskTable.cpp"/>
+            <F N="../tbox/src/tasks/TaskTable.h"/>
+            <F N="../tbox/src/tasks/VehicleAuthTask.h"/>
         </Folder>
     </Files>
 </Project>

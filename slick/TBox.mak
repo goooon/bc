@@ -25,24 +25,22 @@ CFG_LIB=-ldl -lpthread -lMqtt -lstdc++
 CFG_OBJ=
 COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
-	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o \
-	$(OUTDIR)/TaskTable.o $(OUTDIR)/Types.o $(OUTDIR)/Heap.o \
-	$(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o $(OUTDIR)/Pipe.o \
-	$(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
+	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o $(OUTDIR)/Types.o \
+	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
+	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
 	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o 
+	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o $(OUTDIR)/TaskTable.o 
 OBJ=$(COMMON_OBJ) $(CFG_OBJ)
 ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
-	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o \
-	$(OUTDIR)/TaskTable.o $(OUTDIR)/Types.o $(OUTDIR)/Heap.o \
-	$(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o $(OUTDIR)/Pipe.o \
-	$(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
+	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o $(OUTDIR)/Types.o \
+	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
+	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
 	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o -ldl -lpthread -lMqtt \
-	-lstdc++ 
+	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o $(OUTDIR)/TaskTable.o \
+	-ldl -lpthread -lMqtt -lstdc++ 
 
 COMPILE=g++ -c   -g -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
 LINK=g++  -g -o "$(OUTFILE)" $(ALL_OBJ)
@@ -53,94 +51,94 @@ COMPILE_F90=gfortran -c -g -o "$(OUTDIR)/$(*F).o" "$<"
 COMPILE_D=gdc -c -g -o "$(OUTDIR)/$(*F).o" "$<"
 
 # Pattern rules
-$(OUTDIR)/%.o : tbox/src/tasks/%.cpp
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.cpp
 	$(COMPILE)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.cpp
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.cpp
 	$(COMPILE)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.cpp
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.cpp
 	$(COMPILE)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.cpp
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.cpp
 	$(COMPILE)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.cpp
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.cpp
 	$(COMPILE)
 
-$(OUTDIR)/%.o : tbox/src/tasks/%.ada
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.ada
 	$(COMPILE_ADA)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.ada
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.ada
 	$(COMPILE_ADA)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.ada
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.ada
 	$(COMPILE_ADA)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.ada
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.ada
 	$(COMPILE_ADA)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.ada
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.ada
 	$(COMPILE_ADA)
 
-$(OUTDIR)/%.o : tbox/src/tasks/%.d
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.d
 	$(COMPILE_D)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.d
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.d
 	$(COMPILE_D)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.d
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.d
 	$(COMPILE_D)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.d
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.d
 	$(COMPILE_D)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.d
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.d
 	$(COMPILE_D)
 
-$(OUTDIR)/%.o : tbox/src/tasks/%.adb
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.adb
 	$(COMPILE_ADB)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.adb
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.adb
 	$(COMPILE_ADB)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.adb
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.adb
 	$(COMPILE_ADB)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.adb
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.adb
 	$(COMPILE_ADB)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.adb
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.adb
 	$(COMPILE_ADB)
 
-$(OUTDIR)/%.o : tbox/src/tasks/%.f90
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.f90
 	$(COMPILE_F90)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.f90
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.f90
 	$(COMPILE_F90)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.f90
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.f90
 	$(COMPILE_F90)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.f90
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.f90
 	$(COMPILE_F90)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.f90
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.f90
 	$(COMPILE_F90)
 
-$(OUTDIR)/%.o : tbox/src/tasks/%.f
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.f
 	$(COMPILE_F)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.f
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.f
 	$(COMPILE_F)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.f
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.f
 	$(COMPILE_F)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.f
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.f
 	$(COMPILE_F)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.f
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.f
 	$(COMPILE_F)
 
 # Build rules
@@ -175,24 +173,22 @@ CFG_LIB=-ldl -lpthread -lMqtt -lstdc++
 CFG_OBJ=
 COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
-	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o \
-	$(OUTDIR)/TaskTable.o $(OUTDIR)/Types.o $(OUTDIR)/Heap.o \
-	$(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o $(OUTDIR)/Pipe.o \
-	$(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
+	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o $(OUTDIR)/Types.o \
+	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
+	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
 	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o 
+	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o $(OUTDIR)/TaskTable.o 
 OBJ=$(COMMON_OBJ) $(CFG_OBJ)
 ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
-	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o \
-	$(OUTDIR)/TaskTable.o $(OUTDIR)/Types.o $(OUTDIR)/Heap.o \
-	$(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o $(OUTDIR)/Pipe.o \
-	$(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
+	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o $(OUTDIR)/Types.o \
+	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
+	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
 	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o -ldl -lpthread -lMqtt \
-	-lstdc++ 
+	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o $(OUTDIR)/TaskTable.o \
+	-ldl -lpthread -lMqtt -lstdc++ 
 
 COMPILE=g++ -c   -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
 LINK=g++  -o "$(OUTFILE)" $(ALL_OBJ)
@@ -203,94 +199,94 @@ COMPILE_F90=gfortran -O -g -o "$(OUTDIR)/$(*F).o" "$<"
 COMPILE_D=gdc -c -g -o "$(OUTDIR)/$(*F).o" "$<"
 
 # Pattern rules
-$(OUTDIR)/%.o : tbox/src/tasks/%.cpp
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.cpp
 	$(COMPILE)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.cpp
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.cpp
 	$(COMPILE)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.cpp
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.cpp
 	$(COMPILE)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.cpp
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.cpp
 	$(COMPILE)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.cpp
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.cpp
 	$(COMPILE)
 
-$(OUTDIR)/%.o : tbox/src/tasks/%.ada
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.ada
 	$(COMPILE_ADA)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.ada
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.ada
 	$(COMPILE_ADA)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.ada
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.ada
 	$(COMPILE_ADA)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.ada
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.ada
 	$(COMPILE_ADA)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.ada
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.ada
 	$(COMPILE_ADA)
 
-$(OUTDIR)/%.o : tbox/src/tasks/%.d
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.d
 	$(COMPILE_D)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.d
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.d
 	$(COMPILE_D)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.d
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.d
 	$(COMPILE_D)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.d
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.d
 	$(COMPILE_D)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.d
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.d
 	$(COMPILE_D)
 
-$(OUTDIR)/%.o : tbox/src/tasks/%.adb
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.adb
 	$(COMPILE_ADB)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.adb
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.adb
 	$(COMPILE_ADB)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.adb
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.adb
 	$(COMPILE_ADB)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.adb
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.adb
 	$(COMPILE_ADB)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.adb
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.adb
 	$(COMPILE_ADB)
 
-$(OUTDIR)/%.o : tbox/src/tasks/%.f90
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.f90
 	$(COMPILE_F90)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.f90
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.f90
 	$(COMPILE_F90)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.f90
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.f90
 	$(COMPILE_F90)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.f90
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.f90
 	$(COMPILE_F90)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.f90
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.f90
 	$(COMPILE_F90)
 
-$(OUTDIR)/%.o : tbox/src/tasks/%.f
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.f
 	$(COMPILE_F)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.f
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.f
 	$(COMPILE_F)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.f
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.f
 	$(COMPILE_F)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.f
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.f
 	$(COMPILE_F)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.f
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.f
 	$(COMPILE_F)
 
 # Build rules
@@ -325,24 +321,22 @@ CFG_LIB=-ldl -lpthread -lMqtt -lstdc++
 CFG_OBJ=
 COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
-	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o \
-	$(OUTDIR)/TaskTable.o $(OUTDIR)/Types.o $(OUTDIR)/Heap.o \
-	$(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o $(OUTDIR)/Pipe.o \
-	$(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
+	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o $(OUTDIR)/Types.o \
+	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
+	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
 	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o 
+	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o $(OUTDIR)/TaskTable.o 
 OBJ=$(COMMON_OBJ) $(CFG_OBJ)
 ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
-	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o \
-	$(OUTDIR)/TaskTable.o $(OUTDIR)/Types.o $(OUTDIR)/Heap.o \
-	$(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o $(OUTDIR)/Pipe.o \
-	$(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
+	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o $(OUTDIR)/Types.o \
+	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
+	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
 	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o -ldl -lpthread -lMqtt \
-	-lstdc++ 
+	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o $(OUTDIR)/TaskTable.o \
+	-ldl -lpthread -lMqtt -lstdc++ 
 
 COMPILE=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc -c   -g -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
 LINK=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc  -g -o "$(OUTFILE)" $(ALL_OBJ)
@@ -353,94 +347,94 @@ COMPILE_F90=gfortran -c -g -o "$(OUTDIR)/$(*F).o" "$<"
 COMPILE_D=gdc -c -g -o "$(OUTDIR)/$(*F).o" "$<"
 
 # Pattern rules
-$(OUTDIR)/%.o : tbox/src/tasks/%.cpp
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.cpp
 	$(COMPILE)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.cpp
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.cpp
 	$(COMPILE)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.cpp
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.cpp
 	$(COMPILE)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.cpp
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.cpp
 	$(COMPILE)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.cpp
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.cpp
 	$(COMPILE)
 
-$(OUTDIR)/%.o : tbox/src/tasks/%.ada
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.ada
 	$(COMPILE_ADA)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.ada
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.ada
 	$(COMPILE_ADA)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.ada
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.ada
 	$(COMPILE_ADA)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.ada
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.ada
 	$(COMPILE_ADA)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.ada
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.ada
 	$(COMPILE_ADA)
 
-$(OUTDIR)/%.o : tbox/src/tasks/%.d
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.d
 	$(COMPILE_D)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.d
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.d
 	$(COMPILE_D)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.d
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.d
 	$(COMPILE_D)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.d
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.d
 	$(COMPILE_D)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.d
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.d
 	$(COMPILE_D)
 
-$(OUTDIR)/%.o : tbox/src/tasks/%.adb
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.adb
 	$(COMPILE_ADB)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.adb
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.adb
 	$(COMPILE_ADB)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.adb
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.adb
 	$(COMPILE_ADB)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.adb
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.adb
 	$(COMPILE_ADB)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.adb
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.adb
 	$(COMPILE_ADB)
 
-$(OUTDIR)/%.o : tbox/src/tasks/%.f90
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.f90
 	$(COMPILE_F90)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.f90
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.f90
 	$(COMPILE_F90)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.f90
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.f90
 	$(COMPILE_F90)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.f90
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.f90
 	$(COMPILE_F90)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.f90
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.f90
 	$(COMPILE_F90)
 
-$(OUTDIR)/%.o : tbox/src/tasks/%.f
+$(OUTDIR)/%.o : ../fundation/src/cpp/util/%.f
 	$(COMPILE_F)
 
-$(OUTDIR)/%.o : fundation/src/cpp/core/%.f
+$(OUTDIR)/%.o : ../fundation/src/cpp/core/%.f
 	$(COMPILE_F)
 
-$(OUTDIR)/%.o : tbox/src/cpp/%.f
+$(OUTDIR)/%.o : ../tbox/src/tasks/%.f
 	$(COMPILE_F)
 
-$(OUTDIR)/%.o : fundation/src/cpp/%.f
+$(OUTDIR)/%.o : ../tbox/src/cpp/%.f
 	$(COMPILE_F)
 
-$(OUTDIR)/%.o : fundation/src/cpp/util/%.f
+$(OUTDIR)/%.o : ../fundation/src/cpp/%.f
 	$(COMPILE_F)
 
 # Build rules

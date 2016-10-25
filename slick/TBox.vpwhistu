@@ -1,0 +1,23 @@
+[ActiveConfig]
+Mqtt.vpj=Debug
+TBox.vpj=,Debug
+[Global]
+CurrentProject=TBox.vpj
+[ProjectDates]
+TBox.vpj=20161025030650000
+Mqtt.vpj=20161025025037000
+[TreeExpansion2]
++@ Mqtt.vpj
+-@ TBox.vpj
+  - cpp
+  + inc
+  - make
+  + dep
+    + cpp
+      + core
+      + utils
+    + inc
+      + core
+      + utils
+  + tasks
+scroll:0

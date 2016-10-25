@@ -2,6 +2,6 @@
 <Workspace Version="10.0" VendorName="SlickEdit">
 	<Projects>
 		<Project File="Mqtt.vpj"/>
-		<Project File="../TBox_Slick.vpj"/>
+		<Project File="TBox.vpj"/>
 	</Projects>
 </Workspace>
