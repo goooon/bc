@@ -1,6 +1,8 @@
 #ifndef GUARD_TaskTable_h__
 #define GUARD_TaskTable_h__
 #include "../inc/Task.h"
+
+#define APPID_TEST 0
 #define APPID_REMOTE_UNLOCK 1
 #define APPID_AUTHENTICATION 2
 

@@ -12,14 +12,14 @@ private:
 public:
 	struct Args
 	{
-		AppEvent::e e;
+		AppEvent::Type e;
 		u32 param1;
 		u32 param2;
 		void* data;
 	};
-	bool post(AppEvent::e e, u32 param1, u32 param2, void* data);
+	bool post(AppEvent::Type e, u32 param1, u32 param2, void* data);
 	bool out(Args& args);
-	bool out(AppEvent::e& e, u32& param1, u32& param2, void*& data);
+	bool out(AppEvent::Type& e, u32& param1, u32& param2, void*& data);
 	ThreadEvent::WaitResult wait(u32 millSecond);
 };
 
@@ -34,7 +34,7 @@ public:
 	u64  getSequenceId() { return seqID; }
 public:
 	bool handlePackage(bcp_packet_t* pkg);
-	virtual void onEvent(AppEvent::e e, u32 param1, u32 param2, void* data);
+	virtual void onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data);
 protected:
 	//the function should be OVERRIDE by its subclass
 	virtual void doTask(){return;}

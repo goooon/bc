@@ -7,6 +7,7 @@
 #include "./TaskTable.h"
 class VehicleAuthTask : public Task {
 public:
+	const static int AppId = APPID_AUTHENTICATION;
 	VehicleAuthTask() :Task(APPID_AUTHENTICATION, true) {}
 	static Task* Create()
 	{
@@ -23,7 +24,7 @@ protected:
 			return;
 		}
 		else if (wr == ThreadEvent::EventOk) {
-			AppEvent::e e;
+			AppEvent::Type e;
 			u32 param1;
 			u32 param2;
 			void* data;

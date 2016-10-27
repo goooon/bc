@@ -2,7 +2,7 @@
 #define GUARD_CycleQueue_h__
 
 template <typename T>
-class CycleQueue
+class CycleQueue : public BCMemory
 {
 private:
 	unsigned int m_size;

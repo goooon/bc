@@ -59,7 +59,7 @@ public:
 			Task* t = tasks.getDataAt(i);
 			while (t) {
 				if (t->getApplicationId() == applicationId) {
-					t->onEvent(AppEvent::AbortTask, 0, 0, 0);
+					t->onEvent(AppEvent::AbortTasks, 0, 0, 0);
 				}
 				i++;
 			}

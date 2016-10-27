@@ -9,6 +9,7 @@
 #include "./TaskTable.h"
 class RemoteUnlockTask : public Task {
 public:
+	const static int AppId = APPID_REMOTE_UNLOCK;
 	static Task* Create()
 	{
 		return bc_new RemoteUnlockTask();
@@ -42,7 +43,7 @@ public:
 					unlockDoor();
 					sendResponseUnlocked();
 				}
-				else if (args.e == AppEvent::AbortTask) {
+				else if (args.e == AppEvent::AbortTasks) {
 					return;
 				}
 			}
@@ -99,7 +100,6 @@ public:
 	}
 private:
 	u32         duringTime;
-	
 	bcp_packet_t* pkg;
 };
 #endif // GUARD_RemoteUnlockTask_h__
