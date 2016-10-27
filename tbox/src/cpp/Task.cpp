@@ -36,7 +36,12 @@ Task::~Task()
 bool Task::handlePackage(bcp_packet_t* pkg)
 {
 	msgQueue.post(AppEvent::PackageArrived, Package::Mqtt, 0, (void*)pkg);
-	return false;
+	return true;
+}
+
+ThreadEvent::WaitResult Task::waitForEvent(u32 millSeconds)
+{
+	return msgQueue.wait(millSeconds);
 }
 
 void Task::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)

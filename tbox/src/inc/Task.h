@@ -34,6 +34,7 @@ public:
 	u64  getSequenceId() { return seqID; }
 public:
 	bool handlePackage(bcp_packet_t* pkg);
+	ThreadEvent::WaitResult waitForEvent(u32 millSeconds);
 	virtual void onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data);
 protected:
 	//the function should be OVERRIDE by its subclass

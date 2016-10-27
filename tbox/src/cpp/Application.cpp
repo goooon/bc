@@ -178,13 +178,14 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 		onMqttEvent(param1,param2,data);
 		break;
 	case AppEvent::AutoStateChanged:
+		onAutoStateChanged(param1, param2, data);
+		broadcastEvent(e, param1, param2, data);
 		break;
 	case AppEvent::SensorEvent:
 		break;
 	default:
 		break;
 	}
-	broadcastEvent(e, param1, param2, data);
 }
 
 bool Application::postAppEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
@@ -204,6 +205,11 @@ bool Application::postAppEvent(AppEvent::Type e, u32 param1, u32 param2, void* d
 Config& Application::getConfig(void)
 {
 	return config;
+}
+
+Vehicle& Application::getVehicle(void)
+{
+	return vehicle;
 }
 
 void Application::broadcastEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
@@ -228,6 +234,12 @@ void Application::onMqttEvent(u32 param1, u32 param2, void* data)
 			startTask(TaskCreate(APPID_AUTHENTICATION,0), false);
 		}
 	}
+}
+
+void Application::onAutoStateChanged(u32 param1, u32 param2, void* data)
+{
+	LOG_I("AutoStateChanged(%d,%d)", param1, param2);
+	vehicle.onStateChanged(param1,param2,data);
 }
 
 void Application::onNetStateChanged(u32 param)

@@ -9,7 +9,7 @@ struct TaskTable
 };
 
 static TaskTable tt[] = {
-	{ APPID_REMOTE_UNLOCK,RemoteUnlockTask::Create },
+	{ APPID_VKEY_ACTIVITION,RemoteUnlockTask::Create },
 	{ APPID_AUTHENTICATION,VehicleAuthTask::Create},
 	{-1,0}
 };

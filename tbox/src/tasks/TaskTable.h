@@ -3,8 +3,9 @@
 #include "../inc/Task.h"
 
 #define APPID_TEST 0
-#define APPID_REMOTE_UNLOCK 1
-#define APPID_AUTHENTICATION 2
-
+#define APPID_VKEY_ACTIVITION    1
+#define APPID_AUTHENTICATION     2
+#define APPID_VKEY_IGNITION      3
+#define APPID_STATE_UPLOADING    4
 Task* TaskCreate(u16 appId, bcp_packet_t* pkg);
 #endif // GUARD_TaskTable_h__

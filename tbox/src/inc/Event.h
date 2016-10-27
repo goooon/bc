@@ -28,7 +28,7 @@ public:
 		AutoStateChanged,		//param1 Vehicle::State
 		SensorEvent,
 
-		PackageArrived,			//param1 is PackageType,data should be refferred to Package::Type
+		PackageArrived,			//param1 is Package::Type,data should be refferred to Package::Type
 		TestEvent				//for only debug test
 	};
 };
