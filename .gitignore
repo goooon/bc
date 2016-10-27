@@ -11,3 +11,6 @@ debug/*
 *.dll
 *.exp
 *.exe
+*.o
+CMakeFiles
+*.dir
