@@ -90,6 +90,18 @@
     <ClInclude Include="..\src\tasks\TaskTable.h">
       <Filter>src\tasks</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\Operation.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\Apparatus.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\StateUploadTask.h">
+      <Filter>src\tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\VKeyIgnitionTask.h">
+      <Filter>src\tasks</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -120,6 +132,18 @@
       <Filter>src\cpp</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tasks\TaskTable.cpp">
+      <Filter>src\tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\Vehicle.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\RemoteUnlockTask.cpp">
+      <Filter>src\tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\StateUploadTask.cpp">
+      <Filter>src\tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\VKeyIgnitionTask.cpp">
       <Filter>src\tasks</Filter>
     </ClCompile>
   </ItemGroup>

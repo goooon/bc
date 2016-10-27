@@ -15,6 +15,7 @@ class Application : public Thread
 public:
 	static Application& getInstance();
 	Config& getConfig(void);
+	Vehicle& getVehicle(void);
 	void init(int argc, char** argv);
 	//main loop process for app event
 	void loop();
@@ -34,6 +35,7 @@ private:
 	void broadcastEvent(AppEvent::Type e, u32 param1, u32 param2, void* data);
 protected:
 	void onMqttEvent(u32 param1, u32 param2, void* data);
+	void onAutoStateChanged(u32 param1, u32 param2, void* data);
 	void onNetStateChanged(u32 param);
 public:
 	Vehicle     vehicle;		//vehicle states

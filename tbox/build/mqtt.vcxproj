@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\cpp\CmdParser.h" />
+    <ClInclude Include="..\src\inc\Apparatus.h" />
     <ClInclude Include="..\src\inc\Application.h" />
     <ClInclude Include="..\src\inc\Config.h" />
     <ClInclude Include="..\src\inc\CycleQueue.h" />
@@ -44,6 +45,7 @@
     <ClInclude Include="..\src\inc\List.h" />
     <ClInclude Include="..\src\inc\Message.h" />
     <ClInclude Include="..\src\inc\Mqtt.h" />
+    <ClInclude Include="..\src\inc\Operation.h" />
     <ClInclude Include="..\src\inc\State.h" />
     <ClInclude Include="..\src\inc\Task.h" />
     <ClInclude Include="..\src\inc\TaskList.h" />
@@ -53,8 +55,10 @@
     <ClInclude Include="..\src\tasks\Element.h" />
     <ClInclude Include="..\src\tasks\ErrorCode.h" />
     <ClInclude Include="..\src\tasks\RemoteUnlockTask.h" />
+    <ClInclude Include="..\src\tasks\StateUploadTask.h" />
     <ClInclude Include="..\src\tasks\TaskTable.h" />
     <ClInclude Include="..\src\tasks\VehicleAuthTask.h" />
+    <ClInclude Include="..\src\tasks\VKeyIgnitionTask.h" />
     <ClInclude Include="..\src\test\RemoteUnlockTest.h" />
     <ClInclude Include="..\src\test\VehicleAuthTest.h" />
   </ItemGroup>
@@ -70,13 +74,18 @@
     <ClCompile Include="..\src\cpp\main.cpp" />
     <ClCompile Include="..\src\cpp\Mqtt.cpp" />
     <ClCompile Include="..\src\cpp\Task.cpp" />
+    <ClCompile Include="..\src\cpp\Vehicle.cpp" />
+    <ClCompile Include="..\src\tasks\RemoteUnlockTask.cpp" />
+    <ClCompile Include="..\src\tasks\StateUploadTask.cpp" />
     <ClCompile Include="..\src\tasks\TaskTable.cpp" />
+    <ClCompile Include="..\src\tasks\VKeyIgnitionTask.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A0138B76-5EFE-41DD-9941-2DE724A03109}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>foundation</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <ProjectName>tbox</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

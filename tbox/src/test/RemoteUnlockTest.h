@@ -9,7 +9,7 @@ class RemoteUnlockTest : public Task
 	u64 seqId;
 public:
 	const static int AppId = APPID_TEST;
-	RemoteUnlockTest():loop(true),Task(APPID_REMOTE_UNLOCK,false){
+	RemoteUnlockTest():loop(true),Task(APPID_VKEY_ACTIVITION,false){
 
 	}
 	~RemoteUnlockTest() {
