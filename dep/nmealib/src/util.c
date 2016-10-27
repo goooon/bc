@@ -40,7 +40,7 @@ void nmeaRandomInit(void) {
 #if defined(_WIN32) || defined(_WIN64)
 	srand((unsigned int)time(NULL));
 #else
-  srandom((unsigned int) time(NULL));
+	srandom((unsigned int) time(NULL));
 #endif
 }
 
@@ -59,9 +59,9 @@ double nmeaRandom(const double min, const double max) {
       || (read(randomFile, &value, sizeof(value)) != sizeof(value))) {
     /* can't be covered in a test */
 #if defined(_WIN32) || defined(_WIN64)
-	  value = rand((unsigned int)time(NULL));
+	  value = rand();
 #else
-	  value = srandom((unsigned int)time(NULL));
+	  value = random();
 #endif
   }
 

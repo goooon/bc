@@ -24,15 +24,15 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
-static void my_sleep(int miliseconds)
+static void my_sleep(unsigned int miliseconds)
 {
 	Sleep(miliseconds);
 }
 #else
 #include <unistd.h>
-static void my_sleep(int miliseconds)
+static void my_sleep(unsigned int miliseconds)
 {
-	usleep(1000L * miliseconds);
+	usleep(1000U * miliseconds);
 }
 #endif
 
