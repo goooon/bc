@@ -17,12 +17,12 @@ BINARIES = $(SAMPLES:%=lib/%)
 
 .PRECIOUS: $(BINARIES) $(OBJDIRS:%=%/main.o)
 
-CFLAGS += -I $(TOPDIR)/include
-LDLAGS += -L $(TOPDIR)/lib -lm
+#CFLAGS += -I $(TOPDIR)/include
+LDLAGS += -L $(TOPDIR)/lib
 STATICLIBS =
 
 ifneq ($(SAMPLESDYNAMICLINK),0)
-  LDLAGS += -lnmea
+  LDLAGS += -lnmea  -lm
 else
   STATICLIBS += $(TOPDIR)/lib/$(LIBNAMESTATIC)
 endif
@@ -38,17 +38,11 @@ remake: clean all
 
 samples: $(BINARIES)
 
-lib/%: build/%/main.o $(STATICLIBS)
-ifeq ($(VERBOSE),0)
-	@echo "[LD] $@"
-endif
-	$(MAKECMDPREFIX)$(CC) $(CFLAGS) $(LDLAGS) $(LIBRARIES) -o $@ $< $(STATICLIBS)
-
-build/%/main.o: %/main.c $(H_FILES) Makefile $(TOPDIR)/Makefile.inc
+lib/%: %/main.c $(H_FILES) Makefile $(TOPDIR)/Makefile.inc
 ifeq ($(VERBOSE),0)
 	@echo "[CC] $<"
 endif
-	$(MAKECMDPREFIX)$(CC) $(CFLAGS) $(INCLUDES) -o $@ -c $<
+	$(MAKECMDPREFIX)$(CC) $(CFLAGS) $< -I $(TOPDIR)/include $(INCLUDES) $(LDLAGS) -o $@
 
 
 #
