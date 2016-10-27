@@ -30,9 +30,6 @@ int main(int argc, char* argv[]) {
 		lc(onCommand);
 	}
 	else {
-        int i;
-        scanf("%d",&i);
-        printf("%d",i);
 		app.loop();
 	}
 

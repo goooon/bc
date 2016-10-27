@@ -49,7 +49,7 @@ public:
 		if (mutex.lock() == ThreadMutex::Succed) {
 			Task* t = getNextTask(NULL);
 			while (t) {
-				if (t->getApplicationId() == applicationID)t->onEvent(AppEvent::AbortTask, 0, 0, 0);
+				if (t->getApplicationId() == applicationID)t->onEvent(AppEvent::AbortTasks, 0, 0, 0);
 				t = getNextTask(t);
 			}
 			mutex.unlock();

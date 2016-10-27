@@ -102,6 +102,9 @@
     <ClInclude Include="..\src\inc\binary_formater.h">
       <Filter>src\inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\util\TimeStamp.h">
+      <Filter>src\inc\util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cpp\util\Heap.cpp">
@@ -148,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cpp\core\Types.cpp">
       <Filter>src\cpp\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\util\TimeStamp.cpp">
+      <Filter>src\cpp\util</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

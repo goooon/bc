@@ -8,6 +8,7 @@ class RemoteUnlockTest : public Task
 {
 	u64 seqId;
 public:
+	const static int AppId = APPID_TEST;
 	RemoteUnlockTest():loop(true),Task(APPID_REMOTE_UNLOCK,false){
 
 	}
@@ -16,7 +17,7 @@ public:
 	}
 	void stopTest(){
 		loop = false;
-		msgQueue.post(AppEvent::AbortTask, 0, 0, 0);
+		msgQueue.post(AppEvent::AbortTasks, 0, 0, 0);
 	}
 protected:
 	virtual void doTask() { 
@@ -31,7 +32,7 @@ protected:
 			if (ret == ThreadEvent::EventOk) {
 				MessageQueue::Args args;
 				if (msgQueue.out(args)) {
-					if (args.e == AppEvent::AbortTask) {
+					if (args.e == AppEvent::AbortTasks) {
 						break;
 					}
 					else if (args.e == AppEvent::TestEvent) {

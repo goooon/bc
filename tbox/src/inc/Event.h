@@ -4,38 +4,48 @@
 #include "./dep.h"
 #include "./CycleQueue.h"
 
+struct Package {
+	enum Type
+	{
+		Mqtt,		//data is bcp_packet_t*
+		Can,
+		Wifi,
+		Bt
+	};
+};
 class AppEvent
 {
 public:
-	enum e{
-		Customized,
-		AddTask,
-		AbortTask,				//param1 applicationID
-		HandlePackage,			//data is bcp_packet_t*
-		DelTask,
-		NetConnected,
-		NetDisconnected,
+	enum Type{
+		Customized = 0,
+
+		InsertTask,				//data is Task*
+		AbortTasks,				//param1 applicationID
+		RemoveTask,				//data is Task*
+
+		NetStateChanged,		//param1 1:Connected,0:DisConnected
 		MqttStateChanged,		//param1 is Mqtt::State currState,param2 is Mqtt::State nextState
 		AutoStateChanged,		//param1 Vehicle::State
 		SensorEvent,
 
+		PackageArrived,			//param1 is PackageType,data should be refferred to Package::Type
 		TestEvent				//for only debug test
 	};
 };
 //global api for application event
-bool PostEvent(AppEvent::e e, u32 param1, u32 param2, void* data);
+bool PostEvent(AppEvent::Type e, u32 param1, u32 param2, void* data);
 class EventQueue
 {
-	struct Node
+	struct Node : public BCMemory
 	{
-		AppEvent::e e;
+		AppEvent::Type e;
 		u32 param1;
 		u32 param2;
 		void* data;
 	};
 public:
 	EventQueue() :events(100) {}
-	bool in(AppEvent::e e, u32 param1, u32 param2, void* data)
+	bool in(AppEvent::Type e, u32 param1, u32 param2, void* data)
 	{
 		if (mutex.lock() == ThreadMutex::Succed)
 		{
@@ -55,7 +65,7 @@ public:
 			return false;
 		}
 	}
-	bool out(AppEvent::e& type, u32& param1, u32& param2,void*& data)
+	bool out(AppEvent::Type& type, u32& param1, u32& param2,void*& data)
 	{
 		if (mutex.lock() == ThreadMutex::Succed)
 		{

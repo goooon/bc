@@ -18,7 +18,7 @@ public:
 	void init(int argc, char** argv);
 	//main loop process for app event
 	void loop();
-	bool postAppEvent(AppEvent::e e, u32 param1, u32 param2, void* data);
+	bool postAppEvent(AppEvent::Type e, u32 param1, u32 param2, void* data);
 	//debug interface
 	bool onDebugCommand(char* cmd);
 public:
@@ -30,12 +30,11 @@ protected:
 	virtual void run()OVERRIDE;
 private:
 	bool startTask(Task* task, bool runAsThread);
-	void onEvent(AppEvent::e e, u32 param1, u32 param2, void* data);
-	void broadcastEvent(AppEvent::e e, u32 param1, u32 param2, void* data);
+	void onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data);
+	void broadcastEvent(AppEvent::Type e, u32 param1, u32 param2, void* data);
 protected:
 	void onMqttEvent(u32 param1, u32 param2, void* data);
-	void onNetConnected();
-	void onNetDisconnected();
+	void onNetStateChanged(u32 param);
 public:
 	Vehicle     vehicle;		//vehicle states
 	Config      config;			//setting and configuration

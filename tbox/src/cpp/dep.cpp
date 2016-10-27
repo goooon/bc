@@ -20,10 +20,10 @@ Application* getApp() {
 	return &Application::getInstance();
 }
 void conned() {
-	PostEvent(AppEvent::NetConnected, 0, 0, 0);
+	PostEvent(AppEvent::NetStateChanged, 1, 0, 0);
 }
 void disced() {
-	PostEvent(AppEvent::NetDisconnected, 0, 0, 0);
+	PostEvent(AppEvent::NetStateChanged, 0, 0, 0);
 }
 void log_traceCallback(enum LOG_LEVELS level, char* message)
 {

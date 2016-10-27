@@ -376,7 +376,7 @@ bool MqttClient::onRecvPackage(void* data, int len)
 		LOG_E("bcp_packet_unserialize failed");
 		return false;
 	}
-	//	找到applicationID, session对应的task,
+	//找到applicationID, session对应的task,
 	bcp_message_t *m = NULL;
 	bcp_element_t *e = NULL;
 
@@ -389,11 +389,11 @@ bool MqttClient::onRecvPackage(void* data, int len)
 			bool done = task->handlePackage(p);
 			if (!done) {
 				//创建新的任务，放入队列
-				::PostEvent(AppEvent::AbortTask, applicationID, 0, p);
+				::PostEvent(AppEvent::AbortTasks, applicationID, 0, p);
 			}
 		}
 		else {
-			::PostEvent(AppEvent::AddTask, 0, 0, TaskCreate(applicationID,p));
+			::PostEvent(AppEvent::InsertTask, 0, 0, TaskCreate(applicationID,p));
 		}
 	}
 	return true;

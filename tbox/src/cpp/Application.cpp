@@ -58,7 +58,7 @@ void Application::loop()
 		ThreadEvent::WaitResult wr = appEvent.wait(500);
 		if (wr == ThreadEvent::EventOk) {
 			while (!appEventQueue.isEmpty()) {
-				AppEvent::e e;
+				AppEvent::Type e;
 				u32 param1;
 				u32 param2;
 				void* data;
@@ -89,7 +89,7 @@ bool Application::onDebugCommand(char* cmd)
 		return true;
 	}
 	if (!strcmp(cmd, "lock")) {
-		PostEvent(AppEvent::AddTask, 0, 0, bc_new RemoteUnlockTask());
+		PostEvent(AppEvent::InsertTask, 0, 0, bc_new RemoteUnlockTask());
 		return true;
 	}
 	if (!strcmp(cmd, "connMqtt")) {
@@ -102,8 +102,8 @@ bool Application::onDebugCommand(char* cmd)
 	}
 	if (!strcmp(cmd, "reqUnlock")) {
 		Task* t = bc_new RemoteUnlockTest();
-		::PostEvent(AppEvent::AbortTask, t->getApplicationId(), 0, 0);
-		::PostEvent(AppEvent::AddTask, 0, 0, t);
+		::PostEvent(AppEvent::AbortTasks, t->getApplicationId(), 0, 0);
+		::PostEvent(AppEvent::InsertTask, 0, 0, t);
 		return true;
 	}
 	if (mqtt.onDebugCommand(cmd))return true;
@@ -112,13 +112,13 @@ bool Application::onDebugCommand(char* cmd)
 
 bool Application::connectServer()
 {
-	onEvent(AppEvent::NetConnected, 0,0,0);
+	onEvent(AppEvent::NetStateChanged, 1,0,0);
 	return true;
 }
 
 void Application::disconnectServer()
 {
-	onEvent(AppEvent::NetDisconnected, 0,0,0);
+	onEvent(AppEvent::NetStateChanged, 0,0,0);
 }
 
 void Application::run()
@@ -154,28 +154,25 @@ void Application::run()
 	}
 }
 
-void Application::onEvent(AppEvent::e e, u32 param1, u32 param2, void* data)
+void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 {
 	switch (e)
 	{
-	case AppEvent::AddTask:
+	case AppEvent::InsertTask:
 		LOG_A(data, "should not be null");
 		startTask((Task*)data, true);
 		break;
-	case AppEvent::AbortTask:
+	case AppEvent::AbortTasks:
 		tasksWaiting.abortTask(param1);
 		tasksWorking.abortTask(param1);
 		break;
-	case AppEvent::DelTask:
+	case AppEvent::RemoveTask:
 		LOG_A(data,"should not be null");
 		tasksWorking.out((Task*)data);
 		bc_del((Task*)data);
 		break;
-	case AppEvent::NetConnected:
-		onNetConnected();
-		break;
-	case AppEvent::NetDisconnected:
-		onNetDisconnected();
+	case AppEvent::NetStateChanged:
+		onNetStateChanged(param1);
 		break;
 	case AppEvent::MqttStateChanged:
 		onMqttEvent(param1,param2,data);
@@ -190,7 +187,7 @@ void Application::onEvent(AppEvent::e e, u32 param1, u32 param2, void* data)
 	broadcastEvent(e, param1, param2, data);
 }
 
-bool Application::postAppEvent(AppEvent::e e, u32 param1, u32 param2, void* data)
+bool Application::postAppEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 {
 	bool ret = appEventQueue.in(e, param1,param2, data);
 	if (!ret && 
@@ -209,7 +206,7 @@ Config& Application::getConfig(void)
 	return config;
 }
 
-void Application::broadcastEvent(AppEvent::e e, u32 param1, u32 param2, void* data)
+void Application::broadcastEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 {
 	Task* t = tasksWorking.getNextTask(NULLPTR);
 	while (t) {
@@ -233,14 +230,17 @@ void Application::onMqttEvent(u32 param1, u32 param2, void* data)
 	}
 }
 
-void Application::onNetConnected()
+void Application::onNetStateChanged(u32 param)
 {
-	LOG_I("onNetConnected");
-	mqtt.reqConnect(config.mqttServer, config.sub_topic,0,config.keepAliveInterval,config.clientid);
-}
-
-void Application::onNetDisconnected()
-{
-	LOG_I("onNetDisconnected");
-	mqtt.reqDisconnect();
+	if (param == 1) {
+		LOG_I("onNetConnected");
+		mqtt.reqConnect(config.mqttServer, config.sub_topic, 0, config.keepAliveInterval, config.clientid);
+	}
+	else if (param == 0) {
+		LOG_I("onNetDisconnected");
+		mqtt.reqDisconnect();
+	}
+	else {
+		LOG_E("unknown state %d", param);
+	}
 }
