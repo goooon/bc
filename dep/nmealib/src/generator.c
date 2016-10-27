@@ -28,18 +28,18 @@
  * Forward declarations
  */
 
-bool nmeaGeneratorInvokeNoise(NmeaGenerator *gen, NmeaInfo *info);
+bool nmeaGeneratorInvokeNoise(struct _NmeaGenerator *gen, NmeaInfo *info);
 
-bool nmeaGeneratorInitStatic(NmeaGenerator *gen, NmeaInfo *info);
-bool nmeaGeneratorInvokeStatic(NmeaGenerator *gen, NmeaInfo *info);
-bool nmeaGeneratorResetStatic(NmeaGenerator *gen, NmeaInfo *info);
+bool nmeaGeneratorInitStatic(struct _NmeaGenerator *gen, NmeaInfo *info);
+bool nmeaGeneratorInvokeStatic(struct _NmeaGenerator *gen, NmeaInfo *info);
+bool nmeaGeneratorResetStatic(struct _NmeaGenerator *gen, NmeaInfo *info);
 
-bool nmeaGeneratorInitRotate(NmeaGenerator *gen, NmeaInfo *info);
-bool nmeaGeneratorInvokeRotate(NmeaGenerator *gen, NmeaInfo *info);
-bool nmeaGeneratorResetRotate(NmeaGenerator *gen, NmeaInfo *info);
+bool nmeaGeneratorInitRotate(struct _NmeaGenerator *gen, NmeaInfo *info);
+bool nmeaGeneratorInvokeRotate(struct _NmeaGenerator *gen, NmeaInfo *info);
+bool nmeaGeneratorResetRotate(struct _NmeaGenerator *gen, NmeaInfo *info);
 
-bool nmeaGeneratorInitRandomMove(NmeaGenerator *gen, NmeaInfo *info);
-bool nmeaGeneratorInvokeRandomMove(NmeaGenerator *gen, NmeaInfo *info);
+bool nmeaGeneratorInitRandomMove(struct _NmeaGenerator *gen, NmeaInfo *info);
+bool nmeaGeneratorInvokeRandomMove(struct _NmeaGenerator *gen, NmeaInfo *info);
 
 /*
  * NOISE generator
@@ -54,7 +54,7 @@ bool nmeaGeneratorInvokeRandomMove(NmeaGenerator *gen, NmeaInfo *info);
  * @param info The info structure to use during generation
  * @return True on success
  */
-bool nmeaGeneratorInvokeNoise(NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info) {
+bool nmeaGeneratorInvokeNoise(struct _NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info) {
   size_t i;
   size_t inUseCount;
 
@@ -139,7 +139,7 @@ bool nmeaGeneratorInvokeNoise(NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info)
  * @param info The info structure to use during generation
  * @return True on success
  */
-bool nmeaGeneratorInitStatic(NmeaGenerator *gen, NmeaInfo *info) {
+bool nmeaGeneratorInitStatic(struct _NmeaGenerator *gen, NmeaInfo *info) {
   if (!gen //
       || !info) {
     return false;
@@ -165,7 +165,7 @@ bool nmeaGeneratorInitStatic(NmeaGenerator *gen, NmeaInfo *info) {
  * @param info The info structure to use during generation
  * @return True on success
  */
-bool nmeaGeneratorInvokeStatic(NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info) {
+bool nmeaGeneratorInvokeStatic(struct _NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info) {
   if (!info) {
     return false;
   }
@@ -184,7 +184,7 @@ bool nmeaGeneratorInvokeStatic(NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info
  * @param info The info structure to use during generation
  * @return True on success
  */
-bool nmeaGeneratorResetStatic(NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info) {
+bool nmeaGeneratorResetStatic(struct _NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info) {
   if (!info) {
     return false;
   }
@@ -237,7 +237,7 @@ bool nmeaGeneratorResetStatic(NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info)
  * @param info The info structure to use during generation
  * @return True on success
  */
-bool nmeaGeneratorInitRotate(NmeaGenerator *gen, NmeaInfo *info) {
+bool nmeaGeneratorInitRotate(struct _NmeaGenerator *gen, NmeaInfo *info) {
   if (!gen //
       || !info) {
     return false;
@@ -261,7 +261,7 @@ bool nmeaGeneratorInitRotate(NmeaGenerator *gen, NmeaInfo *info) {
  * @param info The info structure to use during generation
  * @return True on success
  */
-bool nmeaGeneratorInvokeRotate(NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info) {
+bool nmeaGeneratorInvokeRotate(struct _NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info) {
   size_t i;
   size_t inViewCount;
   double degreesPerSatellite;
@@ -302,7 +302,7 @@ bool nmeaGeneratorInvokeRotate(NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info
  * @param info The info structure to use during generation
  * @return True on success
  */
-bool nmeaGeneratorResetRotate(NmeaGenerator *gen __UNUSED_PARAM , NmeaInfo *info) {
+bool nmeaGeneratorResetRotate(struct _NmeaGenerator *gen __UNUSED_PARAM , NmeaInfo *info) {
   size_t i;
   double degrees = 360 / 8;
   double azimuth = 0;
@@ -344,7 +344,7 @@ bool nmeaGeneratorResetRotate(NmeaGenerator *gen __UNUSED_PARAM , NmeaInfo *info
  * @param info The info structure to use during generation
  * @return True on success
  */
-bool nmeaGeneratorInitRandomMove(NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info) {
+bool nmeaGeneratorInitRandomMove(struct _NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info) {
   if (!info) {
     return false;
   }
@@ -373,7 +373,7 @@ bool nmeaGeneratorInitRandomMove(NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *in
  * @param info The info structure to use during generation
  * @return True on success
  */
-bool nmeaGeneratorInvokeRandomMove(NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info) {
+bool nmeaGeneratorInvokeRandomMove(struct _NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *info) {
   NmeaPosition pos;
 
   if (!info) {
@@ -426,7 +426,7 @@ bool nmeaGeneratorInvokeRandomMove(NmeaGenerator *gen __UNUSED_PARAM, NmeaInfo *
  * Generator
  */
 
-bool nmeaGeneratorInit(NmeaGenerator *gen, NmeaInfo *info) {
+bool nmeaGeneratorInit(struct _NmeaGenerator *gen, NmeaInfo *info) {
   bool r;
   uint32_t present;
   uint32_t smask;
@@ -465,7 +465,7 @@ bool nmeaGeneratorInit(NmeaGenerator *gen, NmeaInfo *info) {
 }
 
 NmeaGenerator *nmeaGeneratorCreate(NmeaGeneratorType type, NmeaInfo *info) {
-  NmeaGenerator *gen = 0;
+  struct _NmeaGenerator *gen = 0;
 
   if (!info) {
     return NULL;
@@ -515,7 +515,7 @@ NmeaGenerator *nmeaGeneratorCreate(NmeaGeneratorType type, NmeaInfo *info) {
   return gen;
 }
 
-bool nmeaGeneratorReset(NmeaGenerator *gen, NmeaInfo *info) {
+bool nmeaGeneratorReset(struct _NmeaGenerator *gen, NmeaInfo *info) {
   bool r = true;
 
   if (!gen //
@@ -530,7 +530,7 @@ bool nmeaGeneratorReset(NmeaGenerator *gen, NmeaInfo *info) {
   return r;
 }
 
-void nmeaGeneratorDestroy(NmeaGenerator *gen) {
+void nmeaGeneratorDestroy(struct _NmeaGenerator *gen) {
   if (!gen) {
     return;
   }
@@ -543,7 +543,7 @@ void nmeaGeneratorDestroy(NmeaGenerator *gen) {
   free(gen);
 }
 
-bool nmeaGeneratorInvoke(NmeaGenerator *gen, NmeaInfo *info) {
+bool nmeaGeneratorInvoke(struct _NmeaGenerator *gen, NmeaInfo *info) {
   bool r = true;
 
   if (!gen //
@@ -563,7 +563,7 @@ bool nmeaGeneratorInvoke(NmeaGenerator *gen, NmeaInfo *info) {
   return r;
 }
 
-void nmeaGeneratorAppend(NmeaGenerator *to, NmeaGenerator *gen) {
+void nmeaGeneratorAppend(NmeaGenerator *to, struct _NmeaGenerator *gen) {
   NmeaGenerator *next;
 
   if (!to //
@@ -584,7 +584,7 @@ void nmeaGeneratorAppend(NmeaGenerator *to, NmeaGenerator *gen) {
   next->next = gen;
 }
 
-size_t nmeaGeneratorGenerateFrom(NmeaMallocedBuffer *buf, NmeaInfo *info, NmeaGenerator *gen, NmeaSentence mask) {
+size_t nmeaGeneratorGenerateFrom(NmeaMallocedBuffer *buf, NmeaInfo *info, struct _NmeaGenerator *gen, NmeaSentence mask) {
   size_t r;
 
   if (!buf //

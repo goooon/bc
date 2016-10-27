@@ -28,7 +28,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 /* Forward declaration */
-typedef struct _NmeaGenerator NmeaGenerator;
+struct _NmeaGenerator;
 
 /**
  * Generator Type
@@ -51,7 +51,7 @@ typedef enum _NmeaGeneratorType {
  * @param info The info structure to use during generation
  * @return True on success
  */
-typedef bool (*NmeaGeneratorInit)(NmeaGenerator *gen, NmeaInfo *info);
+typedef bool (*NmeaGeneratorInit)(struct _NmeaGenerator *gen, NmeaInfo *info);
 
 /**
  * Generator invoke function definition
@@ -60,7 +60,7 @@ typedef bool (*NmeaGeneratorInit)(NmeaGenerator *gen, NmeaInfo *info);
  * @param info The info structure to use during generation
  * @return True on success
  */
-typedef bool (*NmeaGeneratorInvoke)(NmeaGenerator *gen, NmeaInfo *info);
+typedef bool (*NmeaGeneratorInvoke)(struct _NmeaGenerator *gen, NmeaInfo *info);
 
 /**
  * Generator reset function definition
@@ -69,7 +69,7 @@ typedef bool (*NmeaGeneratorInvoke)(NmeaGenerator *gen, NmeaInfo *info);
  * @param info The info structure to use during generation
  * @return True on success
  */
-typedef bool (*NmeaGeneratorReset)(NmeaGenerator *gen, NmeaInfo *info);
+typedef bool (*NmeaGeneratorReset)(struct _NmeaGenerator *gen, NmeaInfo *info);
 
 /**
  * Generator structure
@@ -78,7 +78,7 @@ typedef struct _NmeaGenerator {
     NmeaGeneratorInit     init;   /**< initialiser function */
     NmeaGeneratorInvoke   invoke; /**< invoke function      */
     NmeaGeneratorReset    reset;  /**< reset function       */
-    NmeaGenerator        *next;   /**< the next generator   */
+    struct _NmeaGenerator        *next;   /**< the next generator   */
 } NmeaGenerator;
 
 /**
@@ -99,7 +99,7 @@ NmeaGenerator *nmeaGeneratorCreate(NmeaGeneratorType type, NmeaInfo *info);
  *
  * @param gen The generator
  */
-void nmeaGeneratorDestroy(NmeaGenerator *gen);
+void nmeaGeneratorDestroy(struct _NmeaGenerator *gen);
 
 /**
  * Initialise the generator
@@ -108,7 +108,7 @@ void nmeaGeneratorDestroy(NmeaGenerator *gen);
  * @param info The info structure to use during generation
  * @return True on success
  */
-bool nmeaGeneratorInit(NmeaGenerator *gen, NmeaInfo *info);
+bool nmeaGeneratorInit(struct _NmeaGenerator *gen, NmeaInfo *info);
 
 /**
  * Invoke the generator
@@ -117,7 +117,7 @@ bool nmeaGeneratorInit(NmeaGenerator *gen, NmeaInfo *info);
  * @param info The info structure to use during generation
  * @return True on success
  */
-bool nmeaGeneratorInvoke(NmeaGenerator *gen, NmeaInfo *info);
+bool nmeaGeneratorInvoke(struct _NmeaGenerator *gen, NmeaInfo *info);
 
 /**
  * Reset the generator
@@ -126,7 +126,7 @@ bool nmeaGeneratorInvoke(NmeaGenerator *gen, NmeaInfo *info);
  * @param info The info structure to use during generation
  * @return True on success
  */
-bool nmeaGeneratorReset(NmeaGenerator *gen, NmeaInfo *info);
+bool nmeaGeneratorReset(struct _NmeaGenerator *gen, NmeaInfo *info);
 
 /**
  * Append a generator to another generator
@@ -134,7 +134,7 @@ bool nmeaGeneratorReset(NmeaGenerator *gen, NmeaInfo *info);
  * @param to The generator to add to
  * @param gen The generator to add
  */
-void nmeaGeneratorAppend(NmeaGenerator *to, NmeaGenerator *gen);
+void nmeaGeneratorAppend(NmeaGenerator *to, struct _NmeaGenerator *gen);
 
 /**
  * Invoke the generator and generate sentences from the result
@@ -147,7 +147,7 @@ void nmeaGeneratorAppend(NmeaGenerator *to, NmeaGenerator *gen);
  * @param mask The mask (smask) of sentences to generate
  * @return The total length of the generated sentences
  */
-size_t nmeaGeneratorGenerateFrom(NmeaMallocedBuffer *buf, NmeaInfo *info, NmeaGenerator *gen, NmeaSentence mask);
+size_t nmeaGeneratorGenerateFrom(NmeaMallocedBuffer *buf, NmeaInfo *info, struct _NmeaGenerator *gen, NmeaSentence mask);
 
 #ifdef  __cplusplus
 }

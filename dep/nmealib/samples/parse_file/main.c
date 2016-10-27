@@ -53,12 +53,14 @@ int main(int argc __UNUSED_PARAM, char *argv[] __UNUSED_PARAM) {
   char buff[2048];
   size_t it = 0;
   NmeaPosition dpos;
+  int endoffile;
 
   if (argc <= 1) {
     deffile = "gpslog.txt";
 	snprintf(&fn[0], sizeof(fn), "%s", deffile);
   } else {
     deffile = argv[1];
+	snprintf(&fn[0], sizeof(fn), "%s", deffile);
   }
   printf("Using file %s\n", filename);
 
@@ -75,9 +77,13 @@ int main(int argc __UNUSED_PARAM, char *argv[] __UNUSED_PARAM) {
   nmeaInfoClear(&info);
   nmeaParserInit(&parser, 0);
 
-  while (!feof(file)) {
+  fseek(file, 0, SEEK_SET);
+
+  while (!(endoffile=feof(file))) {
+  	memset(buff, 0, sizeof(buff));
     size_t size = fread(&buff[0], 1, 100, file);
 
+	printf("sz = %d, s = %s\n", size, buff);
     nmeaParserParse(&parser, &buff[0], size, &info);
     nmeaMathInfoToPosition(&info, &dpos);
 
@@ -85,6 +91,7 @@ int main(int argc __UNUSED_PARAM, char *argv[] __UNUSED_PARAM) {
         info.fix);
   }
 
+  printf("endoffile = %d\n", endoffile);
   fseek(file, 0, SEEK_SET);
 
   /*

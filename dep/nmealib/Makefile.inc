@@ -57,6 +57,7 @@ ifeq ($(strip $(VERSION)),)
 VERSION=0.0.0
 endif
 
+EMBED ?= 0
 CC ?= gcc
 
 GCCVERSIONGTEQ6 := $(shell expr `$(CC) -dumpversion | cut -f1 -d.` \>= 6)
@@ -66,11 +67,11 @@ COMMONCFLAGS += -Wall -Wextra -Wold-style-definition -Wdeclaration-after-stateme
                 -Wmissing-format-attribute -Wno-multichar -Wno-deprecated-declarations -Wendif-labels -Wwrite-strings \
                 -Wbad-function-cast -Wpointer-arith -Wcast-qual -Wshadow -Wformat -Wsequence-point -Wcast-align \
                 -Wnested-externs -Winline -Wdisabled-optimization -funit-at-a-time -fPIC -ggdb -Wformat=2 -Winit-self \
-                -Wmissing-include-dirs -Wswitch-default -Wswitch-enum -Wconversion -Wdouble-promotion \
+                -Wmissing-include-dirs -Wswitch-default -Wswitch-enum -Wconversion \ #-Wdouble-promotion \
                 -Werror=format-security -Wformat-security -Wformat-y2k -Wredundant-decls -Wundef -Wunreachable-code \
                 -Wunused-parameter
 
-GCCCFLAGS    += $(COMMONCFLAGS) -fearly-inlining -finline-functions-called-once -finline-limit=350 -Wtrampolines \
+GCCCFLAGS    += $(COMMONCFLAGS) -fearly-inlining -finline-functions-called-once -finline-limit=350 \ #-Wtrampolines \
                 -Wsync-nand -Wlogical-op -Wjump-misses-init -Werror
 
 ifeq "$(GCCVERSIONGTEQ6)" "1"
