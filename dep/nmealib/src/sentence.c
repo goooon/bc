@@ -102,6 +102,16 @@ bool nmeaSentenceToInfo(const char *s, const size_t sz, NmeaInfo *info) {
       return false;
     }
 
+    case NMEALIB_SENTENCE_GPZDA: {
+      NmeaGPZDA gpzda;
+      if (nmeaGPZDAParse(s, sz, &gpzda)) {
+        nmeaGPZDAToInfo(&gpzda, info);
+        return true;
+      }
+
+      return false;
+    }
+
     case NMEALIB_SENTENCE_GPNON:
     default:
       return false;
@@ -190,6 +200,11 @@ size_t nmeaSentenceFromInfo(NmeaMallocedBuffer *buf, const NmeaInfo *info, const
       nmeaGPVTGFromInfo(info, &pack);
       generateSentence(nmeaGPVTGGenerate(dst, available, &pack));
       msk &= (NmeaSentence) ~NMEALIB_SENTENCE_GPVTG;
+    } else if (msk & NMEALIB_SENTENCE_GPZDA) {
+      NmeaGPZDA pack;
+      nmeaGPZDAFromInfo(info, &pack);
+      generateSentence(nmeaGPZDAGenerate(dst, available, &pack));
+      msk &= (NmeaSentence) ~NMEALIB_SENTENCE_GPZDA;
     } else {
       /* no more known sentences to process */
       break;

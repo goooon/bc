@@ -34,6 +34,7 @@ SET(common_src
 	src/gpgsv.c
 	src/gprmc.c
 	src/gpvtg.c
+	src/gpzda.c
 	src/info.c
 	src/nmath.c
 	src/parser.c

@@ -434,6 +434,33 @@ src/gpvtg.c.s:
 	$(MAKE) -f CMakeFiles/nmea.dir/build.make CMakeFiles/nmea.dir/src/gpvtg.c.s
 .PHONY : src/gpvtg.c.s
 
+src/gpzda.o: src/gpzda.c.o
+
+.PHONY : src/gpzda.o
+
+# target to build an object file
+src/gpzda.c.o:
+	$(MAKE) -f CMakeFiles/nmea.dir/build.make CMakeFiles/nmea.dir/src/gpzda.c.o
+.PHONY : src/gpzda.c.o
+
+src/gpzda.i: src/gpzda.c.i
+
+.PHONY : src/gpzda.i
+
+# target to preprocess a source file
+src/gpzda.c.i:
+	$(MAKE) -f CMakeFiles/nmea.dir/build.make CMakeFiles/nmea.dir/src/gpzda.c.i
+.PHONY : src/gpzda.c.i
+
+src/gpzda.s: src/gpzda.c.s
+
+.PHONY : src/gpzda.s
+
+# target to generate assembly for a file
+src/gpzda.c.s:
+	$(MAKE) -f CMakeFiles/nmea.dir/build.make CMakeFiles/nmea.dir/src/gpzda.c.s
+.PHONY : src/gpzda.c.s
+
 src/info.o: src/info.c.o
 
 .PHONY : src/info.o
@@ -636,6 +663,9 @@ help:
 	@echo "... src/gpvtg.o"
 	@echo "... src/gpvtg.i"
 	@echo "... src/gpvtg.s"
+	@echo "... src/gpzda.o"
+	@echo "... src/gpzda.i"
+	@echo "... src/gpzda.s"
 	@echo "... src/info.o"
 	@echo "... src/info.i"
 	@echo "... src/info.s"

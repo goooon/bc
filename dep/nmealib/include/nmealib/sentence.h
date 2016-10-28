@@ -63,6 +63,7 @@
 #include <nmealib/gpgsv.h>
 #include <nmealib/gprmc.h>
 #include <nmealib/gpvtg.h>
+#include <nmealib/gpzda.h>
 
 #ifdef  __cplusplus
 extern "C" {
@@ -79,7 +80,8 @@ typedef enum _NmeaSentence {
   NMEALIB_SENTENCE_GPGSV = (1u << 2),
   NMEALIB_SENTENCE_GPRMC = (1u << 3),
   NMEALIB_SENTENCE_GPVTG = (1u << 4),
-  NMEALIB_SENTENCE_LAST = NMEALIB_SENTENCE_GPVTG
+  NMEALIB_SENTENCE_GPZDA = (1u << 5),
+  NMEALIB_SENTENCE_LAST = NMEALIB_SENTENCE_GPZDA
 } NmeaSentence;
 
 /** The bit-mask with all NmeaSentence entries */
@@ -119,6 +121,10 @@ static const NmeaSentencePrefixToType nmealibSentencePrefixToType[] = {
     {
         .prefix = NMEALIB_GPVTG_PREFIX, //
         .sentence = NMEALIB_SENTENCE_GPVTG //
+    },
+    {
+        .prefix = NMEALIB_GPZDA_PREFIX, //
+        .sentence = NMEALIB_SENTENCE_GPZDA //
     },
     {
         .prefix = NULL, //

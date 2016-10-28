@@ -52,6 +52,9 @@ static void test_nmeaSentenceToPrefix(void) {
   r = nmeaSentenceToPrefix(NMEALIB_SENTENCE_GPVTG);
   CU_ASSERT_STRING_EQUAL(r, NMEALIB_GPVTG_PREFIX);
 
+  r = nmeaSentenceToPrefix(NMEALIB_SENTENCE_GPZDA);
+  CU_ASSERT_STRING_EQUAL(r, NMEALIB_GPZDA_PREFIX);
+
   r = nmeaSentenceToPrefix(NMEALIB_SENTENCE_LAST + 1);
   CU_ASSERT_PTR_NULL(r);
 }
@@ -107,6 +110,10 @@ static void test_nmeaSentenceFromPrefix(void) {
   s = "$GPVTG,blah";
   r = nmeaSentenceFromPrefix(s, strlen(s));
   CU_ASSERT_EQUAL(r, NMEALIB_SENTENCE_GPVTG);
+
+  s = "$GPZDA,blah";
+  r = nmeaSentenceFromPrefix(s, strlen(s));
+  CU_ASSERT_EQUAL(r, NMEALIB_SENTENCE_GPZDA);
 
   s = "GPVTG,blah";
   r = nmeaSentenceFromPrefix(s, strlen(s));

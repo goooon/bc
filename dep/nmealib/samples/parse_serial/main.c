@@ -50,16 +50,20 @@ static void printDetailInfo(NmeaInfo *info)
 	double db = 0;
 
 	printf("\r\n\r\n");
-	printf("====================================");
-	printf("date-time: %4d/%02d/%02d-%02d:%02d:%02d:%04d\n",
+	printf("====================================\n");
+	printf("utc: %4d/%02d/%02d-%02d:%02d:%02d:%04d\n",
 		info->utc.year, info->utc.mon, info->utc.day,
 		info->utc.hour, info->utc.min, info->utc.sec, info->utc.hsec);
+	printf("localtime: %4d/%02d/%02d-%02d:%02d:%02d:%04d\n",
+		info->localtime.year, info->localtime.mon, info->localtime.day,
+		info->localtime.hour, info->localtime.min, info->localtime.sec, info->localtime.hsec);
 
 	printf("longitude: %f %C\n", info->longitude, (info->longitude < db) ? 'W' : 'E');
 	printf("latitude: %f %C\n", info->latitude, (info->latitude < db) ? 'S' : 'N');
 
 	printf("elevation: %f(M)\n", info->elevation);
 	printf("speed: %f(kph)\n", info->speed);
+	printf("track: %f\n", info->track);
 
 	printf("sig: %s\n", nmeaInfoSignalToString(info->sig));
 	printf("fix: %s\n", nmeaInfoFixToString(info->fix));

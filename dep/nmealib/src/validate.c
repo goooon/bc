@@ -117,7 +117,7 @@ bool nmeaValidateDate(const NmeaTime *t, const char *prefix, const char *s) {
   }
 
   if ((t->year < 1900) //
-      || (t->year > 2089) //
+      || (t->year > 3089) //
       || (t->mon < 1) //
       || (t->mon > 12) //
       || (t->day < 1) //

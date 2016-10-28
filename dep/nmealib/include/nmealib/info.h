@@ -235,6 +235,7 @@ typedef struct _NmeaProgress {
 typedef struct _NmeaInfo {
   uint32_t       present;    /**< Bit-mask specifying which fields are present                    */
   uint32_t       smask;      /**< Bit-mask specifying from which sentences data has been obtained */
+  NmeaTime       localtime;	 /**< local time from GPZDA                                           */
   NmeaTime       utc;        /**< UTC of the position data                                        */
   NmeaSignal     sig;        /**< Signal quality, see NMEALIB_SIG_* signals                       */
   NmeaFix        fix;        /**< Operating mode, see NMEALIB_FIX_* fixes                         */
@@ -290,8 +291,12 @@ typedef enum _NmeaPresence {
 
   NMEALIB_PRESENT_DGPSAGE        = (1u << 20), /* 0x00100000 */
   NMEALIB_PRESENT_DGPSSID        = (1u << 21), /* 0x00200000 */
+  NMEALIB_PRESENT_LOCALZONE      = (1u << 22), /* 0x00400000 */
+  NMEALIB_PRESENT_LOCALDATE      = (1u << 23), /* 0x00800000 */
+  
+  NMEALIB_PRESENT_LOCALTIME      = (1u << 24), /* 0x01000000 */
 
-  NMEALIB_PRESENT_LAST           = NMEALIB_PRESENT_DGPSSID
+  NMEALIB_PRESENT_LAST           = NMEALIB_PRESENT_LOCALTIME
 } NmeaPresence;
 
 /** The bit-mask of all supported field name bits */
