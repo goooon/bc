@@ -102,7 +102,7 @@ void RemoteUnlockTask::doTask()
 		else if (wr == ThreadEvent::EventOk) {
 			MessageQueue::Args args;
 			if (msgQueue.out(args)) {
-				if (args.e == AppEvent::AutoStateChanged) {
+				if (args.e == AppEvent::AutoEvent) {
 					if (args.param1 == Vehicle::DoorActived) {
 						
 					}

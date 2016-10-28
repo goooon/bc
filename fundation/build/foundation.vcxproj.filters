@@ -105,6 +105,12 @@
     <ClInclude Include="..\src\inc\util\TimeStamp.h">
       <Filter>src\inc\util</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\util\Timer.h">
+      <Filter>src\inc\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\util\List.h">
+      <Filter>src\inc\util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cpp\util\Heap.cpp">

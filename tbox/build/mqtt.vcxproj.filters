@@ -102,6 +102,9 @@
     <ClInclude Include="..\src\tasks\VKeyIgnitionTask.h">
       <Filter>src\tasks</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\Schedule.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -145,6 +148,9 @@
     </ClCompile>
     <ClCompile Include="..\src\tasks\VKeyIgnitionTask.cpp">
       <Filter>src\tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\Schedule.cpp">
+      <Filter>src\cpp</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

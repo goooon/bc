@@ -15,8 +15,9 @@ unsigned int last_error(void);
 
 void* initDebugLib();
 void  uninitDebugLib(void* lib);
+typedef char* (*GetCommand)(int idx);
 typedef void (*CmdCallback)(char* cmd);
-typedef void (*LoopCallback)(CmdCallback onCommand);
+typedef void (*LoopCallback)(GetCommand getCommand, CmdCallback onCommand);
 
 #ifdef ME_DEBUGUI
 #include "./incdebug.h"
@@ -25,6 +26,7 @@ typedef void (*LoopCallback)(CmdCallback onCommand);
 #define bc_alloc malloc
 #define bc_free  free
 LoopCallback debugMain(int argc, char* argv[]);
+char* getCommand(int i);
 void onCommand(char* cmd);
 #else
 #include <stdio.h>

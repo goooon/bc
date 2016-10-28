@@ -71,6 +71,13 @@ void uninitDebugLib(void* lib)
 	Memory::dispalyInfo();
 	Memory::checkMemory(vTrue);
 }
+char* getCommand(int i)
+{
+	const char* cmd[] = {
+		"abcd","efg","hijk","",0
+	};
+	return (char*)cmd[i];
+}
 void onCommand(char* cmd)
 {
 	if (me::Tool::isEqual(cmd, "v")) {
@@ -137,4 +144,7 @@ void onCommand(char* cmd)
 	if (Application::getInstance().onDebugCommand(cmd))return;
 }
 LoopCallback debugMain(int argc, char* argv[]) { return 0; }
+
+
+
 #endif

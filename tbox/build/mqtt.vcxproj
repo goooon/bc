@@ -46,6 +46,7 @@
     <ClInclude Include="..\src\inc\Message.h" />
     <ClInclude Include="..\src\inc\Mqtt.h" />
     <ClInclude Include="..\src\inc\Operation.h" />
+    <ClInclude Include="..\src\inc\Schedule.h" />
     <ClInclude Include="..\src\inc\State.h" />
     <ClInclude Include="..\src\inc\Task.h" />
     <ClInclude Include="..\src\inc\TaskList.h" />
@@ -73,6 +74,7 @@
     <ClCompile Include="..\src\cpp\Event.cpp" />
     <ClCompile Include="..\src\cpp\main.cpp" />
     <ClCompile Include="..\src\cpp\Mqtt.cpp" />
+    <ClCompile Include="..\src\cpp\Schedule.cpp" />
     <ClCompile Include="..\src\cpp\Task.cpp" />
     <ClCompile Include="..\src\cpp\Vehicle.cpp" />
     <ClCompile Include="..\src\tasks\RemoteUnlockTask.cpp" />

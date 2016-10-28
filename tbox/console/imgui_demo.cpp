@@ -56,7 +56,7 @@
 
 #ifndef IMGUI_DISABLE_TEST_WINDOWS
 
-static me::Tracer*  ShowExampleAppConsole(bool* p_open,bool draw,void (*func)(char*));
+static me::Tracer*  ShowExampleAppConsole(bool* p_open,bool draw,char* (*getf)(int),void (*func)(char*));
 static void ShowExampleAppLog(bool* p_open);
 static void ShowExampleAppLayout(bool* p_open);
 static void ShowExampleAppPropertyEditor(bool* p_open);
@@ -119,7 +119,7 @@ void ImGui::ShowTestWindow(bool* p_open)
     static bool show_app_about = false;
 
     if (show_app_main_menu_bar) ShowExampleAppMainMenuBar();
-    if (show_app_console) ShowExampleAppConsole(&show_app_console,true,0);
+    if (show_app_console) ShowExampleAppConsole(&show_app_console,true,0,0);
     if (show_app_log) ShowExampleAppLog(&show_app_log);
     if (show_app_layout) ShowExampleAppLayout(&show_app_layout);
     if (show_app_property_editor) ShowExampleAppPropertyEditor(&show_app_property_editor);
@@ -2081,7 +2081,7 @@ struct ExampleAppConsole : public me::Tracer
 		return true;
 	};
 
-    void    Draw(const char* title, bool* p_open,void (func)(char*))
+    void    Draw(const char* title, bool* p_open,char* (getf)(int),void (func)(char*))
     {
         ImGui::SetNextWindowSize(ImVec2(520,600), ImGuiSetCond_FirstUseEver);
         if (!ImGui::Begin(title, p_open))
@@ -2126,6 +2126,17 @@ struct ExampleAppConsole : public me::Tracer
 		if (ImGui::SmallButton("memscan")) { func("memscan"); } ImGui::SameLine();
 		if (ImGui::SmallButton("clear")) { ClearLog();func("clear"); } ImGui::SameLine();
         if (ImGui::SmallButton("Scroll to bottom")) ScrollToBottom = true;
+
+		int idx = 0;
+		char* cmd;
+		for (;;) {
+			if(getf == 0)break;
+			cmd = getf(idx);
+			if (cmd == 0)break;
+			if(*cmd == 0)ImGui::Separator();
+			else if (ImGui::SmallButton(cmd)) { func(cmd); } ImGui::SameLine();
+			idx++;
+		}
 
         //static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddLog("Spam %f", t); }
 
@@ -2341,10 +2352,10 @@ struct ExampleAppConsole : public me::Tracer
     }
 };
 
-static me::Tracer* ShowExampleAppConsole(bool* p_open,bool draw,void (func)(char*))
+static me::Tracer* ShowExampleAppConsole(bool* p_open,bool draw,char* (getf)(int),void (func)(char*))
 {
     static ExampleAppConsole console;
-    if(draw)console.Draw("Example: Console", p_open, func);
+    if(draw)console.Draw("Example: Console", p_open,getf, func);
 	return &console;
 }
 

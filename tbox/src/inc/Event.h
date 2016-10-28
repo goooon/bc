@@ -23,10 +23,19 @@ public:
 		AbortTasks,				//param1 applicationID
 		RemoveTask,				//data is Task*
 
+
+		InsertSchedule,			//insert scheduled task,param1 is Timestamp::TimeVal_H,param2 is Timestamp::TimeVal_L,data is Task*
+		UpdateSchedule,			//update scheduled task,param1 is Timestamp::TimeVal_H,param2 is Timestamp::TimeVal_L,data should be casted to applicationid
+		RemoveSchedule,			//remove scheduled task,if data != null,data is Task* that shoud be removed,if data is null then param1 is applicationid
+
 		NetStateChanged,		//param1 1:Connected,0:DisConnected
-		MqttStateChanged,		//param1 is Mqtt::State currState,param2 is Mqtt::State nextState
-		AutoStateChanged,		//param1 Vehicle::State
-		SensorEvent,
+
+		MqttStateChanged,		//param1 is Mqtt::State prevState,param2 is Mqtt::State currState
+
+		AutoEvent,				//param1 Vehicle::Event
+		AutoStateChanged,		//param1 is Vehicle::State prevState,param2 is Vehicle::State currState
+
+		SensorEvent,			//sensor event
 
 		PackageArrived,			//param1 is Package::Type,data should be refferred to Package::Type
 		TestEvent				//for only debug test

@@ -321,7 +321,7 @@ bool MqttClient::changeState(State next)
 			LOG_I("Mqtt:%s -> %s", ss[state], ss[next]);
 			State prev = state;
 			state = next;
-			PostEvent(AppEvent::MqttStateChanged, prev, next, 0);
+			PostEvent(AppEvent::MqttStateChanged, prev, state, 0);
 		}
 		return true;
 	}

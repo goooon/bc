@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
 	if (lc) {
 		MainLoop loop(app);
 		loop.start();
-		lc(onCommand);
+		lc(getCommand, onCommand);
 	}
 	else {
 		app.loop();

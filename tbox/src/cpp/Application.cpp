@@ -178,10 +178,20 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 		onMqttEvent(param1,param2,data);
 		break;
 	case AppEvent::AutoStateChanged:
-		onAutoStateChanged(param1, param2, data);
+		onAutoEvent(param1, param2, data);
 		broadcastEvent(e, param1, param2, data);
 		break;
 	case AppEvent::SensorEvent:
+		break;
+	case AppEvent::InsertSchedule:
+		schedule.insert(Timestamp(param1, param2), (Task*)data);
+		break;
+	case AppEvent::RemoveSchedule:
+		if(data)schedule.remove((Task*)data);
+		else schedule.remove(param1);
+		break;
+	case AppEvent::UpdateSchedule:
+		schedule.update(Timestamp(param1, param2), (u32)data);
 		break;
 	default:
 		break;
@@ -211,6 +221,11 @@ Vehicle& Application::getVehicle(void)
 {
 	return vehicle;
 }
+//
+//Schedule& Application::getSchedule(void)
+//{
+//	return schedule;
+//}
 
 void Application::broadcastEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 {
@@ -236,10 +251,10 @@ void Application::onMqttEvent(u32 param1, u32 param2, void* data)
 	}
 }
 
-void Application::onAutoStateChanged(u32 param1, u32 param2, void* data)
+void Application::onAutoEvent(u32 param1, u32 param2, void* data)
 {
 	LOG_I("AutoStateChanged(%d,%d)", param1, param2);
-	vehicle.onStateChanged(param1,param2,data);
+	vehicle.onEvent(param1,param2,data);
 }
 
 void Application::onNetStateChanged(u32 param)

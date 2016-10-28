@@ -1,11 +1,12 @@
 #include "../inc/Vehicle.h"
 #include "../inc/Application.h"
+#include "../inc/Event.h"
 Vehicle& Vehicle::getInstance()
 {
 	return Application::getInstance().getVehicle();
 }
 
-Vehicle::Vehicle() :authed(Unauthed)
+Vehicle::Vehicle() :authed(Unauthed),state(Enabled)
 {
 	apparatus.reset();
 }
@@ -57,7 +58,7 @@ Operation::Result Vehicle::reqLockDoor()
 	return Operation::Succ;
 }
 
-void Vehicle::onStateChanged(u32 param1, u32 param2, void* data)
+void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 {
 	switch (param1) {
 	case DoorActived:
@@ -66,8 +67,24 @@ void Vehicle::onStateChanged(u32 param1, u32 param2, void* data)
 	case DoorDeactived:
 		apparatus.misc.door_actived = false;
 		break;
+	case DoorOpened:
+		apparatus.door.lh_front = true;
+		break;
+	case DoorClosed:
+		apparatus.door.lh_front = false;
+		break;
 	default:
 		LOG_W("unhandled State %d", param1);
 		break;
 	}
+}
+
+bool Vehicle::changeState(State next)
+{
+	//todo ...
+	LOG_I("Vehicle state %d -> %d", state, next);
+	State prev = state;
+	state = next;
+	PostEvent(AppEvent::AutoStateChanged, prev, state,0);
+	return false;
 }

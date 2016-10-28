@@ -30,6 +30,8 @@ public:
 	Timestamp(TimeVal tv) :ts(tv) {};
 	/// Creates a timestamp from the given time value.
 
+	Timestamp(u32 high,u32 low):h(high),l(low){}
+
 	Timestamp(const Timestamp& other) :ts(other.ts) {};
 	/// Copy constructor.
 
@@ -46,14 +48,21 @@ public:
 
 	TimeVal getValue() { return ts; }
 
-	bool operator == (const Timestamp& ts) const { return ts == ts.ts; }
-	bool operator != (const Timestamp& ts) const { return ts != ts.ts; }
-	bool operator >  (const Timestamp& ts) const { return ts > ts.ts; };
-	bool operator >= (const Timestamp& ts) const { return ts >= ts.ts; };
-	bool operator <  (const Timestamp& ts) const { return ts < ts.ts; };
-	bool operator <= (const Timestamp& ts) const { return ts <= ts.ts; };
+	bool operator == (const Timestamp& ts) const { return this->ts == ts.ts; }
+	bool operator != (const Timestamp& ts) const { return this->ts != ts.ts; }
+	bool operator >  (const Timestamp& ts) const { return this->ts > ts.ts; };
+	bool operator >= (const Timestamp& ts) const { return this->ts >= ts.ts; };
+	bool operator <  (const Timestamp& ts) const { return this->ts < ts.ts; };
+	bool operator <= (const Timestamp& ts) const { return this->ts <= ts.ts; };
 private:
-	TimeVal ts;
+	union 
+	{
+		TimeVal ts;
+		struct {
+			u32     h;
+			u32     l;
+		};
+	};
 };
 
 class DateTime

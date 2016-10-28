@@ -8,6 +8,7 @@
 #include "./Mqtt.h"
 #include "./Event.h"
 #include "./Vehicle.h"
+#include "./Schedule.h"
 
 class Application : public Thread
 {
@@ -35,10 +36,11 @@ private:
 	void broadcastEvent(AppEvent::Type e, u32 param1, u32 param2, void* data);
 protected:
 	void onMqttEvent(u32 param1, u32 param2, void* data);
-	void onAutoStateChanged(u32 param1, u32 param2, void* data);
+	void onAutoEvent(u32 param1, u32 param2, void* data);
 	void onNetStateChanged(u32 param);
 public:
 	Vehicle     vehicle;		//vehicle states
+	Schedule    schedule;
 	Config      config;			//setting and configuration
 	TaskQueue   tasksWaiting;	//tasks that waiting for launching
 	TaskList    tasksWorking;	//tasks that already started
