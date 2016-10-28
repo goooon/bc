@@ -67,5 +67,6 @@ ADD_SUBDIRECTORY(samples/generator)
 ADD_SUBDIRECTORY(samples/math)
 ADD_SUBDIRECTORY(samples/parse)
 ADD_SUBDIRECTORY(samples/parse_file)
+ADD_SUBDIRECTORY(samples/parse_serial)
 
 

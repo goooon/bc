@@ -232,6 +232,19 @@ parse_file/fast:
 	$(MAKE) -f samples/parse_file/CMakeFiles/parse_file.dir/build.make samples/parse_file/CMakeFiles/parse_file.dir/build
 .PHONY : parse_file/fast
 
+#=============================================================================
+# Target rules for targets named parse_serial
+
+# Build rule for target.
+parse_serial: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 parse_serial
+.PHONY : parse_serial
+
+# fast build rule for target.
+parse_serial/fast:
+	$(MAKE) -f samples/parse_serial/CMakeFiles/parse_serial.dir/build.make samples/parse_serial/CMakeFiles/parse_serial.dir/build
+.PHONY : parse_serial/fast
+
 src/context.o: src/context.c.o
 
 .PHONY : src/context.o
@@ -601,6 +614,7 @@ help:
 	@echo "... math"
 	@echo "... parse"
 	@echo "... parse_file"
+	@echo "... parse_serial"
 	@echo "... src/context.o"
 	@echo "... src/context.i"
 	@echo "... src/context.s"
