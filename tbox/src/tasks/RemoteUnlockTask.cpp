@@ -7,14 +7,65 @@ Task* RemoteUnlockTask::Create()
 	return bc_new RemoteUnlockTask();
 }
 
-void RemoteUnlockTask::sendResponseError(Operation::Result ret)
+RemoteUnlockTask::RemoteUnlockTask() :Task(APPID_VKEY_ACTIVITION, true), pkg(pkg)
 {
 
 }
 
+void RemoteUnlockTask::sendResponseError(Operation::Result ret)
+{
+	u8 ecode = 0;
+	switch (ret)
+	{
+	case Operation::Succ:
+		ecode = ERR_SUCC;
+		break;
+	case Operation::W_Aborted:
+		ecode = ERR_CONDITION;
+		break;
+	case Operation::E_Code:
+		ecode = ERR_CONDITION;
+		break;
+	case Operation::E_Auth:
+		ecode = ERR_AUTHFAIL;
+		break;
+	case Operation::E_Permission:
+		ecode = ERR_CONDITION;
+		break;
+	case Operation::E_DoorOpened:
+		ecode = ERR_CONDITION;
+		break;
+	case Operation::E_Driving:
+		ecode = ERR_CONDITION;
+		break;
+	case Operation::E_Brake:
+		ecode = ERR_CONDITION;
+		break;
+	case Operation::E_Door:
+		ecode = ERR_CONDITION;
+		break;
+	default:
+		break;
+	}
+
+	BCPackage pkg;
+	BCMessage msg = pkg.appendMessage(appID, 1, seqID);
+	msg.appendErrorElement(ecode);
+	msg.appendTimeStamp();
+	if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
+		LOG_E("sendResponseError failed %d",ret);
+	}
+}
+
 void RemoteUnlockTask::sendResponseUnlocked()
 {
-
+	BCPackage pkg;
+	BCMessage msg = pkg.appendMessage(appID, 1, seqID);
+	msg.appendErrorElement(ERR_SUCC);
+	msg.appendTimeStamp();
+	if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
+		LOG_E("sendResponseUnlocked failed");
+	}
 }
 
 void RemoteUnlockTask::doTask()

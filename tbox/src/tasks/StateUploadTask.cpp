@@ -1,16 +1,12 @@
 #include "./StateUploadTask.h"
 Task* StateUploadTask::Create()
 {
-	return bc_new UploadStateTask();
+	return bc_new StateUploadTask();
 }
 
 void StateUploadTask::doTask()
 {
-	reqSendState();
+	//reqSendState();
 }
 
-void StateUploadTask::reqSendState()
-{
-
-}
 

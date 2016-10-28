@@ -7,3 +7,9 @@ void Timestamp::update()
 {
 	ts = time(NULL);
 }
+
+void Timestamp::update(TimeVal milliseconds)
+{
+	ts = time(NULL);
+	ts += milliseconds;
+}
