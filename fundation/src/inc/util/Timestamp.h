@@ -54,6 +54,8 @@ public:
 	bool operator >= (const Timestamp& ts) const { return this->ts >= ts.ts; };
 	bool operator <  (const Timestamp& ts) const { return this->ts < ts.ts; };
 	bool operator <= (const Timestamp& ts) const { return this->ts <= ts.ts; };
+
+	TimeDiff operator - (const Timestamp& ts)const { return this->ts - ts.ts; }
 private:
 	union 
 	{

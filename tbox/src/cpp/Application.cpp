@@ -54,6 +54,8 @@ void Application::loop()
 	LOG_V("Application loop...");
 	if(!config.isServer)onDebugCommand("connMqtt");
 	loopID = Thread::getCurrentThreadId();
+	Timestamp prev;
+	Timestamp now;
 	while (true) {
 		ThreadEvent::WaitResult wr = appEvent.wait(500);
 		if (wr == ThreadEvent::EventOk) {
@@ -77,6 +79,11 @@ void Application::loop()
 		else {
 			LOG_E("wrong wait result %d", wr);
 			break;
+		}
+		now.update();
+		if (now - prev > 500) {
+			schedule.triger(now);
+			prev = now;
 		}
 	}
 }
