@@ -6,4 +6,5 @@
 #include "./util/Log.h"
 #include "./util/Heap.h"
 #include "./bcp_packet.h"
+#include "./util/Timestamp.h"
 #endif // GUARD_fundation_h__

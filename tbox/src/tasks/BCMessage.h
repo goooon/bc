@@ -3,6 +3,7 @@
 
 #include "../inc/dep.h"
 #include "./Element.h"
+//ref http://jira.oa.beecloud.com:8090/pages/viewpage.action?pageId=2818185
 class BCMessage
 {
 public:
@@ -29,6 +30,14 @@ public:
 		ele.errorcode = ec;
 		bcp_element_t *e = bcp_element_create((u8*)&ele, sizeof(ErrorElement));
 		bcp_element_append(msg, e);
+		return true;
+	}
+	bool appendFunctionStatus(u8 rawdata) {
+		u8 data[2];
+		data[0] = 1;
+		data[2] = rawdata;
+		bcp_element_t *ele = bcp_element_create(data, 2);
+		bcp_element_append(msg, ele);
 		return true;
 	}
 	bool appendTimeStamp() {

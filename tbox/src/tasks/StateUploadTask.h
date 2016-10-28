@@ -8,6 +8,7 @@
 #include "./BCMessage.h"
 #include "./TaskTable.h"
 
+//ref http://jira.oa.beecloud.com:8090/pages/viewpage.action?pageId=3997706 a04,a05,a06
 class StateUploadTask : public Task {
 public:
 	const static int AppId = APPID_STATE_UPLOADING;

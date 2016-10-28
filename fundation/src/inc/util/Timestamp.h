@@ -39,9 +39,19 @@ public:
 	void update();
 	/// Updates the Timestamp with the current time.
 
+	void update(TimeVal milliseconds);
+
 	void swap(Timestamp& timestamp) { TimeVal t = ts; ts = timestamp.ts; timestamp.ts = t; };
 	/// Swaps the Timestamp with another one.
 
+	TimeVal getValue() { return ts; }
+
+	bool operator == (const Timestamp& ts) const { return ts == ts.ts; }
+	bool operator != (const Timestamp& ts) const { return ts != ts.ts; }
+	bool operator >  (const Timestamp& ts) const { return ts > ts.ts; };
+	bool operator >= (const Timestamp& ts) const { return ts >= ts.ts; };
+	bool operator <  (const Timestamp& ts) const { return ts < ts.ts; };
+	bool operator <= (const Timestamp& ts) const { return ts <= ts.ts; };
 private:
 	TimeVal ts;
 };
