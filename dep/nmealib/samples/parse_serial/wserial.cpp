@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <fcntl.h>
+#include "wserial.h"
 #if defined(__WINOS__)
+#else
 #include <unistd.h>
 #endif
 #include <stdio.h>
 
-#include "wserial.h"
 #include "timeout.h"
 
 #if defined(__WINOS__)
