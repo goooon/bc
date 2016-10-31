@@ -41,6 +41,7 @@ SET(common_src
 	src/cpp/bcp_packet.cpp
 	src/cpp/binary_formater.cpp
 	src/cpp/crc32.cpp
+	src/cpp/bcp_serial.cpp
     )
 
 ##-std=gnu++11 

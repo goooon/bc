@@ -283,7 +283,7 @@
 	
 		return 1;
 	}
-	
+
 	void serial::close(void) 
 	{
    		// Set old parameters
@@ -295,8 +295,7 @@
 			close(m_fd);
 		}
 	}
-	
-	
+
 	char serial::write(char* buffer, int length) 
 	{
 		ssize_t r;
@@ -319,7 +318,7 @@
 		return 1;
 	}
 	
-	int serial::read(char* buffer, int length)
+	int serial::read(char* buffer, int length, int timout)
 	{
 		ssize_t r = 0;
 		timeout timeout(timout);

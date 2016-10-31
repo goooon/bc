@@ -100,7 +100,7 @@ public:
 	DateTime() {
 		struct tm *tblock;
 		Timestamp now;
-		tblock = localtime(&now.ts);
+		tblock = localtime((time_t*)&now.ts);
 		tm_sec = tblock->tm_sec;
 		tm_min = tblock->tm_min;
 		tm_hour = tblock->tm_hour;
@@ -113,7 +113,7 @@ public:
 	}
 	DateTime(Timestamp ts) {
 		struct tm *tblock;
-		tblock = localtime(&ts.ts);
+		tblock = localtime((time_t*)&ts.ts);
 		tm_sec = tblock->tm_sec;
 		tm_min = tblock->tm_min;
 		tm_hour = tblock->tm_hour;

@@ -21,6 +21,7 @@
 #include "../fundation/src/inc/dep.h"
 #include "../fundation/src/inc/bcp_packet.h"
 #include "../fundation/src/inc/bcp_comm.h"
+#include "../fundation/src/inc/bcp_serial.h"
 #include "../fundation/src/inc/bcp.h"
 
 #include "../fundation/src/inc/binary_formater.h"
@@ -513,14 +514,44 @@ static void test_binary_formater(void)
 			printf("\t%d ", recv_bytes[i]);
 		}
 		printf("\n");
+		free(recv_bytes);
 	}
 	if (bf_read_string(h, (char**)&rs) < 0) {
 		LOG_W("put string failed");
 	} else {
 		LOG_I("put string = %s", s);
+		free(rs);
 	}
 
 	bf_destroy(h);
+}
+
+#if defined (_WIN32) || defined(_WIN64)
+#define SERIAL_DEVNAME "COM6"
+#else
+#define SERIAL_DEVNAME "/dev/ttySAC2"
+#endif
+static void serial_test(void)
+{
+	int r;
+	char buff[2048] = {0,};
+	void *s;
+
+	if (!(s = bcp_serial_open(SERIAL_DEVNAME, 9600, 8, P_NONE, 1))) {
+		printf("open %s failed.\n", SERIAL_DEVNAME);
+		return;
+	}
+
+	while ((r = bcp_serial_read(s, buff, 1, 1000)) >= 0) {
+		if (r > 0) {
+			printf("%s", buff);
+			memset(buff, 0, sizeof(buff));
+		} else {
+			printf("-\n");
+		}
+	}
+
+	bcp_serial_close(s);
 }
 
 int main(int argc, char **argv)
@@ -528,7 +559,7 @@ int main(int argc, char **argv)
 	int ispub;
 
 	//execl();
-
+	serial_test();
 
 	if (argc < 2) {
 		printf("usage %s {0|1}", argv[0]);
