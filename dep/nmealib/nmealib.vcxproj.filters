@@ -54,6 +54,9 @@
     <ClInclude Include="include\nmealib\context.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\nmealib\gpzda.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\generator.c">
@@ -93,6 +96,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\context.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gpzda.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
