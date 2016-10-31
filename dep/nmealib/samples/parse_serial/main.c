@@ -81,7 +81,6 @@ int main(int argc, char *argv[]) {
 	NmeaParser parser;
 	char buff[2048];
 	size_t it = 0, size = 0;
-	NmeaPosition dpos;
 	int ret;
 	serial_t serial;
 	char *devname;
