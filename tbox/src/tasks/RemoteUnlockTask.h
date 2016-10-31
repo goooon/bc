@@ -19,10 +19,11 @@ public:
 	RemoteUnlockTask();
 private:
 	virtual void doTask()OVERRIDE;
-	void sendResponseError(Operation::Result ret);
-	void sendResponseUnlocked();
-	void sendAck();
-	void sendResponseTimeOut();
+	void rspError(Operation::Result ret);
+	void rspDoorActived();
+	void rspDoorOpened();
+	void rspAck();
+	void rspTimeOut();
 private:
 	Timestamp     expireTime;
 	bcp_packet_t* pkg;

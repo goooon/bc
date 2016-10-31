@@ -9,10 +9,12 @@ Task* RemoteUnlockTask::Create()
 
 RemoteUnlockTask::RemoteUnlockTask() :Task(APPID_VKEY_ACTIVITION, true), pkg(pkg)
 {
-
+	expireTime.update(Druation);
+	LOG_I("RemoteUnlockTask(%d,%lld) expire: %lld run...", appID, seqID, expireTime.getValue());
+	rspAck();
 }
 
-void RemoteUnlockTask::sendResponseError(Operation::Result ret)
+void RemoteUnlockTask::rspError(Operation::Result ret)
 {
 	u8 ecode = 0;
 	switch (ret)
@@ -57,12 +59,25 @@ void RemoteUnlockTask::sendResponseError(Operation::Result ret)
 	}
 }
 
-void RemoteUnlockTask::sendResponseUnlocked()
+void RemoteUnlockTask::rspDoorActived()
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, 1, seqID);
-	msg.appendErrorElement(ERR_SUCC);
+	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
+	msg.appendAuthToken();
 	msg.appendTimeStamp();
+	msg.appendErrorElement(ERR_SUCC);
+	if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
+		LOG_E("sendResponseUnlocked failed");
+	}
+}
+
+void RemoteUnlockTask::rspDoorOpened()
+{
+	BCPackage pkg;
+	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
+	msg.appendAuthToken();
+	msg.appendTimeStamp();
+	msg.appendErrorElement(ERR_SUCC);
 	if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
 		LOG_E("sendResponseUnlocked failed");
 	}
@@ -70,22 +85,21 @@ void RemoteUnlockTask::sendResponseUnlocked()
 
 void RemoteUnlockTask::doTask()
 {
-	expireTime.update(Druation);
-	LOG_I("RemoteUnlockTask(%d,%lld) expire: %lld run...", appID, seqID, expireTime.getValue());
-	sendAck();
-
 	Operation::Result ret;
 
 	ret = Vehicle::getInstance().prepareActiveDoorByVKey();
 	if (ret != Operation::Succ) {
 		LOG_I("prepareActiveDoorByVKey() wrong %d", ret);
-		return sendResponseError(ret);
+		return rspError(ret);
 	}
 
 	ret = Vehicle::getInstance().reqActiveDoorByVKey();
 	if (ret != Operation::Succ) {
 		LOG_I("reqActiveDoorByVKey() wrong %d", ret);
-		return sendResponseError(ret);
+		return rspError(ret);
+	}
+	else {
+		rspDoorActived();
 	}
 
 	for (;;) {
@@ -94,7 +108,7 @@ void RemoteUnlockTask::doTask()
 			Timestamp now;
 			if (now > expireTime) {
 				LOG_I("Unlock waiting Time Out %lld",expireTime.getValue());
-				sendResponseTimeOut();
+				rspTimeOut();
 				Vehicle::getInstance().reqDeactiveDoor();
 				return;
 			}
@@ -107,14 +121,14 @@ void RemoteUnlockTask::doTask()
 						
 					}
 					else if (args.param1 == Vehicle::DoorOpened) {
-						sendResponseUnlocked();
+						rspDoorOpened();
 					}
 					else {
 						LOG_W("Unhandled Vehicle Event %d", args.param1);
 					}
 				}
 				else if (args.e == AppEvent::AbortTasks) {
-					sendResponseError(Operation::W_Aborted);
+					rspError(Operation::W_Aborted);
 					return;
 				}
 				else if (args.e == AppEvent::PackageArrived){
@@ -132,17 +146,17 @@ void RemoteUnlockTask::doTask()
 		}
 		else {
 			LOG_I("waitForKnobTrigger Error %d", wr);
-			sendResponseError(Operation::E_Code);
+			rspError(Operation::E_Code);
 			return;
 		}
 	}
 	return;
 }
 
-void RemoteUnlockTask::sendAck()
+void RemoteUnlockTask::rspAck()
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, 1, seqID);
+	BCMessage msg = pkg.appendMessage(appID, 3, seqID);
 	msg.appendAck(1);
 	if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
 		LOG_E("req Auth failed");
@@ -152,7 +166,7 @@ void RemoteUnlockTask::sendAck()
 	}
 }
 
-void RemoteUnlockTask::sendResponseTimeOut()
+void RemoteUnlockTask::rspTimeOut()
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 1, seqID);

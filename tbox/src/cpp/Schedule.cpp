@@ -7,8 +7,8 @@
 
 Schedule::Schedule()
 {
-	nodes.next = nodes.prev;
-	nodes.prev = nodes.next;
+	nodes.next = &nodes;
+	nodes.prev = &nodes;
 	nodes.fireTime = 0x7fffffffffffffff;
 	nodes.task = NULL;
 }
@@ -16,6 +16,7 @@ Schedule::Schedule()
 void Schedule::triger(Timestamp current)
 {
 	Node* node = nodes.next;
+	LOG_V("Schedule::triger(%lld)", current.getValue());
 	while (node != &nodes)
 	{
 		if (node->fireTime >= current) {

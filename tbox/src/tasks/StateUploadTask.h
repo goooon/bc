@@ -15,12 +15,12 @@ public:
 	static Task* Create();
 	StateUploadTask() :Task(APPID_STATE_UPLOADING, true), pkg(pkg) {}
 
-	void sendResponseError(Operation::Result ret);
+	void rspError(Operation::Result ret);
 
-	void sendResponseUnlocked();
+	void rspUnlocked();
 	virtual void doTask()OVERRIDE;
-	void sendAck();
-	void sendResponseTimeOut();
+	void rspAck();
+	void rspTimeOut();
 private:
 	Timestamp   expireTime;
 	bcp_packet_t* pkg;
