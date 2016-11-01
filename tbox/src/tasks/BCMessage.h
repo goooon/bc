@@ -96,6 +96,7 @@ public:
 		if (bcp_packet_serialize(pkg, &buf, &len) >= 0)
 		{
 			ret = ThreadEvent::EventOk == MqttClient::getInstance().reqSendPackage(publish, buf, len, qos, millSec) ? true : false;
+			free(buf);
 		}
 		else {
 			LOG_E("bcp_packet_serialize failed");
