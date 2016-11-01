@@ -114,6 +114,9 @@
     <ClInclude Include="..\src\inc\bcp_serial.h">
       <Filter>src\inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\bcp_nmea.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cpp\util\Heap.cpp">
@@ -165,6 +168,9 @@
       <Filter>src\cpp\util</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cpp\bcp_serial.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\bcp_nmea.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
   </ItemGroup>

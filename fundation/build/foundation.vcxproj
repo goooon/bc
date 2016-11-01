@@ -123,6 +123,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)lib\$(Platform)\$(Configuration)\</OutDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)dep\nmealib\include;</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(SolutionDir)dep\nmealib\lib;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugUI|Win32'">
     <OutDir>$(SolutionDir)lib\$(Platform)\$(Configuration)\</OutDir>
@@ -249,6 +251,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\inc\bcp.h" />
     <ClInclude Include="..\src\inc\bcp_comm.h" />
+    <ClInclude Include="..\src\inc\bcp_nmea.h" />
     <ClInclude Include="..\src\inc\bcp_packet.h" />
     <ClInclude Include="..\src\inc\bcp_serial.h" />
     <ClInclude Include="..\src\inc\binary_formater.h" />
@@ -277,6 +280,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\cpp\bcp.cpp" />
     <ClCompile Include="..\src\cpp\bcp_comm.cpp" />
+    <ClCompile Include="..\src\cpp\bcp_nmea.cpp" />
     <ClCompile Include="..\src\cpp\bcp_packet.cpp" />
     <ClCompile Include="..\src\cpp\bcp_serial.cpp" />
     <ClCompile Include="..\src\cpp\binary_formater.cpp" />
