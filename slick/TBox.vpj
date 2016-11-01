@@ -418,7 +418,10 @@
             <F N="../tbox/src/cpp/Event.cpp"/>
             <F N="../tbox/src/cpp/main.cpp"/>
             <F N="../tbox/src/cpp/Mqtt.cpp"/>
+            <F N="../tbox/src/cpp/readme.txt"/>
+            <F N="../tbox/src/cpp/Schedule.cpp"/>
             <F N="../tbox/src/cpp/Task.cpp"/>
+            <F N="../tbox/src/cpp/Vehicle.cpp"/>
         </Folder>
         <Folder
             Name="inc"
@@ -528,10 +531,15 @@
             <F N="../tbox/src/tasks/BCMessage.h"/>
             <F N="../tbox/src/tasks/Element.h"/>
             <F N="../tbox/src/tasks/ErrorCode.h"/>
+            <F N="../tbox/src/tasks/RemoteUnlockTask.cpp"/>
             <F N="../tbox/src/tasks/RemoteUnlockTask.h"/>
+            <F N="../tbox/src/tasks/StateUploadTask.cpp"/>
+            <F N="../tbox/src/tasks/StateUploadTask.h"/>
             <F N="../tbox/src/tasks/TaskTable.cpp"/>
             <F N="../tbox/src/tasks/TaskTable.h"/>
             <F N="../tbox/src/tasks/VehicleAuthTask.h"/>
+            <F N="../tbox/src/tasks/VKeyIgnitionTask.cpp"/>
+            <F N="../tbox/src/tasks/VKeyIgnitionTask.h"/>
         </Folder>
     </Files>
 </Project>

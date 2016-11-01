@@ -29,6 +29,7 @@ void log_traceCallback(enum LOG_LEVELS level, char* message)
 {
 	if(level >= 4)LOG_I("%d,%s", level, message);
 }
+#include "./stdinout.cpp"
 void* initDebugLib()
 {
 	using namespace luabridge;
@@ -51,13 +52,15 @@ void* initDebugLib()
 			.addFunction("disconnect", &Application::disconnectServer)
 			.endClass();
 	}
-
+	
 	Log_setTraceCallback(log_traceCallback);
 	Log_nameValue lnv[2];
 	lnv[0].name = "logname";
 	lnv[0].value = "logvalue";
 	lnv[1].name = 0;
 	Log_initialize(lnv);
+
+	me::Trace::setLevelMask(me::Trace::getLevelMask() & me::Trace::Level::V ? me::Trace::Level::MI : me::Trace::Level::MV);
 	return &con;
 }
 void uninitDebugLib(void* lib)
@@ -74,12 +77,19 @@ void uninitDebugLib(void* lib)
 char* getCommand(int i)
 {
 	const char* cmd[] = {
-		"abcd","efg","hijk","",0
+		"ssh","testRemoteUnlock","hijk","",0
 	};
 	return (char*)cmd[i];
 }
 void onCommand(char* cmd)
 {
+	if (me::Tool::isEqual("ssh",cmd)) {
+		CreateProcess();
+		//ReadFromPipe();
+		//WriteToPipe("Password\r\n");
+		//ReadFromPipe();
+		return;
+	}
 	if (me::Tool::isEqual(cmd, "v")) {
 		me::Trace::setLevelMask(me::Trace::getLevelMask() & me::Trace::Level::V ? me::Trace::Level::MI : me::Trace::Level::MV);
 		return;
@@ -110,6 +120,10 @@ void onCommand(char* cmd)
 		return;
 	}
 	if (Application::getInstance().onDebugCommand(cmd))return;
+	if (!me::Tool::endWith(cmd,");")) {
+		WriteToPipe(cmd);
+		return;
+	}
 	if (g_state) {
 		int r = luaL_dostring(g_state, cmd);
 		if (r)
@@ -121,6 +135,7 @@ void onCommand(char* cmd)
 	}
 }
 #include "../../console/dxmain.cpp"
+
 #else
 void* initDebugLib() { return 0; }
 void uninitDebugLib(void* lib) {}
@@ -145,6 +160,6 @@ void onCommand(char* cmd)
 }
 LoopCallback debugMain(int argc, char* argv[]) { return 0; }
 
-
+char* getCommand(int i){return 0;}
 
 #endif

@@ -1,7 +1,7 @@
 #ifndef VERSIONINFO_H
 #define VERSIONINFO_H
 
-#define BUILD_TIMESTAMP "@BUILD_TIMESTAMP@"
+#define BUILD_TIMESTAMP __DATE__ " at " __TIME__
 #define CLIENT_VERSION  "@CLIENT_VERSION@"
 
 #endif /* VERSIONINFO_H */

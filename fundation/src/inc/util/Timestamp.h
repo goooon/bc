@@ -35,6 +35,7 @@ public:
 	Timestamp(const Timestamp& other) :ts(other.ts) {};
 	/// Copy constructor.
 
+	Timestamp(int year, int day, int hour, int min, int mon, int sec);
 	~Timestamp() {};
 	/// Destroys the timestamp
 

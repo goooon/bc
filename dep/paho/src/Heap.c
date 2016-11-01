@@ -37,7 +37,6 @@ char* Broker_recordFFDC(char* symptoms);
 #include <string.h>
 #include <stdio.h>
 #include <stddef.h>
-
 #include "Heap.h"
 
 #undef malloc

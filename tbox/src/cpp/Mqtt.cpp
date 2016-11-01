@@ -36,7 +36,7 @@ void trace_callback(enum MQTTASYNC_TRACE_LEVELS level, char* message)
 	}
 }
 
-bool MqttClient::onDebugCommand(char* cmd)
+bool MqttClient::onDebugCommand(const char* cmd)
 {
 	if (!strcmp(cmd, "MAXIMUM")) {
 		MQTTAsync_setTraceLevel(MQTTASYNC_TRACE_MAXIMUM);
@@ -178,14 +178,14 @@ bool MqttClient::reqConnect(char* url, char* topic,int qos,int keepAliveInterval
 	rc = MQTTAsync_setCallbacks(client, this, Client_connectionLost, Client_messageArrived, Client_deliveryComplete);
 
 	opts.keepAliveInterval = keepAliveInterval;
-	opts.username = "testuser";
-	opts.password = "testpassword";
+	opts.username = "test";
+	opts.password = "test123";
 	opts.MQTTVersion = 0;
 
 	opts.onFailure = Mqtt_onConnectFailed;
 	opts.context = this;
 
-	opts.cleansession = 1;
+	opts.cleansession = false;
 	opts.onSuccess = Mqtt_onConnected;
 	rc = MQTTAsync_connect(client, &opts);
 
@@ -213,10 +213,10 @@ ThreadEvent::WaitResult MqttClient::reqSendPackage(char* publish, void* payload,
 			LOG_W("MQTTAsync_waitForCompletion() timeout %d", rc);
 			return ThreadEvent::TimeOut;
 		}
-		else {
+		/*else {
 			LOG_W("MQTTAsync_waitForCompletion() failed %d", rc);
 			return ThreadEvent::Errors;
-		}
+		}*/
 	}
 	return ThreadEvent::EventOk;
 }

@@ -22,7 +22,7 @@ public:
 	void loop();
 	bool postAppEvent(AppEvent::Type e, u32 param1, u32 param2, void* data);
 	//debug interface
-	bool onDebugCommand(char* cmd);
+	bool onDebugCommand(const char* cmd);
 public:
 	bool connectServer();
 	void disconnectServer();

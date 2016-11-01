@@ -36,7 +36,6 @@ public:
 	Operation::Result prepareActiveDoorByVKey();
 	Operation::Result reqActiveDoorByVKey();
 	Operation::Result reqDeactiveDoor();
-	Operation::Result reqLockDoor();
 private:
 	void onEvent(u32 param1, u32 param2, void* data);
 	bool changeState(State next);

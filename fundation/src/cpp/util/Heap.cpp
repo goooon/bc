@@ -136,7 +136,7 @@ void Heap_check(char* string, void* ptr)
  * @param size the size of the item to be allocated
  * @return pointer to the allocated item, or NULL if there was an error
  */
-void* mymalloc(char* file, int line, size_t size)
+void* mymalloc(const char* file, int line, size_t size)
 {
 	storageElement* s = NULL;
 	size_t space = sizeof(storageElement);
@@ -180,7 +180,7 @@ void* mymalloc(char* file, int line, size_t size)
 }
 
 
-void checkEyecatchers(char* file, int line, void* p, size_t size)
+void checkEyecatchers(const char* file, int line, void* p, size_t size)
 {
 	int *sp = (int*)p;
 	char *cp = (char*)p;
@@ -203,7 +203,7 @@ void checkEyecatchers(char* file, int line, void* p, size_t size)
  * @param line use the __LINE__ macro to indicate which line this item was allocated at
  * @param p pointer to the item to be removed
  */
-int Internal_heap_unlink(char* file, int line, void* p)
+int Internal_heap_unlink(const char* file, int line, void* p)
 {
 	Node* e = NULL;
 	int rc = 0;
@@ -235,7 +235,7 @@ int Internal_heap_unlink(char* file, int line, void* p)
  * @param line use the __LINE__ macro to indicate which line this item was allocated at
  * @param p pointer to the item to be freed
  */
-void myfree(char* file, int line, void* p)
+void myfree(const char* file, int line, void* p)
 {
 	Thread_lock_mutex(heap_mutex);
 	if (Internal_heap_unlink(file, line, p))

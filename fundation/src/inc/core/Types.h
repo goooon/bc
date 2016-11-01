@@ -75,7 +75,7 @@ struct BCMemory
 	void  operator delete(void* p, int line, const char *func);
 	void  operator delete(void* p, int line, const char *func, const char* ext) {};
 	//void  operator delete(void* p,const char* fmt,...){}
-	void* operator new[](bc_size size);
+	void* operator new[]( bc_size size);
 	void  operator delete[](void* p);
 };
 #endif // GUARD_Types_h__

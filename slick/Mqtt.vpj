@@ -4,8 +4,8 @@
     VendorName="SlickEdit"
     TemplateName="GNU C/C++"
     WorkingDir="."
-    BuildSystem="automakefile"
-    BuildMakeFile="%rp%rn.mak">
+    BuildSystem=""
+    BuildMakeFile="">
     <Config
         Name="Debug"
         Type="gnuc"
@@ -44,7 +44,7 @@
                 Deletable="0"
                 SaveOption="SaveWorkspaceFiles"
                 RunFromDir="%rw">
-                <Exec CmdLine='make -f "%rp%rn.mak" CFG=%b'/>
+                <Exec CmdLine=""/>
             </Target>
             <Target
                 Name="Rebuild"
@@ -53,7 +53,7 @@
                 Deletable="0"
                 SaveOption="SaveWorkspaceFiles"
                 RunFromDir="%rw">
-                <Exec CmdLine='make -f "%rp%rn.mak" rebuild CFG=%b'/>
+                <Exec CmdLine=""/>
             </Target>
             <Target
                 Name="Debug"
@@ -177,7 +177,7 @@
                 Deletable="0"
                 SaveOption="SaveWorkspaceFiles"
                 RunFromDir="%rw">
-                <Exec CmdLine='make -f "%rp%rn.mak" CFG=%b'/>
+                <Exec CmdLine=""/>
             </Target>
             <Target
                 Name="Rebuild"
@@ -186,7 +186,7 @@
                 Deletable="0"
                 SaveOption="SaveWorkspaceFiles"
                 RunFromDir="%rw">
-                <Exec CmdLine='make -f "%rp%rn.mak" rebuild CFG=%b'/>
+                <Exec CmdLine=""/>
             </Target>
             <Target
                 Name="Debug"
@@ -310,7 +310,7 @@
                 Deletable="0"
                 SaveOption="SaveWorkspaceFiles"
                 RunFromDir="%rw">
-                <Exec CmdLine='make -f "%rp%rn.mak" CFG=%b'/>
+                <Exec CmdLine=""/>
             </Target>
             <Target
                 Name="Rebuild"
@@ -319,7 +319,7 @@
                 Deletable="0"
                 SaveOption="SaveWorkspaceFiles"
                 RunFromDir="%rw">
-                <Exec CmdLine='make -f "%rp%rn.mak" rebuild CFG=%b'/>
+                <Exec CmdLine=""/>
             </Target>
             <Target
                 Name="Debug"
@@ -402,7 +402,7 @@
             <Lib File="-ldl"/>
         </Libs>
         <PostBuildCommands>
-            <Exec CmdLine="cp %bdMqtt.so /usr/lib/libMqtt.so"/>
+            <Exec CmdLine="cp %bdMqtt.so /usr/local/arm/5.5.1/opt/arm-none-linux-gnueabi/lib/libMqtt.so"/>
         </PostBuildCommands>
     </Config>
     <Files>

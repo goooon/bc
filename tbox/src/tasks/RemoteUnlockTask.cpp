@@ -59,7 +59,7 @@ void RemoteUnlockTask::rspError(Operation::Result ret)
 	}
 }
 
-void RemoteUnlockTask::rspDoorActived()
+void RemoteUnlockTask::ntfDoorActived()
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
@@ -71,7 +71,7 @@ void RemoteUnlockTask::rspDoorActived()
 	}
 }
 
-void RemoteUnlockTask::rspDoorOpened()
+void RemoteUnlockTask::ntfDoorOpened()
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
@@ -98,17 +98,13 @@ void RemoteUnlockTask::doTask()
 		LOG_I("reqActiveDoorByVKey() wrong %d", ret);
 		return rspError(ret);
 	}
-	else {
-		rspDoorActived();
-	}
-
 	for (;;) {
 		ThreadEvent::WaitResult wr = waitForEvent(500);
 		if (wr == ThreadEvent::TimeOut) {
 			Timestamp now;
 			if (now > expireTime) {
 				LOG_I("Unlock waiting Time Out %lld",expireTime.getValue());
-				rspTimeOut();
+				ntfTimeOut();
 				Vehicle::getInstance().reqDeactiveDoor();
 				return;
 			}
@@ -118,10 +114,11 @@ void RemoteUnlockTask::doTask()
 			if (msgQueue.out(args)) {
 				if (args.e == AppEvent::AutoEvent) {
 					if (args.param1 == Vehicle::DoorActived) {
-						
+						ntfDoorActived();
 					}
 					else if (args.param1 == Vehicle::DoorOpened) {
-						rspDoorOpened();
+						LOG_I("rspDoorOpened %d %d", args.param1,args.param2);
+						ntfDoorOpened();
 					}
 					else {
 						LOG_W("Unhandled Vehicle Event %d", args.param1);
@@ -139,8 +136,11 @@ void RemoteUnlockTask::doTask()
 						LOG_W("Unhandled Package %d", args.param1);
 					}
 				}
+				else  if(args.e == AppEvent::AutoStateChanged){
+					LOG_W("Unhandled Event %d %d %d %lld", args.e,args.param1,args.param2,args.data);
+				}
 				else {
-					LOG_W("Unhandled Event %d", args.e);
+					LOG_E("Unhandled Event %d", args.e);
 				}
 			}
 		}
@@ -157,24 +157,30 @@ void RemoteUnlockTask::rspAck()
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 3, seqID);
-	msg.appendAck(1);
+	msg.appendAuthToken();
+	msg.appendTimeStamp();
+	msg.appendErrorElement(0);
 	if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
-		LOG_E("req Auth failed");
+		LOG_E("rspAck failed");
 	}
 	else {
-		PostEvent(AppEvent::AutoStateChanged, Vehicle::Authing, 0, 0);
+		//PostEvent(AppEvent::AutoStateChanged, Vehicle::Authing, 0, 0);
 	}
 }
 
-void RemoteUnlockTask::rspTimeOut()
+void RemoteUnlockTask::ntfTimeOut()
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, 1, seqID);
+	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
+	msg.appendAuthToken();
+	msg.appendTimeStamp();
 	msg.appendErrorElement(11);
+	msg.appendFunctionStatus(0);
+
 	if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
 		LOG_E("req Auth failed");
 	}
 	else {
-		PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);
+		//PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);
 	}
 }

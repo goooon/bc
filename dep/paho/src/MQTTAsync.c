@@ -3125,13 +3125,13 @@ MQTTAsync_nameValue* MQTTAsync_getVersionInfo()
 	static MQTTAsync_nameValue libinfo[MAX_INFO_STRINGS + 1];
 	int i = 0; 
 	
-	libinfo[i].name = "Product name";
-	libinfo[i++].value = "Paho Asynchronous MQTT C Client Library";
+	//libinfo[i].name = "Product name";
+	//libinfo[i++].value = "Paho Asynchronous MQTT C Client Library";
 	
-	libinfo[i].name = "Version";
-	libinfo[i++].value = CLIENT_VERSION;
+	//libinfo[i].name = "Version";
+	//libinfo[i++].value = CLIENT_VERSION;
 	
-	libinfo[i].name = "Build level";
+	libinfo[i].name = "Mqtt Timestamp";
 	libinfo[i++].value = BUILD_TIMESTAMP;
 #if defined(OPENSSL)
 	libinfo[i].name = "OpenSSL version";

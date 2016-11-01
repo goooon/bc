@@ -19,8 +19,10 @@ private:
 int main(int argc, char* argv[]) {
 	void* lib = initDebugLib();
 
-	LoopCallback lc = debugMain(argc, argv);
-
+	LoopCallback lc = 0;// debugMain(argc, argv);
+	printf("==================Tbox===================================\r\n");
+	printf(" timestamp " __DATE__ " at " __TIME__ "\r\n");
+	printf("=========================================================\r\n");
 	Application app;
 	app.init(argc, argv);
 	

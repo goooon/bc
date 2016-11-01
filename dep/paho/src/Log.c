@@ -161,8 +161,8 @@ int Log_initialize(Log_nameValue* info)
 		else if (strcmp(envval, "ERROR") == 0  || strcmp(envval, "TRACE_ERROR") == 0)
 			trace_output_level = LOG_ERROR;
 	}
-	Log_output(TRACE_MINIMUM, "=========================================================");
-	Log_output(TRACE_MINIMUM, "                   Trace Output");
+	Log_output(TRACE_MINIMUM, "===================Mqtt==================================");
+	//Log_output(TRACE_MINIMUM, "                   Trace Output");
 	if (info)
 	{
 		while (info->name)
