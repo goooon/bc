@@ -22,6 +22,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 ## compilation/linkage settings
 INCLUDE_DIRECTORIES(
     .
+    ../dep/nmealib/include
     ${CMAKE_BINARY_DIR}
     )
 
@@ -42,6 +43,7 @@ SET(common_src
 	src/cpp/binary_formater.cpp
 	src/cpp/crc32.cpp
 	src/cpp/bcp_serial.cpp
+	src/cpp/bcp_nmea.cpp
     )
 
 ##-std=gnu++11 
@@ -49,11 +51,15 @@ set (MY_CXX_FLAGS "-fpermissive -Wwrite-strings")
 SET( CMAKE_CXX_FLAGS  "${MY_CXX_FLAGS} ${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
 SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
 
+LINK_DIRECTORIES(../dep/nmealib)
+
 IF (CMAKE_SYSTEM_NAME MATCHES "Windows")
     SET(LIBS_SYSTEM ws2_32)
 ELSEIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
     SET(LIBS_SYSTEM dl)
 ENDIF()
+
+SET(LIBS_SYSTEM nmea ${LIBS_SYSTEM})
 
 ADD_LIBRARY(foundation SHARED ${common_src})
 TARGET_LINK_LIBRARIES(foundation pthread ${LIBS_SYSTEM}) 

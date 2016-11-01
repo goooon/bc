@@ -24,8 +24,8 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_BINARY_DIR}
     )
 
-LINK_DIRECTORIES(../fundation ../dep/paho/src)
-set(LIBS_SYSTEM foundation paho-mqtt3a)
+LINK_DIRECTORIES(../fundation ../dep/paho/src ../dep/nmealib)
+set(LIBS_SYSTEM foundation paho-mqtt3a nmea)
 
 #-std=gnu++11 
 set (MY_CXX_FLAGS "-fpermissive -Wwrite-strings")
