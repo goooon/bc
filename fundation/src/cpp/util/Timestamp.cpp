@@ -1,5 +1,6 @@
-//#include "../../inc/util/Timestamp.h"
-/*#include <time.h>
+#include "../../inc/util/Timestamp.h"
+#include <time.h>
+
 #if BC_TARGET == BC_TARGET_WIN
 #include <windows.h>
 #endif
@@ -34,4 +35,4 @@ void Timestamp::update(TimeVal milliseconds)
 {
 	update();
 	ts += milliseconds;
-}*/
+}
