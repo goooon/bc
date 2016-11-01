@@ -29,7 +29,7 @@ void BCMemory::operator delete(void* p)
 
 void* BCMemory::operator new[](bc_size size)
 {
-	return mymalloc(__FILE__, __LINE__, size);
+	return mymalloc((char*)__FILE__, __LINE__, size);
 }
 
 void BCMemory::operator delete[](void* p)

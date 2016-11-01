@@ -41,7 +41,7 @@ public:
 	bool reqDisconnect();
 	bool isConnected();
 	const char* getTopicName()const;
-	bool onDebugCommand(char* cmd);
+	bool onDebugCommand(const char* cmd);
 private:
 	bool changeState(State next);
 public:

@@ -13,17 +13,18 @@
 class RemoteUnlockTask : public Task {
 public:
 	const static int AppId = APPID_VKEY_ACTIVITION;
-	const static int Druation = 30 * 10000;
+	const static int Druation = 5 * 1000;
 public:
 	static Task* Create();
 	RemoteUnlockTask();
 private:
 	virtual void doTask()OVERRIDE;
 	void rspError(Operation::Result ret);
-	void rspDoorActived();
-	void rspDoorOpened();
 	void rspAck();
-	void rspTimeOut();
+
+	void ntfDoorActived();
+	void ntfDoorOpened();
+	void ntfTimeOut();
 private:
 	Timestamp     expireTime;
 	bcp_packet_t* pkg;

@@ -8,9 +8,10 @@ class BCMessage
 {
 public:
 	BCMessage(bcp_message_t* msg):msg(msg){}
-	bool appendAck(u8 ack) {
-		bcp_element_t *ele = bcp_element_create(&ack, 1);
-		bcp_element_append(msg, ele);
+	bool appendAck(u8 ec) {
+		appendAuthToken();
+		appendTimeStamp();
+		appendErrorElement(ec);
 		return true;
 	}
 	bool appendVehicleDesc() {
@@ -25,6 +26,7 @@ public:
 		bcp_element_append(msg, e);
 		return true;
 	}
+	//ec 0:succ else ref 云蜂通信协议
 	bool appendErrorElement(u8 ec) {
 		ErrorElement ele;
 		ele.errorcode = ec;
@@ -35,7 +37,7 @@ public:
 	bool appendFunctionStatus(u8 rawdata) {
 		u8 data[2];
 		data[0] = 1;
-		data[2] = rawdata;
+		data[1] = rawdata;
 		bcp_element_t *ele = bcp_element_create(data, 2);
 		bcp_element_append(msg, ele);
 		return true;

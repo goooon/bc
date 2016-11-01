@@ -90,11 +90,11 @@ struct Apparatus {
 	}DECL_GNU_PACKED;
 	struct AirCondition
 	{
-		byte level;			//¿Õµ÷µµÎ»
+		u8 level;			//¿Õµ÷µµÎ»
 	}DECL_GNU_PACKED;
 	struct Wiper
 	{
-		byte state;			//Óê¹ÎÆ÷µµÎ»
+		u8 state;			//Óê¹ÎÆ÷µµÎ»
 	}DECL_GNU_PACKED;
 	void reset() {
 		memset(this, 0, sizeof(Apparatus));

@@ -27,9 +27,9 @@ Operation::Result Vehicle::prepareVKeyIgnition()
 
 Operation::Result Vehicle::prepareActiveDoorByVKey()
 {
-	if (!authed) {
+	/*if (!authed) {
 		return Operation::E_Auth;
-	}
+	}*/
 	if (driving) {
 		return Operation::E_Driving;
 	}
@@ -42,6 +42,7 @@ Operation::Result Vehicle::prepareActiveDoorByVKey()
 Operation::Result Vehicle::reqActiveDoorByVKey()
 {
 	LOG_I("do reqActiveDoorByVKey()");
+	PostEvent(AppEvent::AutoEvent, Vehicle::DoorActived,0,0);
 	return Operation::Succ;
 }
 
@@ -49,14 +50,16 @@ Operation::Result Vehicle::reqDeactiveDoor()
 {
 	LOG_I("do reqDeactiveDoor()");
 	if (!apparatus.misc.door_actived)return Operation::Succ;
+	PostEvent(AppEvent::AutoEvent, Vehicle::DoorDeactived, 0, 0);
 	return Operation::Succ;
 }
 
-Operation::Result Vehicle::reqLockDoor()
-{
-	LOG_I("do reqLockDoor()");
-	return Operation::Succ;
-}
+//Operation::Result Vehicle::reqLockDoor()
+//{
+//	LOG_I("do reqLockDoor()");
+//	PostEvent(AppEvent::AutoEvent, Vehicle::Event::DoorDeactived, 0, 0);
+//	return Operation::Succ;
+//}
 
 void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 {

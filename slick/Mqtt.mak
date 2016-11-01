@@ -228,7 +228,7 @@ all: $(OUTFILE)
 
 $(OUTFILE): $(OUTDIR)  $(OBJ)
 	$(LINK)
-	-cp $(OUTDIR)/Mqtt.so /usr/lib/libMqtt.so
+	-cp $(OUTDIR)/Mqtt.so /usr/local/arm/4.5.1/opt/arm-none-linux-gnueabi/lib/libMqtt.so
 
 $(OUTDIR):
 	$(MKDIR) -p "$(OUTDIR)"

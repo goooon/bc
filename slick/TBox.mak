@@ -25,22 +25,28 @@ CFG_LIB=-ldl -lpthread -lMqtt -lstdc++
 CFG_OBJ=
 COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
-	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o $(OUTDIR)/Types.o \
+	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Schedule.o \
+	$(OUTDIR)/Task.o $(OUTDIR)/Vehicle.o $(OUTDIR)/Types.o \
 	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
 	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
 	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o $(OUTDIR)/TaskTable.o 
+	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
+	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
+	$(OUTDIR)/TaskTable.o $(OUTDIR)/VKeyIgnitionTask.o 
 OBJ=$(COMMON_OBJ) $(CFG_OBJ)
 ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
-	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o $(OUTDIR)/Types.o \
+	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Schedule.o \
+	$(OUTDIR)/Task.o $(OUTDIR)/Vehicle.o $(OUTDIR)/Types.o \
 	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
 	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
 	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o $(OUTDIR)/TaskTable.o \
-	-ldl -lpthread -lMqtt -lstdc++ 
+	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
+	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
+	$(OUTDIR)/TaskTable.o $(OUTDIR)/VKeyIgnitionTask.o -ldl -lpthread \
+	-lMqtt -lstdc++ 
 
 COMPILE=g++ -c   -g -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
 LINK=g++  -g -o "$(OUTFILE)" $(ALL_OBJ)
@@ -173,22 +179,28 @@ CFG_LIB=-ldl -lpthread -lMqtt -lstdc++
 CFG_OBJ=
 COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
-	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o $(OUTDIR)/Types.o \
+	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Schedule.o \
+	$(OUTDIR)/Task.o $(OUTDIR)/Vehicle.o $(OUTDIR)/Types.o \
 	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
 	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
 	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o $(OUTDIR)/TaskTable.o 
+	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
+	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
+	$(OUTDIR)/TaskTable.o $(OUTDIR)/VKeyIgnitionTask.o 
 OBJ=$(COMMON_OBJ) $(CFG_OBJ)
 ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
-	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o $(OUTDIR)/Types.o \
+	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Schedule.o \
+	$(OUTDIR)/Task.o $(OUTDIR)/Vehicle.o $(OUTDIR)/Types.o \
 	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
 	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
 	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o $(OUTDIR)/TaskTable.o \
-	-ldl -lpthread -lMqtt -lstdc++ 
+	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
+	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
+	$(OUTDIR)/TaskTable.o $(OUTDIR)/VKeyIgnitionTask.o -ldl -lpthread \
+	-lMqtt -lstdc++ 
 
 COMPILE=g++ -c   -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
 LINK=g++  -o "$(OUTFILE)" $(ALL_OBJ)
@@ -321,22 +333,28 @@ CFG_LIB=-ldl -lpthread -lMqtt -lstdc++
 CFG_OBJ=
 COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
-	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o $(OUTDIR)/Types.o \
+	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Schedule.o \
+	$(OUTDIR)/Task.o $(OUTDIR)/Vehicle.o $(OUTDIR)/Types.o \
 	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
 	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
 	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o $(OUTDIR)/TaskTable.o 
+	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
+	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
+	$(OUTDIR)/TaskTable.o $(OUTDIR)/VKeyIgnitionTask.o 
 OBJ=$(COMMON_OBJ) $(CFG_OBJ)
 ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
-	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Task.o $(OUTDIR)/Types.o \
+	$(OUTDIR)/main.o $(OUTDIR)/Mqtt.o $(OUTDIR)/Schedule.o \
+	$(OUTDIR)/Task.o $(OUTDIR)/Vehicle.o $(OUTDIR)/Types.o \
 	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
 	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
 	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
 	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o $(OUTDIR)/TaskTable.o \
-	-ldl -lpthread -lMqtt -lstdc++ 
+	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
+	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
+	$(OUTDIR)/TaskTable.o $(OUTDIR)/VKeyIgnitionTask.o -ldl -lpthread \
+	-lMqtt -lstdc++ 
 
 COMPILE=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc -c   -g -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
 LINK=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc  -g -o "$(OUTFILE)" $(ALL_OBJ)

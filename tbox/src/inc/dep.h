@@ -48,6 +48,6 @@ struct Memory
 #define bc_free  free
 LoopCallback debugMain(int argc, char* argv[]);
 void onCommand(char* cmd);
-
+char* getCommand(int i);
 #endif
 #endif // GUARD_dep_h__

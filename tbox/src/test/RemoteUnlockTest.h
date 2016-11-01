@@ -57,27 +57,15 @@ protected:
 	}
 private:
 	void reqRemoteUnlock() {
-		u8 ack = 1;
-		bcp_packet_t *pkg = bcp_packet_create();
-		seqId = bcp_next_seq_id();
-
-		bcp_message_t *msg = bcp_message_create(1, 1, seqId);
-		bcp_message_append(pkg, msg);
-		bcp_element_t *ele = bcp_element_create(&ack, 1);
-		bcp_element_append(msg, ele);
-
-		TimeStamp ts;
-		bcp_element_t *tse = bcp_element_create((u8*)&ts, sizeof(ts));
-		bcp_element_append(msg, tse);
-
-		u8* buf;
-		u32 len;
-		if (bcp_packet_serialize(pkg, &buf, &len) >= 0)
-		{
-			Config& cfg = Config::getInstance();
-			MqttClient::getInstance().reqSendPackage(cfg.pub_topic, buf, len, 0, 5000);
+		BCPackage pkg;
+		BCMessage msg = pkg.appendMessage(appID, 3, seqID);
+		msg.appendAck(1);
+		if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
+			LOG_E("req Auth failed");
 		}
-		bcp_packet_destroy(pkg);
+		else {
+			PostEvent(AppEvent::AutoStateChanged, Vehicle::Authing, 0, 0);
+		}
 	}
 private:
 	bool loop;

@@ -19,6 +19,7 @@ void Application::init(int argc, char** argv)
 	config.parse(argc, argv);
 	//launch thread to do branch task
 	Thread::startThread(this);
+	mqtt.onDebugCommand("PROTOCOL");
 }
 
 bool Application::startTask(Task* task,bool runAsThread)
@@ -88,9 +89,8 @@ void Application::loop()
 	}
 }
 
-bool Application::onDebugCommand(char* cmd)
+bool Application::onDebugCommand(const char* cmd)
 {
-	LOG_P("%s\r\n", cmd);
 	if (!strcmp(cmd, "unlock")) {
 
 		return true;
@@ -108,6 +108,12 @@ bool Application::onDebugCommand(char* cmd)
 		return true;
 	}
 	if (!strcmp(cmd, "reqUnlock")) {
+		Task* t = bc_new RemoteUnlockTest();
+		::PostEvent(AppEvent::AbortTasks, t->getApplicationId(), 0, 0);
+		::PostEvent(AppEvent::InsertTask, 0, 0, t);
+		return true;
+	}
+	if (!strcmp(cmd, "testRemoteUnlock")) {
 		Task* t = bc_new RemoteUnlockTest();
 		::PostEvent(AppEvent::AbortTasks, t->getApplicationId(), 0, 0);
 		::PostEvent(AppEvent::InsertTask, 0, 0, t);
@@ -197,8 +203,8 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 		if(data)schedule.remove((Task*)data);
 		else schedule.remove(param1);
 		break;
-	case AppEvent::UpdateSchedule:
-		schedule.update(Timestamp(param1, param2), (u32)data);
+    case AppEvent::UpdateSchedule:
+		schedule.update(Timestamp(param1, param2), *((int*)(&data)));
 		break;
 	default:
 		break;
@@ -253,7 +259,7 @@ void Application::onMqttEvent(u32 param1, u32 param2, void* data)
 	LOG_I("onMqttEvent(%d,%d,%p)",param1,param2,data);
 	if (param2 == MqttClient::Subscribed) {
 		if (!config.isServer) { 
-			startTask(TaskCreate(APPID_AUTHENTICATION,0), false);
+			//startTask(TaskCreate(APPID_AUTHENTICATION,0), false);
 		}
 	}
 }

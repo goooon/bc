@@ -61,9 +61,9 @@ typedef struct
 } heap_info;
 
 
-void* mymalloc(char*, int, size_t size);
-void* myrealloc(char*, int, void* p, size_t size);
-void  myfree(char*, int, void* p);
+void* mymalloc(const char*, int, size_t size);
+void* myrealloc(const char*, int, void* p, size_t size);
+void  myfree(const char*, int, void* p);
 
 void Heap_scan(int log_level);
 int Heap_initialize(void);
