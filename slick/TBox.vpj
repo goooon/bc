@@ -137,6 +137,7 @@
             <Lib File="-lpthread"/>
             <Lib File="-lMqtt"/>
             <Lib File="-lstdc++"/>
+            <Lib File="-lrt"/>
         </Libs>
     </Config>
     <Config
@@ -403,6 +404,7 @@
             <Lib File="-lpthread"/>
             <Lib File="-lMqtt"/>
             <Lib File="-lstdc++"/>
+            <Lib File="-lrt"/>
         </Libs>
     </Config>
     <Files>
@@ -478,6 +480,7 @@
                     <F N="../fundation/src/cpp/util/SharedMemory.cpp"/>
                     <F N="../fundation/src/cpp/util/StackTrace.cpp"/>
                     <F N="../fundation/src/cpp/util/Thread.cpp"/>
+                    <F N="../fundation/src/cpp/util/Timestamp.cpp"/>
                     <F N="../fundation/src/cpp/util/Tree.cpp"/>
                 </Folder>
                 <F N="../fundation/src/cpp/bcp.cpp"/>

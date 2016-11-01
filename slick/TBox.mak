@@ -21,7 +21,7 @@ ifeq "$(CFG)" "Debug"
 OUTDIR=Debug
 OUTFILE=$(OUTDIR)/TBox_Slick
 CFG_INC=
-CFG_LIB=-ldl -lpthread -lMqtt -lstdc++ 
+CFG_LIB=-ldl -lpthread -lMqtt -lstdc++ -lrt 
 CFG_OBJ=
 COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
@@ -29,9 +29,9 @@ COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Task.o $(OUTDIR)/Vehicle.o $(OUTDIR)/Types.o \
 	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
 	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
-	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
-	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
+	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Timestamp.o \
+	$(OUTDIR)/Tree.o $(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o \
+	$(OUTDIR)/bcp_packet.o $(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
 	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
 	$(OUTDIR)/TaskTable.o $(OUTDIR)/VKeyIgnitionTask.o 
 OBJ=$(COMMON_OBJ) $(CFG_OBJ)
@@ -41,12 +41,12 @@ ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Task.o $(OUTDIR)/Vehicle.o $(OUTDIR)/Types.o \
 	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
 	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
-	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
-	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
+	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Timestamp.o \
+	$(OUTDIR)/Tree.o $(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o \
+	$(OUTDIR)/bcp_packet.o $(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
 	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
 	$(OUTDIR)/TaskTable.o $(OUTDIR)/VKeyIgnitionTask.o -ldl -lpthread \
-	-lMqtt -lstdc++ 
+	-lMqtt -lstdc++ -lrt 
 
 COMPILE=g++ -c   -g -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
 LINK=g++  -g -o "$(OUTFILE)" $(ALL_OBJ)
@@ -183,9 +183,9 @@ COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Task.o $(OUTDIR)/Vehicle.o $(OUTDIR)/Types.o \
 	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
 	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
-	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
-	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
+	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Timestamp.o \
+	$(OUTDIR)/Tree.o $(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o \
+	$(OUTDIR)/bcp_packet.o $(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
 	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
 	$(OUTDIR)/TaskTable.o $(OUTDIR)/VKeyIgnitionTask.o 
 OBJ=$(COMMON_OBJ) $(CFG_OBJ)
@@ -195,9 +195,9 @@ ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Task.o $(OUTDIR)/Vehicle.o $(OUTDIR)/Types.o \
 	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
 	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
-	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
-	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
+	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Timestamp.o \
+	$(OUTDIR)/Tree.o $(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o \
+	$(OUTDIR)/bcp_packet.o $(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
 	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
 	$(OUTDIR)/TaskTable.o $(OUTDIR)/VKeyIgnitionTask.o -ldl -lpthread \
 	-lMqtt -lstdc++ 
@@ -329,7 +329,7 @@ ifeq "$(CFG)" "ArmDebug"
 OUTDIR=ArmDebug
 OUTFILE=$(OUTDIR)/TBox_Slick
 CFG_INC=
-CFG_LIB=-ldl -lpthread -lMqtt -lstdc++ 
+CFG_LIB=-ldl -lpthread -lMqtt -lstdc++ -lrt 
 CFG_OBJ=
 COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
@@ -337,9 +337,9 @@ COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Task.o $(OUTDIR)/Vehicle.o $(OUTDIR)/Types.o \
 	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
 	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
-	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
-	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
+	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Timestamp.o \
+	$(OUTDIR)/Tree.o $(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o \
+	$(OUTDIR)/bcp_packet.o $(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
 	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
 	$(OUTDIR)/TaskTable.o $(OUTDIR)/VKeyIgnitionTask.o 
 OBJ=$(COMMON_OBJ) $(CFG_OBJ)
@@ -349,12 +349,12 @@ ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Task.o $(OUTDIR)/Vehicle.o $(OUTDIR)/Types.o \
 	$(OUTDIR)/Heap.o $(OUTDIR)/LinkedList.o $(OUTDIR)/Log.o \
 	$(OUTDIR)/Pipe.o $(OUTDIR)/Semaphore.o $(OUTDIR)/SharedMemory.o \
-	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Tree.o \
-	$(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o $(OUTDIR)/bcp_packet.o \
-	$(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
+	$(OUTDIR)/StackTrace.o $(OUTDIR)/Thread.o $(OUTDIR)/Timestamp.o \
+	$(OUTDIR)/Tree.o $(OUTDIR)/bcp.o $(OUTDIR)/bcp_comm.o \
+	$(OUTDIR)/bcp_packet.o $(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
 	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
 	$(OUTDIR)/TaskTable.o $(OUTDIR)/VKeyIgnitionTask.o -ldl -lpthread \
-	-lMqtt -lstdc++ 
+	-lMqtt -lstdc++ -lrt 
 
 COMPILE=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc -c   -g -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
 LINK=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc  -g -o "$(OUTFILE)" $(ALL_OBJ)
