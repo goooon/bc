@@ -5,6 +5,7 @@
 #include <time.h>
 #if defined(_WIN32) || defined(_WIN64)
 #define __WINOS__ 1
+#include <windows.h>
 #else
 #include <termios.h>
 #include <sys/types.h>
@@ -65,7 +66,7 @@ typedef struct bcp_serial_s
 } bcp_serial_t;
 
 #if defined(__WINOS__)
-char bcp_serial_open(const char *port, int baud, char bits, parity parity, char stopbit) 
+void *bcp_serial_open(const char *port, int baud, char bits, parity parity, char stopbit) 
 {
 	bcp_serial_t *s;
 	char tmp[256];
@@ -160,7 +161,7 @@ char bcp_serial_open(const char *port, int baud, char bits, parity parity, char 
 		goto __failed;
 	}
 
-	if (!SetCommState(s->hdl, &conf)) {
+	if (!SetCommState(s->hdl, &s->conf)) {
 		printf("Error SetCommState %s Port\n", tmp);
 		goto __failed;
 	}
@@ -201,7 +202,7 @@ int bcp_serial_write(void *hdl, const char *buffer, int len)
 {
 	DWORD r = 0;
 	bcp_serial_t *s;
-	uint8_t *p = (uint8_t*)buffer;
+	const uint8_t *p = (uint8_t*)buffer;
 
 	if (!hdl || !p) {
 		return -1;
@@ -216,7 +217,7 @@ int bcp_serial_write(void *hdl, const char *buffer, int len)
 		}
 	}
 
-	return p - buffer;
+	return (const char*)p - buffer;
 }
 
 int bcp_serial_read(void *hdl, char *buffer, int len, int timout)

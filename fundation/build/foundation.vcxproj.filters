@@ -111,6 +111,9 @@
     <ClInclude Include="..\src\inc\util\List.h">
       <Filter>src\inc\util</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\bcp_serial.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cpp\util\Heap.cpp">
@@ -160,6 +163,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cpp\util\TimeStamp.cpp">
       <Filter>src\cpp\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\bcp_serial.cpp">
+      <Filter>src\cpp</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

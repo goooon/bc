@@ -45,7 +45,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugUI|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -135,7 +135,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -250,6 +250,7 @@
     <ClInclude Include="..\src\inc\bcp.h" />
     <ClInclude Include="..\src\inc\bcp_comm.h" />
     <ClInclude Include="..\src\inc\bcp_packet.h" />
+    <ClInclude Include="..\src\inc\bcp_serial.h" />
     <ClInclude Include="..\src\inc\binary_formater.h" />
     <ClInclude Include="..\src\inc\core\Arch.h" />
     <ClInclude Include="..\src\inc\core\Compiler.h" />
@@ -277,6 +278,7 @@
     <ClCompile Include="..\src\cpp\bcp.cpp" />
     <ClCompile Include="..\src\cpp\bcp_comm.cpp" />
     <ClCompile Include="..\src\cpp\bcp_packet.cpp" />
+    <ClCompile Include="..\src\cpp\bcp_serial.cpp" />
     <ClCompile Include="..\src\cpp\binary_formater.cpp" />
     <ClCompile Include="..\src\cpp\core\Types.cpp" />
     <ClCompile Include="..\src\cpp\crc32.cpp" />
