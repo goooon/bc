@@ -1,3 +1,4 @@
+#if defined(_WIN32) || defined(_WIN64)
 #include <windows.h> 
 #include <tchar.h>
 #include <stdio.h> 
@@ -219,3 +220,4 @@ void ErrorExit(PTSTR lpszFunction)
 	LocalFree(lpDisplayBuf);
 	ExitProcess(1);
 }
+#endif

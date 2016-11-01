@@ -44,6 +44,7 @@ SET(common_src
 	src/cpp/crc32.cpp
 	src/cpp/bcp_serial.cpp
 	src/cpp/bcp_nmea.cpp
+	src/cpp/util/Timestamp.cpp
     )
 
 ##-std=gnu++11 
@@ -59,7 +60,7 @@ ELSEIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
     SET(LIBS_SYSTEM dl)
 ENDIF()
 
-SET(LIBS_SYSTEM nmea ${LIBS_SYSTEM})
+SET(LIBS_SYSTEM rt nmea ${LIBS_SYSTEM})
 
 ADD_LIBRARY(foundation SHARED ${common_src})
 TARGET_LINK_LIBRARIES(foundation pthread ${LIBS_SYSTEM}) 

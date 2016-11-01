@@ -24,8 +24,8 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_BINARY_DIR}
     )
 
-LINK_DIRECTORIES(../fundation ../dep/paho/src)
-set(LIBS_SYSTEM foundation paho-mqtt3a)
+LINK_DIRECTORIES(../fundation ../dep/paho/src ../dep/nmealib)
+set(LIBS_SYSTEM foundation paho-mqtt3a nmea)
 
 #-std=gnu++11 
 set (MY_CXX_FLAGS "-fpermissive -Wwrite-strings")
@@ -41,7 +41,14 @@ set(SRC_LIST
 		src/cpp/Config.cpp
 		src/cpp/main.cpp
 		src/cpp/Event.cpp
+		src/cpp/Schedule.cpp
+		src/cpp/stdinout.cpp
+		src/cpp/Vehicle.cpp
 		src/tasks/TaskTable.cpp
+		src/tasks/RemoteUnlockTask.cpp
+		src/tasks/StateUploadTask.cpp
+		src/tasks/VKeyIgnitionTask.cpp
+		
 	)
 add_executable(tbox ${SRC_LIST})
 TARGET_LINK_LIBRARIES(tbox pthread ${LIBS_SYSTEM}) 
