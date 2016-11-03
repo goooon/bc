@@ -81,7 +81,7 @@ void *bcp_serial_open(const char *port, int baud, char bits, parity parity, char
 	}
 
 	sprintf(tmp, "\\\\.\\%s", port);
-	s->hdl = CreateFile(tmp,
+	s->hdl = CreateFileA(tmp,
 				  GENERIC_READ | GENERIC_WRITE, 
 				  0,
 				  NULL,

@@ -16,15 +16,30 @@ private:
 	Application& app;
 };
 
+class TestLoop : public Thread
+{
+	virtual void run()OVERRIDE
+	{
+		char cmd[512];
+		for (;;) {
+			if (scanf("%s", cmd)) {
+				onCommand(cmd);
+			}
+		}
+	}
+};
+
 int main(int argc, char* argv[]) {
 	void* lib = initDebugLib();
 
-	LoopCallback lc = 0;// debugMain(argc, argv);
+	LoopCallback lc =  debugMain(argc, argv);
 	printf("==================Tbox===================================\r\n");
 	printf(" timestamp " __DATE__ " at " __TIME__ "\r\n");
 	printf("=========================================================\r\n");
 	Application app;
-	app.init(argc, argv);
+	if (!app.init(argc, argv)) {
+		return 0;
+	}
 	
 	if (lc) {
 		MainLoop loop(app);
@@ -32,6 +47,8 @@ int main(int argc, char* argv[]) {
 		lc(getCommand, onCommand);
 	}
 	else {
+		TestLoop tl;
+		Thread::startThread(&tl);
 		app.loop();
 	}
 

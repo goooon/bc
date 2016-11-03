@@ -223,9 +223,11 @@ long MQTTAsync_elapsed(struct timespec start)
 long MQTTAsync_elapsed(struct timeval start)
 {
 	struct timeval now, res;
-
+	printf("MQTTAsync_elapsed ----------------");
 	gettimeofday(&now, NULL);
+	printf("MQTTAsync_elapsed ----------------1");
 	timersub(&now, &start, &res);
+	printf("MQTTAsync_elapsed ----------------2");
 	return (res.tv_sec)*1000 + (res.tv_usec)/1000;
 }
 #endif
@@ -406,6 +408,8 @@ int MQTTAsync_createWithOptions(MQTTAsync* handle, const char* serverURI, const 
 	MQTTAsyncs *m = NULL;
 
 	FUNC_ENTRY;
+	
+	Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 	MQTTAsync_lock_mutex(mqttasync_mutex);
 
 	if (serverURI == NULL || clientId == NULL)
@@ -488,7 +492,7 @@ int MQTTAsync_createWithOptions(MQTTAsync* handle, const char* serverURI, const 
 	ListAppend(bstate->clients, m->c, sizeof(Clients) + 3*sizeof(List));
 
 exit:
-	MQTTAsync_unlock_mutex(mqttasync_mutex);
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 	FUNC_EXIT_RC(rc);
 	return rc;
 }
@@ -862,6 +866,7 @@ int MQTTAsync_reconnect(MQTTAsync handle)
 	MQTTAsyncs* m = handle;
 
 	FUNC_ENTRY;
+	Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 	MQTTAsync_lock_mutex(mqttasync_mutex);
 
 	if (m->automaticReconnect) 
@@ -891,7 +896,7 @@ int MQTTAsync_reconnect(MQTTAsync handle)
 	  	rc = MQTTASYNC_SUCCESS;
 	}
 
-	MQTTAsync_unlock_mutex(mqttasync_mutex);
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 	FUNC_EXIT_RC(rc);
 	return rc;
 }
@@ -1063,6 +1068,7 @@ int MQTTAsync_processCommand()
 	List* ignored_clients = NULL;
 	
 	FUNC_ENTRY;
+	Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 	MQTTAsync_lock_mutex(mqttasync_mutex);
 	MQTTAsync_lock_mutex(mqttcommand_mutex);
 	
@@ -1294,7 +1300,7 @@ int MQTTAsync_processCommand()
 		ListAppend(command->client->responses, command, sizeof(command));
 
 exit:
-	MQTTAsync_unlock_mutex(mqttasync_mutex);
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 	rc = (command != NULL);
 	FUNC_EXIT_RC(rc);
 	return rc;
@@ -1311,7 +1317,7 @@ void MQTTAsync_checkTimeouts()
 	time(&(now));
 	if (difftime(now, last) < 3)
 		goto exit;
-
+	Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 	MQTTAsync_lock_mutex(mqttasync_mutex);
 	last = now;
 	while (ListNextElement(handles, &current))		/* for each client */
@@ -1400,7 +1406,7 @@ void MQTTAsync_checkTimeouts()
 			}
 		}
 	}
-	MQTTAsync_unlock_mutex(mqttasync_mutex);
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 exit:
 	FUNC_EXIT;
 }
@@ -1409,10 +1415,11 @@ exit:
 thread_return_type WINAPI MQTTAsync_sendThread(void* n)
 {
 	FUNC_ENTRY;
+	Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 	MQTTAsync_lock_mutex(mqttasync_mutex);
 	sendThread_state = RUNNING;
 	sendThread_id = Thread_getid();
-	MQTTAsync_unlock_mutex(mqttasync_mutex);
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 	while (!tostop)
 	{
 		int rc;
@@ -1433,10 +1440,11 @@ thread_return_type WINAPI MQTTAsync_sendThread(void* n)
 		MQTTAsync_checkTimeouts();
 	}
 	sendThread_state = STOPPING;
+	Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 	MQTTAsync_lock_mutex(mqttasync_mutex);
 	sendThread_state = STOPPED;
 	sendThread_id = 0;
-	MQTTAsync_unlock_mutex(mqttasync_mutex);
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 	FUNC_EXIT;
 	return 0;
 }
@@ -1538,6 +1546,7 @@ void MQTTAsync_destroy(MQTTAsync* handle)
 	MQTTAsyncs* m = *handle;
 
 	FUNC_ENTRY;
+	Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 	MQTTAsync_lock_mutex(mqttasync_mutex);
 
 	if (m == NULL)
@@ -1574,7 +1583,7 @@ void MQTTAsync_destroy(MQTTAsync* handle)
 		MQTTAsync_terminate();
 
 exit:
-	MQTTAsync_unlock_mutex(mqttasync_mutex);
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 	FUNC_EXIT;
 }
 
@@ -1647,6 +1656,7 @@ thread_return_type WINAPI MQTTAsync_receiveThread(void* n)
 	long timeout = 10L; /* first time in we have a small timeout.  Gets things started more quickly */
 
 	FUNC_ENTRY;
+	Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 	MQTTAsync_lock_mutex(mqttasync_mutex);
 	receiveThread_state = RUNNING;
 	receiveThread_id = Thread_getid();
@@ -1657,8 +1667,9 @@ thread_return_type WINAPI MQTTAsync_receiveThread(void* n)
 		MQTTAsyncs* m = NULL;
 		MQTTPacket* pack = NULL;
 
-		MQTTAsync_unlock_mutex(mqttasync_mutex);
+		Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 		pack = MQTTAsync_cycle(&sock, timeout, &rc);
+		Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 		MQTTAsync_lock_mutex(mqttasync_mutex);
 		if (tostop)
 			break;
@@ -1685,8 +1696,9 @@ thread_return_type WINAPI MQTTAsync_receiveThread(void* n)
 			Log(TRACE_MINIMUM, -1, "Error from MQTTAsync_cycle() - removing socket %d", sock);
 			if (m->c->connected == 1)
 			{
-				MQTTAsync_unlock_mutex(mqttasync_mutex);
+				Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 				MQTTAsync_disconnect_internal(m, 0);
+				Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 				MQTTAsync_lock_mutex(mqttasync_mutex);
 			}
 			else /* calling disconnect_internal won't have any effect if we're already disconnected */
@@ -1874,7 +1886,7 @@ thread_return_type WINAPI MQTTAsync_receiveThread(void* n)
 	}
 	receiveThread_state = STOPPED;
 	receiveThread_id = 0;
-	MQTTAsync_unlock_mutex(mqttasync_mutex);
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 #if !defined(WIN32) && !defined(WIN64)
 	if (sendThread_state != STOPPED)
 		Thread_signal_cond(send_cond);
@@ -1915,9 +1927,10 @@ void MQTTAsync_stop()
 			tostop = 1;
 			while ((sendThread_state != STOPPED || receiveThread_state != STOPPED) && ++count < 100)
 			{
-				MQTTAsync_unlock_mutex(mqttasync_mutex);
+				Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 				Log(TRACE_MIN, -1, "sleeping");
 				MQTTAsync_sleep(100L);
+				Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 				MQTTAsync_lock_mutex(mqttasync_mutex);
 			}
 			rc = 1;
@@ -1937,6 +1950,7 @@ int MQTTAsync_setCallbacks(MQTTAsync handle, void* context,
 	MQTTAsyncs* m = handle;
 
 	FUNC_ENTRY;
+	Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 	MQTTAsync_lock_mutex(mqttasync_mutex);
 
 	if (m == NULL || ma == NULL || m->c->connect_state != 0)
@@ -1949,7 +1963,7 @@ int MQTTAsync_setCallbacks(MQTTAsync handle, void* context,
 		m->dc = dc;
 	}
 
-	MQTTAsync_unlock_mutex(mqttasync_mutex);
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 	FUNC_EXIT_RC(rc);
 	return rc;
 }
@@ -1961,6 +1975,7 @@ int MQTTAsync_setConnected(MQTTAsync handle, void* context, MQTTAsync_connected*
 	MQTTAsyncs* m = handle;
 
 	FUNC_ENTRY;
+	Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 	MQTTAsync_lock_mutex(mqttasync_mutex);
 
 	if (m == NULL || m->c->connect_state != 0)
@@ -1971,7 +1986,7 @@ int MQTTAsync_setConnected(MQTTAsync handle, void* context, MQTTAsync_connected*
 		m->connected = connected;
 	}
 
-	MQTTAsync_unlock_mutex(mqttasync_mutex);
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 	FUNC_EXIT_RC(rc);
 	return rc;
 }
@@ -2183,17 +2198,19 @@ int MQTTAsync_connect(MQTTAsync handle, const MQTTAsync_connectOptions* options)
 	tostop = 0;
 	if (sendThread_state != STARTING && sendThread_state != RUNNING)
 	{
+		Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 		MQTTAsync_lock_mutex(mqttasync_mutex);
 		sendThread_state = STARTING;
 		Thread_start(MQTTAsync_sendThread, NULL);
-		MQTTAsync_unlock_mutex(mqttasync_mutex);
+		Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 	}
 	if (receiveThread_state != STARTING && receiveThread_state != RUNNING)
 	{
+		Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 		MQTTAsync_lock_mutex(mqttasync_mutex);
 		receiveThread_state = STARTING;
 		Thread_start(MQTTAsync_receiveThread, handle);
-		MQTTAsync_unlock_mutex(mqttasync_mutex);
+		Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 	}
 
 	m->c->keepAliveInterval = options->keepAliveInterval;
@@ -2368,10 +2385,11 @@ int MQTTAsync_isConnected(MQTTAsync handle)
 	int rc = 0;
 
 	FUNC_ENTRY;
+	Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 	MQTTAsync_lock_mutex(mqttasync_mutex);
 	if (m && m->c)
 		rc = m->c->connected;
-	MQTTAsync_unlock_mutex(mqttasync_mutex);
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 	FUNC_EXIT_RC(rc);
 	return rc;
 }
@@ -2403,6 +2421,7 @@ int MQTTAsync_assignMsgId(MQTTAsyncs* m)
 	thread_id = Thread_getid();
 	if (thread_id != sendThread_id && thread_id != receiveThread_id)
 	{
+		Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 		MQTTAsync_lock_mutex(mqttasync_mutex);
 		locked = 1;
 	}
@@ -2421,7 +2440,7 @@ int MQTTAsync_assignMsgId(MQTTAsyncs* m)
 	if (msgid != 0)
 		m->c->msgID = msgid;
 	if (locked)
-		MQTTAsync_unlock_mutex(mqttasync_mutex);
+		Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 	FUNC_EXIT_RC(msgid);
 	return msgid;
 }
@@ -2831,6 +2850,7 @@ MQTTPacket* MQTTAsync_cycle(int* sock, unsigned long timeout, int* rc)
 #if defined(OPENSSL)
 	}
 #endif
+	Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 	MQTTAsync_lock_mutex(mqttasync_mutex);
 	if (*sock > 0)
 	{
@@ -2942,7 +2962,7 @@ MQTTPacket* MQTTAsync_cycle(int* sock, unsigned long timeout, int* rc)
 		}
 	}
 	MQTTAsync_retry();
-	MQTTAsync_unlock_mutex(mqttasync_mutex);
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 	FUNC_EXIT_RC(*rc);
 	return pack;
 }
@@ -2963,6 +2983,7 @@ int MQTTAsync_getPendingTokens(MQTTAsync handle, MQTTAsync_token **tokens)
 	int count = 0;
 
 	FUNC_ENTRY;
+	Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 	MQTTAsync_lock_mutex(mqttasync_mutex);
 	*tokens = NULL;
 
@@ -3010,7 +3031,7 @@ int MQTTAsync_getPendingTokens(MQTTAsync handle, MQTTAsync_token **tokens)
 	(*tokens)[count] = -1; /* indicate end of list */
 
 exit:
-	MQTTAsync_unlock_mutex(mqttasync_mutex);
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 	FUNC_EXIT_RC(rc);
 	return rc;
 }
@@ -3023,6 +3044,7 @@ int MQTTAsync_isComplete(MQTTAsync handle, MQTTAsync_token dt)
 	ListElement* current = NULL;
 
 	FUNC_ENTRY;
+	Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 	MQTTAsync_lock_mutex(mqttasync_mutex);
 
 	if (m == NULL)
@@ -3055,7 +3077,7 @@ int MQTTAsync_isComplete(MQTTAsync handle, MQTTAsync_token dt)
 	rc = MQTTASYNC_TRUE; /* Can't find it, so it must be complete */
 
 exit:
-	MQTTAsync_unlock_mutex(mqttasync_mutex);
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 	FUNC_EXIT_RC(rc);
 	return rc;
 }
@@ -3069,29 +3091,36 @@ int MQTTAsync_waitForCompletion(MQTTAsync handle, MQTTAsync_token dt, unsigned l
 	MQTTAsyncs* m = handle;
 
 	FUNC_ENTRY;
+	Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 	MQTTAsync_lock_mutex(mqttasync_mutex);
-
 	if (m == NULL || m->c == NULL)
 	{
 		rc = MQTTASYNC_FAILURE;
+		printf("EEEEEEEEEEEEEEEEEEEEEEE what a xxxx(0)\r\n");
+		Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 		goto exit;
 	}
 	if (m->c->connected == 0)
 	{
 		rc = MQTTASYNC_DISCONNECTED;
+		printf("what a xxxx(1)\r\n");
+		Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
 		goto exit;
 	}
-	MQTTAsync_unlock_mutex(mqttasync_mutex);
-
+	
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
+	
 	if (MQTTAsync_isComplete(handle, dt) == 1)
 	{
 		rc = MQTTASYNC_SUCCESS; /* well we couldn't find it */
 		goto exit;
 	}
-
+	printf("MQTTAsync_elapsed1(%d)\r\n", start);
 	elapsed = MQTTAsync_elapsed(start);
+	printf("MQTTAsync_elapsed(%d)\r\n",elapsed);
 	while (elapsed < timeout)
 	{
+		printf(".....\r\n");
 		MQTTAsync_sleep(100);
 		if (MQTTAsync_isComplete(handle, dt) == 1)
 		{
@@ -3101,6 +3130,7 @@ int MQTTAsync_waitForCompletion(MQTTAsync handle, MQTTAsync_token dt, unsigned l
 		elapsed = MQTTAsync_elapsed(start);
 	}
 exit:
+	printf("exit(...)\r\n");
 	FUNC_EXIT_RC(rc);
 	return rc;
 }

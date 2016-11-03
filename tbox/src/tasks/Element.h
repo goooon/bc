@@ -9,6 +9,11 @@
 
 struct VehicleDesc
 {
+	VehicleDesc()
+	{
+		memset(this, 0, sizeof(VehicleDesc));
+		memcpy(vin, "VIN67423921      ", sizeof(vin));
+	};
 	u8 vin[17];	//utf-8 string
 	u8 tbox_serial[20];//utf-8 string
 	u8 imei[15];//utf-8 string
@@ -17,6 +22,16 @@ struct VehicleDesc
 
 struct AuthToken
 {
+	static u8 sToken[4];
+	void update(u8 t[4]) {
+		sToken[0] = t[0];
+		sToken[1] = t[1];
+		sToken[2] = t[2];
+		sToken[3] = t[3];
+	}
+	AuthToken() {
+
+	}
 	u8 token[4];
 }DECL_GNU_PACKED;
 
@@ -37,6 +52,9 @@ struct TimeStamp
 
 struct Authentication
 {
+	Authentication() {
+		memset(this, 0, sizeof(Authentication));
+	}
 	u8 PID[16];
 }DECL_GNU_PACKED;
 

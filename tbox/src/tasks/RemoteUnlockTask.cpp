@@ -1,4 +1,5 @@
 #include "./RemoteUnlockTask.h"
+#include "../inc/Sensor.h"
 #undef TAG
 #define TAG "RemoteUnlockTask"
 
@@ -9,9 +10,9 @@ Task* RemoteUnlockTask::Create()
 
 RemoteUnlockTask::RemoteUnlockTask() :Task(APPID_VKEY_ACTIVITION, true), pkg(pkg)
 {
-	expireTime.update(Druation);
+	expireTime.update(Config::getInstance().getDoorActivationTimeOut());
 	LOG_I("RemoteUnlockTask(%d,%lld) expire: %lld run...", appID, seqID, expireTime.getValue());
-	rspAck();
+	
 }
 
 void RemoteUnlockTask::rspError(Operation::Result ret)
@@ -51,10 +52,11 @@ void RemoteUnlockTask::rspError(Operation::Result ret)
 	}
 
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, 1, seqID);
+	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
 	msg.appendErrorElement(ecode);
 	msg.appendTimeStamp();
-	if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
+	msg.appendFunctionStatus(0);
+	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
 		LOG_E("sendResponseError failed %d",ret);
 	}
 }
@@ -66,7 +68,8 @@ void RemoteUnlockTask::ntfDoorActived()
 	msg.appendAuthToken();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(ERR_SUCC);
-	if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
+	msg.appendFunctionStatus(0);
+	if (!pkg.post(Config::getInstance().pub_topic,2, 5000)) {
 		LOG_E("sendResponseUnlocked failed");
 	}
 }
@@ -78,7 +81,7 @@ void RemoteUnlockTask::ntfDoorOpened()
 	msg.appendAuthToken();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(ERR_SUCC);
-	if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
+	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
 		LOG_E("sendResponseUnlocked failed");
 	}
 }
@@ -104,7 +107,7 @@ void RemoteUnlockTask::doTask()
 			Timestamp now;
 			if (now > expireTime) {
 				LOG_I("Unlock waiting Time Out %lld",expireTime.getValue());
-				ntfTimeOut();
+				ntfDoorActived();
 				Vehicle::getInstance().reqDeactiveDoor();
 				return;
 			}
@@ -130,7 +133,14 @@ void RemoteUnlockTask::doTask()
 				}
 				else if (args.e == AppEvent::PackageArrived){
 					if (args.param1 == Package::Mqtt) {
-						expireTime.update(Druation);
+						//check stepid first
+						if (args.param2 == 2) { 
+							rspAck();
+							expireTime.update(Config::getInstance().getDoorActivationTimeOut());
+						}
+						if (args.data) {
+							BCPackage pkg(args.data);
+						}
 					}
 					else{
 						LOG_W("Unhandled Package %d", args.param1);
@@ -160,11 +170,11 @@ void RemoteUnlockTask::rspAck()
 	msg.appendAuthToken();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(0);
-	if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
+	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
 		LOG_E("rspAck failed");
 	}
 	else {
-		//PostEvent(AppEvent::AutoStateChanged, Vehicle::Authing, 0, 0);
+		LOG_I("rspAck succed");
 	}
 }
 
@@ -177,7 +187,7 @@ void RemoteUnlockTask::ntfTimeOut()
 	msg.appendErrorElement(11);
 	msg.appendFunctionStatus(0);
 
-	if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
+	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
 		LOG_E("req Auth failed");
 	}
 	else {

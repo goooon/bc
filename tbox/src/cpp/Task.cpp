@@ -6,7 +6,7 @@ Task::Task(u16 appId, bool async) :
 	prev(NULLPTR),
 	next(NULLPTR),
 	appID(appId),
-	seqID(1),
+	seqID(0),
 	isAsync(async)
 {
 
@@ -35,7 +35,22 @@ Task::~Task()
 
 bool Task::handlePackage(bcp_packet_t* pkg)
 {
-	msgQueue.post(AppEvent::PackageArrived, Package::Mqtt, 0, (void*)pkg);
+	u32 stepId = -1;
+	if (pkg != NULL) {
+		bcp_message_t *m = NULL;
+		bcp_element_t *e = NULL;
+		
+		//bcp_messages_foreach(p, bcp_message_foreach_callback, NULL);
+
+		if ((m = bcp_next_message(pkg, m)) != NULL) {
+			seqID = m->hdr.sequence_id;
+			stepId = m->hdr.step_id;
+		}
+		else {
+			//seqID = sSeqID++;
+		}
+	}
+	msgQueue.post(AppEvent::PackageArrived, Package::Mqtt,stepId , (void*)pkg);
 	return true;
 }
 
@@ -54,6 +69,8 @@ void Task::run()
 	doTask();
 	while(!PostEvent(AppEvent::RemoveTask,0,0,this)){}
 }
+
+u64 Task::sSeqID = 0;
 
 bool MessageQueue::post(AppEvent::Type e, u32 param1, u32 param2, void* data)
 {

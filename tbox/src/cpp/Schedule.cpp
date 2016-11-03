@@ -16,7 +16,7 @@ Schedule::Schedule()
 void Schedule::triger(Timestamp current)
 {
 	Node* node = nodes.next;
-	LOG_V("Schedule::triger(%lld)", current.getValue());
+	//LOG_V("Schedule::triger(%lld)", current.getValue());
 	while (node != &nodes)
 	{
 		if (node->fireTime >= current) {

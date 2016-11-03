@@ -30,12 +30,12 @@ Operation::Result Vehicle::prepareActiveDoorByVKey()
 	/*if (!authed) {
 		return Operation::E_Auth;
 	}*/
-	if (driving) {
+	/*if (driving) {
 		return Operation::E_Driving;
 	}
 	if (apparatus.door.lh_front) {
 		return Operation::E_DoorOpened;
-	}
+	}*/
 	return Operation::Succ;
 }
 

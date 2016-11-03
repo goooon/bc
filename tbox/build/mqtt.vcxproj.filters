@@ -105,6 +105,9 @@
     <ClInclude Include="..\src\inc\Schedule.h">
       <Filter>src\inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\Sensor.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -151,6 +154,15 @@
     </ClCompile>
     <ClCompile Include="..\src\cpp\Schedule.cpp">
       <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\VehicleAuthTask.cpp">
+      <Filter>src\tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\Sensor.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\test\RemoteUnlockTest.cpp">
+      <Filter>src\test</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

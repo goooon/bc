@@ -540,6 +540,7 @@
             <F N="../tbox/src/tasks/StateUploadTask.h"/>
             <F N="../tbox/src/tasks/TaskTable.cpp"/>
             <F N="../tbox/src/tasks/TaskTable.h"/>
+            <F N="../tbox/src/tasks/VehicleAuthTask.cpp"/>
             <F N="../tbox/src/tasks/VehicleAuthTask.h"/>
             <F N="../tbox/src/tasks/VKeyIgnitionTask.cpp"/>
             <F N="../tbox/src/tasks/VKeyIgnitionTask.h"/>

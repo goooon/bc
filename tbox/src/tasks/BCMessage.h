@@ -6,6 +6,7 @@
 //ref http://jira.oa.beecloud.com:8090/pages/viewpage.action?pageId=2818185
 class BCMessage
 {
+	friend class BCPackage;
 public:
 	BCMessage(bcp_message_t* msg):msg(msg){}
 	bool appendAck(u8 ec) {
@@ -22,6 +23,18 @@ public:
 	}
 	bool appendAuthToken() {
 		AuthToken token;
+#if BC_TARGET_LINUX == BC_TARGET
+		//350262672
+		token.token[0] = 0x90;
+		token.token[1] = 0x95;
+		token.token[2] = 0xe0;
+		token.token[3] = 0x14;
+#else //-1869225964
+		token.token[0] = 0x90;
+		token.token[1] = 0x95;
+		token.token[2] = 0xe0;
+		token.token[3] = 0x14;
+#endif
 		bcp_element_t *e = bcp_element_create((u8*)&token, sizeof(AuthToken));
 		bcp_element_append(msg, e);
 		return true;
@@ -81,6 +94,17 @@ public:
 	BCPackage() {
 		pkg = bcp_packet_create();
 	}
+	BCPackage(void* data) {
+
+	}
+	BCMessage nextMessage(BCMessage msg) {
+		if (pkg == 0)return 0;
+		bcp_message_t* m;
+		if ((m = bcp_next_message(pkg, msg.msg)) != NULL) {
+			return m;
+		}
+		return 0;
+	}
 	BCMessage appendMessage(u16 appid,u8 stepid, u64 seqid) {
 		bcp_message_t* msg = bcp_message_create(appid, stepid, seqid);
 		if (msg == NULL) {
@@ -101,6 +125,7 @@ public:
 		else {
 			LOG_E("bcp_packet_serialize failed");
 		}
+		LOG_I("bcp_packet_destroy");
 		bcp_packet_destroy(pkg);
 		pkg = NULL;
 		return ret;

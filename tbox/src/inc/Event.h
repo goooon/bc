@@ -7,7 +7,7 @@
 struct Package {
 	enum Type
 	{
-		Mqtt,		//data is bcp_packet_t*
+		Mqtt,		//data is bcp_packet_t*,param2 is stepid
 		Can,
 		Wifi,
 		Bt
@@ -35,9 +35,9 @@ public:
 		AutoEvent,				//param1 Vehicle::Event
 		AutoStateChanged,		//param1 is Vehicle::State prevState,param2 is Vehicle::State currState
 
-		SensorEvent,			//sensor event
+		SensorEvent,			//sensor event,param1 is Sensor::Event
 
-		PackageArrived,			//param1 is Package::Type,data should be refferred to Package::Type
+		PackageArrived,			//param1 is Package::Type,data should be refferred to Package::Type,
 		TestEvent				//for only debug test
 	};
 };

@@ -17,7 +17,7 @@ public:
 	static Application& getInstance();
 	Config& getConfig(void);
 	Vehicle& getVehicle(void);
-	void init(int argc, char** argv);
+	bool init(int argc, char** argv);
 	//main loop process for app event
 	void loop();
 	bool postAppEvent(AppEvent::Type e, u32 param1, u32 param2, void* data);

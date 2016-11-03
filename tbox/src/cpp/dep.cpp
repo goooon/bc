@@ -1,6 +1,9 @@
 #include "../inc/dep.h"
 #include "../inc/Application.h"
 #include "../inc/Event.h"
+#include "../inc/Sensor.h"
+#include "../tasks/TaskTable.h"
+#include "../test/RemoteUnlockTest.h"
 #include <errno.h>
 unsigned int last_error(void)
 {
@@ -9,6 +12,34 @@ unsigned int last_error(void)
 #else
 	return errno;
 #endif
+}
+
+bool onClientTest(char* cmd) {
+	if (!strcmp("auth", cmd)) {
+		PostEvent(AppEvent::InsertTask, 0, 0, TaskCreate(APPID_AUTHENTICATION, 0));
+		return true;
+	}
+	if (!strcmp(cmd, "reqRemoteUnlock")) {
+		::Task* t = bc_new RemoteUnlockTest();
+		::PostEvent(AppEvent::InsertTask, 0, 0, t);
+		return true;
+	}
+	if (!strcmp("openDoor", cmd)) {
+		PostEvent(AppEvent::AutoEvent, Vehicle::DoorOpened, 0, 0);
+		LOG_I("AutoEvent Vehicle::DoorOpened Triggered");
+		return true;
+	}
+	if (!strcmp("closeDoor", cmd)) {
+		PostEvent(AppEvent::AutoEvent, Vehicle::DoorClosed, 0, 0);
+		LOG_I("AutoEvent Vehicle::DoorOpened Triggered");
+		return true;
+	}
+	if (!strncmp("doorTimeOut", cmd,sizeof("doorTimeOut") - 1))
+	{
+		int i = atoi(cmd + sizeof("doorTimeOut"));
+		Application::getInstance().getConfig().setDoorActivationTimeOut(i);
+	}
+	return false;
 }
 
 #ifdef ME_DEBUGUI
@@ -77,19 +108,31 @@ void uninitDebugLib(void* lib)
 char* getCommand(int i)
 {
 	const char* cmd[] = {
-		"ssh","testRemoteUnlock","hijk","",0
+		"ssh","auth", "\0",
+		"reqRemoteUnlock","openDoor","closeDoor", "\0",
+		0
 	};
 	return (char*)cmd[i];
 }
+
+static bool isSsh = false;
 void onCommand(char* cmd)
 {
 	if (me::Tool::isEqual("ssh",cmd)) {
 		CreateProcess();
-		//ReadFromPipe();
-		//WriteToPipe("Password\r\n");
-		//ReadFromPipe();
+		isSsh = true;
 		return;
 	}
+	if (!isSsh) {
+		if (onClientTest(cmd))return;
+	}
+	else {
+		if (!me::Tool::endWith(cmd, ");")) {
+			WriteToPipe(cmd);
+			return;
+		}
+	}
+
 	if (me::Tool::isEqual(cmd, "v")) {
 		me::Trace::setLevelMask(me::Trace::getLevelMask() & me::Trace::Level::V ? me::Trace::Level::MI : me::Trace::Level::MV);
 		return;
@@ -120,10 +163,7 @@ void onCommand(char* cmd)
 		return;
 	}
 	if (Application::getInstance().onDebugCommand(cmd))return;
-	if (!me::Tool::endWith(cmd,");")) {
-		WriteToPipe(cmd);
-		return;
-	}
+	
 	if (g_state) {
 		int r = luaL_dostring(g_state, cmd);
 		if (r)
@@ -156,6 +196,7 @@ void uninitDebugLib(void* lib) {}
 
 void onCommand(char* cmd)
 {
+	if (onClientTest(cmd))return;
 	if (Application::getInstance().onDebugCommand(cmd))return;
 }
 LoopCallback debugMain(int argc, char* argv[]) { return 0; }

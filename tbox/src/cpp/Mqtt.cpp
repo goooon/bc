@@ -185,7 +185,7 @@ bool MqttClient::reqConnect(char* url, char* topic,int qos,int keepAliveInterval
 	opts.onFailure = Mqtt_onConnectFailed;
 	opts.context = this;
 
-	opts.cleansession = false;
+	opts.cleansession = true;
 	opts.onSuccess = Mqtt_onConnected;
 	rc = MQTTAsync_connect(client, &opts);
 
@@ -206,7 +206,9 @@ ThreadEvent::WaitResult MqttClient::reqSendPackage(char* publish, void* payload,
 		LOG_E("reqSendPackage() failed %d", rc);
 		return ThreadEvent::Errors;
 	}
+	LOG_I("MQTTAsync_waitForCompletion ...");
 	rc = MQTTAsync_waitForCompletion(client, ropts.token, millSec);
+	LOG_I("MQTTAsync_waitForCompletion done");
 	if (MQTTASYNC_SUCCESS != rc) {
 		rc = MQTTAsync_isComplete(client, ropts.token);
 		if (MQTTASYNC_TRUE != rc) {
@@ -218,6 +220,7 @@ ThreadEvent::WaitResult MqttClient::reqSendPackage(char* publish, void* payload,
 			return ThreadEvent::Errors;
 		}*/
 	}
+	LOG_I("MQTTAsync_waitForCompletion ret");
 	return ThreadEvent::EventOk;
 }
 
@@ -384,6 +387,7 @@ bool MqttClient::onRecvPackage(void* data, int len)
 
 	while ((m = bcp_next_message(p, m)) != NULL) {
 		applicationID = m->hdr.id;
+		u64 seqId = m->hdr.sequence_id;
 		task = Application::getInstance().findTask(applicationID);
 		if (task != NULL) {
 			bool done = task->handlePackage(p);

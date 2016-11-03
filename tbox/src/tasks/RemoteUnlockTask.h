@@ -13,7 +13,6 @@
 class RemoteUnlockTask : public Task {
 public:
 	const static int AppId = APPID_VKEY_ACTIVITION;
-	const static int Druation = 5 * 1000;
 public:
 	static Task* Create();
 	RemoteUnlockTask();

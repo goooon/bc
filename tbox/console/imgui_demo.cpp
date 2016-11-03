@@ -2133,8 +2133,12 @@ struct ExampleAppConsole : public me::Tracer
 			if(getf == 0)break;
 			cmd = getf(idx);
 			if (cmd == 0)break;
-			if(*cmd == 0)ImGui::Separator();
-			else if (ImGui::SmallButton(cmd)) { func(cmd); } ImGui::SameLine();
+			if (*cmd == 0) {
+				ImGui::Separator();
+			}
+			else{
+				if (ImGui::SmallButton(cmd)) { func(cmd); } ImGui::SameLine();
+			}
 			idx++;
 		}
 

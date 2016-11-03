@@ -21,54 +21,36 @@ public:
 	}
 protected:
 	virtual void doTask() { 
-		while (loop) {
-			//LOG_I("reqRemoteUnlock()");
-			ThreadEvent::WaitResult ret = msgQueue.wait(10000);
-			if (ret == ThreadEvent::TimeOut) {
-				reqRemoteUnlock();
-				LOG_I("reqRemoteUnlock()");
-				continue;
-			}
-			if (ret == ThreadEvent::EventOk) {
-				MessageQueue::Args args;
-				if (msgQueue.out(args)) {
-					if (args.e == AppEvent::AbortTasks) {
-						break;
-					}
-					else if (args.e == AppEvent::TestEvent) {
-						if (args.param1 == 1) {
-							reqRemoteUnlock();
-						}
-					}
+		if (!reqRemoteUnlock()) {
+			LOG_I("reqRemoteUnlock FAILED");
+		}
+		else {
+			LOG_I("reqRemoteUnlock Message dispatched FAILED");
+		}
+		ThreadEvent::WaitResult wr = waitForEvent(5000);
+		if (wr == ThreadEvent::TimeOut) {
+			LOG_I("reqRemoteUnlock Responsed");
+		}
+		else if(wr == ThreadEvent::EventOk) {
+			MessageQueue::Args args;
+			msgQueue.out(args);
+			switch (args.e)
+			{
+			case AppEvent::PackageArrived:
+				if (args.param1 == Package::Mqtt) {
+					//what a ...
 				}
-			}
-			else {//error
+				break;
+			default:
 				break;
 			}
+			LOG_I("reqRemoteUnlock Responsed");
 		}
 		return;
 	}
-	virtual bool handlePackage(bcp_packet_t* pkg) {
-		if (pkg != NULLPTR) {
-			free(pkg);
-		}
-		LOG_I("RemoteUnlockTest received pkg");
-		return true;
-	}
 private:
-	void reqRemoteUnlock() {
-		BCPackage pkg;
-		BCMessage msg = pkg.appendMessage(appID, 3, seqID);
-		msg.appendAck(1);
-		if (!pkg.post(Config::getInstance().pub_topic, 1, 5000)) {
-			LOG_E("req Auth failed");
-		}
-		else {
-			PostEvent(AppEvent::AutoStateChanged, Vehicle::Authing, 0, 0);
-		}
-	}
+	bool reqRemoteUnlock();
 private:
 	bool loop;
-	MessageQueue msgQueue;
 };
 #endif // GUARD_RemoteUnlockTest_h__

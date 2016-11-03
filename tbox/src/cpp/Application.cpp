@@ -9,17 +9,18 @@ Application& Application::getInstance()
 	return *g_inst;
 }
 
-void Application::init(int argc, char** argv)
+bool Application::init(int argc, char** argv)
 {
 	g_inst = this;
 	LOG_I("Application::init(%d)", argc);
 	DebugCode( for (int i = 0; i < argc; ++i) {
 		LOG_I("    %s", argv[i]);
 	})
-	config.parse(argc, argv);
+		if (!config.parse(argc, argv))return false;
 	//launch thread to do branch task
 	Thread::startThread(this);
 	mqtt.onDebugCommand("PROTOCOL");
+	return true;
 }
 
 bool Application::startTask(Task* task,bool runAsThread)
@@ -53,7 +54,7 @@ bool Application::startTask(Task* task,bool runAsThread)
 void Application::loop()
 {
 	LOG_V("Application loop...");
-	if(!config.isServer)onDebugCommand("connMqtt");
+	//if(!config.isServer)onDebugCommand("connMqtt");
 	loopID = Thread::getCurrentThreadId();
 	Timestamp prev;
 	Timestamp now;
@@ -113,12 +114,7 @@ bool Application::onDebugCommand(const char* cmd)
 		::PostEvent(AppEvent::InsertTask, 0, 0, t);
 		return true;
 	}
-	if (!strcmp(cmd, "testRemoteUnlock")) {
-		Task* t = bc_new RemoteUnlockTest();
-		::PostEvent(AppEvent::AbortTasks, t->getApplicationId(), 0, 0);
-		::PostEvent(AppEvent::InsertTask, 0, 0, t);
-		return true;
-	}
+	
 	if (mqtt.onDebugCommand(cmd))return true;
 	return false;
 }
@@ -136,9 +132,9 @@ void Application::disconnectServer()
 
 void Application::run()
 {
-	LOG_V("tasks run...");
 	while (true) {
-		ThreadEvent::WaitResult wr = taskEvent.wait(500);
+		ThreadEvent::WaitResult wr = taskEvent.wait(1000);
+		LOG_I("tasks run...");
 		if (wr == ThreadEvent::EventOk) {
 			while (!tasksWaiting.isEmpty()) {
 				Task* task = tasksWaiting.out();
@@ -259,7 +255,7 @@ void Application::onMqttEvent(u32 param1, u32 param2, void* data)
 	LOG_I("onMqttEvent(%d,%d,%p)",param1,param2,data);
 	if (param2 == MqttClient::Subscribed) {
 		if (!config.isServer) { 
-			//startTask(TaskCreate(APPID_AUTHENTICATION,0), false);
+			startTask(TaskCreate(APPID_AUTHENTICATION,0), false);
 		}
 	}
 }
