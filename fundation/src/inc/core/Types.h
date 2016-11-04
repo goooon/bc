@@ -52,6 +52,20 @@ typedef const achar*    castr;
 typedef const wchar*    cwstr;
 typedef u32             color;
 
+#if BC_TARGET == BC_TARGET_WIN
+#pragma pack(push, 1)
+#endif
+
+union DWord
+{
+	struct { u8 b[4]; };
+	u32    dw;
+}DECL_GNU_PACKED;
+
+#if BC_TARGET == BC_TARGET_WIN
+#pragma pack(pop)
+#endif
+
 #if BC_COMPILER == BC_COMPILER_GNU
 #if BC_TARGET == BC_TARGET_APPLE_IOS
 #define bc_size unsigned long

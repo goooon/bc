@@ -3,7 +3,6 @@
 #include "../inc/Vehicle.h"
 void VehicleAuthTask::doTask()
 {
-
 	reqAuth();
 	ThreadEvent::WaitResult wr = msgQueue.wait(5000);
 	if (wr == ThreadEvent::TimeOut) {
@@ -29,8 +28,50 @@ void VehicleAuthTask::doTask()
 			{
 				if (param1 == Package::Mqtt && data != 0)
 				{
-					LOG_I("Vehicle::Authed");
-					PostEvent(AppEvent::AutoStateChanged, Vehicle::Authed, 0, 0);
+					BCPackage pkg((BCPackage*)data);
+					BCMessage msg(0);
+					BCMessage m = pkg.nextMessage(msg);
+					if (m.getApplicationId() == APPID_AUTHENTICATION)
+					{
+						if (m.msg) {
+							
+							BCMessage::Index idx;
+							Identity at;
+							if (idx = m.getFirstElement(&at)){
+								Config::getInstance().setAuthToken(at.token.dw);
+							}
+							else {
+								LOG_E("Auth failed with imcomplete data");
+								PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);
+								return;
+							}
+							TimeStamp ts;
+							if (idx = m.getNextElement(&ts, idx)) {
+								LOG_I("Auth %d-%d %d:%d:%d", 1900 + ts.year, ts.month, ts.day, ts.hour, ts.min, ts.sec);
+							}
+							else {
+								LOG_E("Auth failed with imcomplete data");
+								PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);
+								return;
+							}
+							ErrorElement ee;
+							if (idx = m.getNextElement(&ee, idx)) {
+								if (ee.errorcode == 0) {
+									LOG_I("Vehicle::Authed with 0x%x", at.token);
+									PostEvent(AppEvent::AutoStateChanged, Vehicle::Authed, 0, 0);
+								}
+								else {
+									LOG_E("Auth failed whit errcode : %d", ee.errorcode);
+									PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);
+								}
+							}
+							else {
+								LOG_E("Auth failed with imcomplete data");
+								PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);
+								return;
+							}
+						}
+					}
 					return;
 				}
 			}

@@ -108,6 +108,9 @@
     <ClInclude Include="..\src\inc\Sensor.h">
       <Filter>src\inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\tasks\PackageQueue.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -163,6 +166,15 @@
     </ClCompile>
     <ClCompile Include="..\src\test\RemoteUnlockTest.cpp">
       <Filter>src\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\Element.cpp">
+      <Filter>src\tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\BCMessage.cpp">
+      <Filter>src\tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\PackageQueue.cpp">
+      <Filter>src\cpp</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

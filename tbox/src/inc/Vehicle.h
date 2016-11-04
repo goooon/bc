@@ -15,10 +15,15 @@ public:
 		Authed
 	};
 	enum Event {
-		DoorActived,			//param2
-		DoorDeactived,			//param2
-		DoorOpened,				//param2
-		DoorClosed				//param2
+		ActiveDoorResult,		//param2 true:succ false:falied
+		DeactiveDoorResult,		//param2
+		Ignite,				    //点火
+		UnIgnt,				    //熄火
+		ShiftLevel,				//param2 curr level
+		DoorOpened,				//param2 door id
+		DoorClosed,				//param2
+		WindOpened,				//param2 window id
+		WindClosed
 	};
 	enum State {				//汽车当前状态
 		Disabled,
@@ -36,6 +41,7 @@ public:
 	Operation::Result prepareActiveDoorByVKey();
 	Operation::Result reqActiveDoorByVKey();
 	Operation::Result reqDeactiveDoor();
+	Apparatus& getApparatus() { return apparatus; }
 private:
 	void onEvent(u32 param1, u32 param2, void* data);
 	bool changeState(State next);

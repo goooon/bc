@@ -4,6 +4,7 @@
 #include "../inc/Sensor.h"
 #include "../tasks/TaskTable.h"
 #include "../test/RemoteUnlockTest.h"
+#include "../tasks/StateUploadTask.h"
 #include <errno.h>
 unsigned int last_error(void)
 {
@@ -19,17 +20,78 @@ bool onClientTest(char* cmd) {
 		PostEvent(AppEvent::InsertTask, 0, 0, TaskCreate(APPID_AUTHENTICATION, 0));
 		return true;
 	}
+	if (!strcmp(cmd, "ntfState")) {
+		::PostEvent(AppEvent::InsertTask, 0, 0, bc_new StateUploadTask_NTF());
+		return true;
+	}
 	if (!strcmp(cmd, "reqRemoteUnlock")) {
 		::Task* t = bc_new RemoteUnlockTest();
 		::PostEvent(AppEvent::InsertTask, 0, 0, t);
 		return true;
 	}
-	if (!strcmp("openDoor", cmd)) {
-		PostEvent(AppEvent::AutoEvent, Vehicle::DoorOpened, 0, 0);
-		LOG_I("AutoEvent Vehicle::DoorOpened Triggered");
+#define OPER_DOOR(op,cc,door_pos,id,bl) if (!strcmp(cc, cmd)) { \
+		Vehicle::getInstance().getApparatus().vehiState.door_pos = bl; \
+		PostEvent(AppEvent::AutoEvent, Vehicle::op, id, 0); \
+		return true; \
+	}
+	OPER_DOOR(DoorOpened, "openDoor0", door.lh_front, 0,true);
+	OPER_DOOR(DoorOpened, "openDoor1", door.rh_front, 1, true);
+	OPER_DOOR(DoorOpened, "openDoor2", door.lh_rear, 2, true);
+	OPER_DOOR(DoorOpened, "openDoor3", door.rh_rear, 3, true);
+	OPER_DOOR(DoorOpened, "openHood", door.hood, 4, true);
+	OPER_DOOR(DoorOpened, "openLugDoor", door.luggage_door, 5, true);
+	OPER_DOOR(DoorOpened, "openPowerPlug", door.fuellid, 6, true);
+
+	OPER_DOOR(DoorClosed, "shutDoor0", door.lh_front, 0,false);
+	OPER_DOOR(DoorClosed, "shutDoor1", door.rh_front, 1, false);
+	OPER_DOOR(DoorClosed, "shutDoor2", door.lh_rear, 2, false);
+	OPER_DOOR(DoorClosed, "shutDoor3", door.rh_rear, 3, false);
+	OPER_DOOR(DoorClosed, "shutHood", door.hood, 4, false);
+	OPER_DOOR(DoorClosed, "shutLugDoor", door.luggage_door, 5, false);
+	OPER_DOOR(DoorClosed, "shutPowerPlug", door.fuellid, 6, false);
+
+	OPER_DOOR(WindOpened, "openWind0", window.lh_front, 0, true);
+	OPER_DOOR(WindOpened, "openWind1", window.rh_front, 1, true);
+	OPER_DOOR(WindOpened, "openWind2", window.lh_rear, 2, true);
+	OPER_DOOR(WindOpened, "openWind3", window.rh_rear, 3, true);
+
+	OPER_DOOR(WindClosed, "shutWind0", window.lh_front, 0, false);
+	OPER_DOOR(WindClosed, "shutWind1", window.rh_front, 1, false);
+	OPER_DOOR(WindClosed, "shutWind2", window.lh_rear, 2, false);
+	OPER_DOOR(WindClosed, "shutWind3", window.rh_rear, 3, false);
+
+	OPER_DOOR(Ignite, "Ignite", pedal.ingnition, 0, true);
+	OPER_DOOR(UnIgnt, "UnIgnt", pedal.ingnition, 0, false);
+
+	if (!strcmp(cmd, "P")) {
+		Vehicle::getInstance().getApparatus().vehiState.pedal.shift_level = 0;
+		PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 0, 0);
 		return true;
 	}
-	if (!strcmp("closeDoor", cmd)) {
+	if (!strcmp(cmd, "R")) {
+		Vehicle::getInstance().getApparatus().vehiState.pedal.shift_level = 1;
+		PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 1, 0);
+		return true;
+	}
+	if (!strcmp(cmd, "N")) {
+		Vehicle::getInstance().getApparatus().vehiState.pedal.shift_level = 2;
+		PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 2, 0);
+		return true;
+	}
+	if (!strcmp(cmd, "D")) {
+		Vehicle::getInstance().getApparatus().vehiState.pedal.shift_level = 3;
+		PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 3, 0);
+		return true;
+	}
+
+	//if (!strcmp("openDoor0", cmd)) {
+	//	Vehicle::getInstance().getApparatus().vehiState.door.lh_front = true;
+	//	PostEvent(AppEvent::AutoEvent, Vehicle::DoorOpened, 0, 0);
+	//	LOG_I("AutoEvent Vehicle::DoorOpened 0 Triggered");
+	//	return true;
+	//}
+	if (!strcmp("shutDoor0", cmd)) {
+		Vehicle::getInstance().getApparatus().vehiState.door.lh_front = false;
 		PostEvent(AppEvent::AutoEvent, Vehicle::DoorClosed, 0, 0);
 		LOG_I("AutoEvent Vehicle::DoorOpened Triggered");
 		return true;
@@ -38,6 +100,8 @@ bool onClientTest(char* cmd) {
 	{
 		int i = atoi(cmd + sizeof("doorTimeOut"));
 		Application::getInstance().getConfig().setDoorActivationTimeOut(i);
+		LOG_I("doorTimeOut set %d ok", i);
+		return true;
 	}
 	return false;
 }
@@ -109,12 +173,21 @@ char* getCommand(int i)
 {
 	const char* cmd[] = {
 		"ssh","auth", "\0",
-		"reqRemoteUnlock","openDoor","closeDoor", "\0",
+		"ntfState","\0",
+		"reqRemoteUnlock","\0",
+		"openDoor0", "openDoor1", "openDoor2", "openDoor3", "openHood", "openLugDoor", "openPowerPlug","\0",
+		"shutDoor0", "shutDoor1", "shutDoor2", "shutDoor3", "shutHood", "shutLugDoor", "shutPowerPlug","\0",
+		"openWind0","openWind1","openWind2","openWind3","\0",
+		"shutWind0","shutWind1","shutWind2","shutWind3","\0",
+		"P","R","N","D","\0",
+		"Ignite","UnIgnt","\0",
 		0
 	};
 	return (char*)cmd[i];
 }
-
+//char* getVCommand(int i) {
+//	"name",Vehicle::getInstance().getApparatus().vehiState.door.lh_front
+//}
 static bool isSsh = false;
 void onCommand(char* cmd)
 {

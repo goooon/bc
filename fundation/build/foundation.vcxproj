@@ -280,7 +280,6 @@
   <ItemGroup>
     <ClCompile Include="..\src\cpp\bcp.cpp" />
     <ClCompile Include="..\src\cpp\bcp_comm.cpp" />
-    <ClCompile Include="..\src\cpp\bcp_nmea.cpp" />
     <ClCompile Include="..\src\cpp\bcp_packet.cpp" />
     <ClCompile Include="..\src\cpp\bcp_serial.cpp" />
     <ClCompile Include="..\src\cpp\binary_formater.cpp" />

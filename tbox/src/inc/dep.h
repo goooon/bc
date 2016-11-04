@@ -17,7 +17,7 @@ void* initDebugLib();
 void  uninitDebugLib(void* lib);
 typedef char* (*GetCommand)(int idx);
 typedef void (*CmdCallback)(char* cmd);
-typedef void (*LoopCallback)(GetCommand getCommand, CmdCallback onCommand);
+typedef void (*LoopCallback)(GetCommand getCommand, CmdCallback onCommand, GetCommand getVCommand, CmdCallback onVCommand);
 
 #ifdef ME_DEBUGUI
 #include "./incdebug.h"

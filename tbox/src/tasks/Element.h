@@ -9,30 +9,26 @@
 
 struct VehicleDesc
 {
-	VehicleDesc()
-	{
-		memset(this, 0, sizeof(VehicleDesc));
-		memcpy(vin, "VIN67423921      ", sizeof(vin));
-	};
+	VehicleDesc();;
 	u8 vin[17];	//utf-8 string
 	u8 tbox_serial[20];//utf-8 string
 	u8 imei[15];//utf-8 string
 	u8 iccid[20];//utf-8 string
 }DECL_GNU_PACKED;
 
-struct AuthToken
+struct Identity
 {
-	static u8 sToken[4];
+	/*static u8 sToken[4];
 	void update(u8 t[4]) {
 		sToken[0] = t[0];
 		sToken[1] = t[1];
 		sToken[2] = t[2];
 		sToken[3] = t[3];
-	}
-	AuthToken() {
+	}*/
+	//AuthToken() {
 
-	}
-	u8 token[4];
+	//}
+	DWord token;
 }DECL_GNU_PACKED;
 
 struct ErrorElement

@@ -9,7 +9,7 @@
 #include "./Event.h"
 #include "./Vehicle.h"
 #include "./Schedule.h"
-
+#include "../tasks/PackageQueue.h"
 class Application : public Thread
 {
 	friend bool PostEvent(AppEvent,u32,u32,void*);
@@ -17,6 +17,7 @@ public:
 	static Application& getInstance();
 	Config& getConfig(void);
 	Vehicle& getVehicle(void);
+	PackageQueue& getPackageQueue(void);
 	bool init(int argc, char** argv);
 	//main loop process for app event
 	void loop();
@@ -49,6 +50,7 @@ public:
 	EventQueue  appEventQueue;	//event message for application attached with appEvent
 	MqttClient  mqtt;			//mqtt protocol for receiving and sending message
 	Thread::ID  loopID;			//current thread id
+	PackageQueue pkgQueue;		//packages stored for resend
 };
 
 

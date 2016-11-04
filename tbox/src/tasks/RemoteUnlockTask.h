@@ -26,6 +26,6 @@ private:
 	void ntfTimeOut();
 private:
 	Timestamp     expireTime;
-	bcp_packet_t* pkg;
+
 };
 #endif // GUARD_RemoteUnlockTask_h__

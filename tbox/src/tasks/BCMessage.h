@@ -3,17 +3,64 @@
 
 #include "../inc/dep.h"
 #include "./Element.h"
+#include "../inc/Apparatus.h"
 //ref http://jira.oa.beecloud.com:8090/pages/viewpage.action?pageId=2818185
 class BCMessage
 {
 	friend class BCPackage;
 public:
+	typedef void* Index;
+public:
 	BCMessage(bcp_message_t* msg):msg(msg){}
 	bool appendAck(u8 ec) {
-		appendAuthToken();
+		appendIdentity();
 		appendTimeStamp();
 		appendErrorElement(ec);
 		return true;
+	}
+	Index getFirstElement(Identity* token) {
+		bcp_element_t *e = bcp_next_element(msg, 0);
+		if (e && e->len == 4) {
+			if (token) {
+				token->token.b[0] = e->data[0];
+				token->token.b[1] = e->data[1];
+				token->token.b[2] = e->data[2];
+				token->token.b[3] = e->data[3];
+			}
+			return e;
+		}
+		return 0;
+	}
+	Index getNextElement(TimeStamp* ts, Index idx) {
+		if (idx == 0)return 0;
+		bcp_element_t *e = bcp_next_element(msg, (bcp_element_t*)idx);
+		if (e && e->len == 6) {
+			if (ts) {
+				ts->year = e->data[0];
+				ts->month = e->data[1];
+				ts->day = e->data[2];
+				ts->hour = e->data[3];
+				ts->min = e->data[4];
+				ts->sec = e->data[5];
+			}
+			return e;
+		}
+		return 0;
+	}
+	Index getNextElement(ErrorElement* ee, Index idx) {
+		if (idx == 0)return 0;
+		bcp_element_t *e = bcp_next_element(msg, (bcp_element_t*)idx);
+		if (e && e->len == 1) {
+			if (ee) {
+				ee->errorcode = e->data[0];
+			}
+			return e;
+		}
+		return 0;
+	}
+	u32 getApplicationId() {
+		if (msg == 0)return -1;
+		return msg->hdr.id;
 	}
 	bool appendVehicleDesc() {
 		VehicleDesc desc;
@@ -21,24 +68,41 @@ public:
 		bcp_element_append(msg, e);
 		return true;
 	}
-	bool appendAuthToken() {
-		AuthToken token;
-#if BC_TARGET_LINUX == BC_TARGET
-		//350262672
-		token.token[0] = 0x90;
-		token.token[1] = 0x95;
-		token.token[2] = 0xe0;
-		token.token[3] = 0x14;
-#else //-1869225964
-		token.token[0] = 0x90;
-		token.token[1] = 0x95;
-		token.token[2] = 0xe0;
-		token.token[3] = 0x14;
-#endif
-		bcp_element_t *e = bcp_element_create((u8*)&token, sizeof(AuthToken));
+	bool appendVehicleState(Apparatus::VehicleState& state) {
+		bcp_element_t *e = bcp_element_create((u8*)&state, sizeof(Apparatus::VehicleState));
 		bcp_element_append(msg, e);
 		return true;
 	}
+	bool appendIdentity() {
+		Identity token;
+//#if BC_TARGET_LINUX == BC_TARGET
+//		//350262672
+//		token.token[0] = 0x90;
+//		token.token[1] = 0x95;
+//		token.token[2] = 0xe0;
+//		token.token[3] = 0x14;
+//#else //-1869225964
+//		token.token[0] = 0x90;
+//		token.token[1] = 0x95;
+//		token.token[2] = 0xe0;
+//		token.token[3] = 0x14;
+//#endif
+		token.token.dw = 0x9095E014;
+		//AuthToken = CRC32(Vehicle Descriptor(见4.4.1)(VIN + TBox Serial + IMEI + ICCID) +
+		//	Authentication(见4.4.5)(PID))
+		VehicleDesc vdesc;
+		u32 crc = calc_crc32((u8*)&vdesc,sizeof(vdesc));
+
+		token.token.dw = crc;
+		
+		u32 at = Config::getInstance().getAuthToken();
+		LOG_I("TBOX with 0x%x ? 0x%x", at, crc);
+
+		bcp_element_t *e = bcp_element_create((u8*)&token, sizeof(Identity));
+		bcp_element_append(msg, e);
+		return true;
+	}
+	//
 	//ec 0:succ else ref 云蜂通信协议
 	bool appendErrorElement(u8 ec) {
 		ErrorElement ele;
@@ -85,7 +149,7 @@ public:
 		bcp_element_append(msg, e);
 		return true;
 	}
-private:
+public:
 	bcp_message_t* msg;
 };
 class BCPackage
@@ -95,7 +159,7 @@ public:
 		pkg = bcp_packet_create();
 	}
 	BCPackage(void* data) {
-
+		pkg = (bcp_packet_t*)data;
 	}
 	BCMessage nextMessage(BCMessage msg) {
 		if (pkg == 0)return 0;
@@ -113,14 +177,21 @@ public:
 		bcp_message_append(pkg, msg);
 		return msg;
 	}
-	bool post(char* publish, int qos, int millSec) {
+	bool post(char* publish, int qos, int millSec,bool isImportant = false) {
 		u8* buf;
 		u32 len;
 		bool ret = false;
 		if (bcp_packet_serialize(pkg, &buf, &len) >= 0)
 		{
 			ret = ThreadEvent::EventOk == MqttClient::getInstance().reqSendPackage(publish, buf, len, qos, millSec) ? true : false;
-			free(buf);
+			if (!ret) {
+				if (!storeForResend(buf, len)) {
+					free(buf);
+				}
+			}
+			else {
+				free(buf);
+			}
 		}
 		else {
 			LOG_E("bcp_packet_serialize failed");
@@ -135,7 +206,8 @@ public:
 			bcp_packet_destroy(pkg);
 		}
 	}
-private:
+	bool storeForResend(u8* buf,u32 len);
+public:
 	bcp_packet_t* pkg;
 };
 #endif // GUARD_BCMessage_h__

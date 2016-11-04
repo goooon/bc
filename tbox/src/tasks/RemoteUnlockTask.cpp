@@ -8,7 +8,7 @@ Task* RemoteUnlockTask::Create()
 	return bc_new RemoteUnlockTask();
 }
 
-RemoteUnlockTask::RemoteUnlockTask() :Task(APPID_VKEY_ACTIVITION, true), pkg(pkg)
+RemoteUnlockTask::RemoteUnlockTask() :Task(APPID_VKEY_ACTIVITION, true)
 {
 	expireTime.update(Config::getInstance().getDoorActivationTimeOut());
 	LOG_I("RemoteUnlockTask(%d,%lld) expire: %lld run...", appID, seqID, expireTime.getValue());
@@ -65,7 +65,7 @@ void RemoteUnlockTask::ntfDoorActived()
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
-	msg.appendAuthToken();
+	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(ERR_SUCC);
 	msg.appendFunctionStatus(0);
@@ -78,9 +78,10 @@ void RemoteUnlockTask::ntfDoorOpened()
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
-	msg.appendAuthToken();
+	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(ERR_SUCC);
+	msg.appendFunctionStatus(0);
 	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
 		LOG_E("sendResponseUnlocked failed");
 	}
@@ -107,7 +108,7 @@ void RemoteUnlockTask::doTask()
 			Timestamp now;
 			if (now > expireTime) {
 				LOG_I("Unlock waiting Time Out %lld",expireTime.getValue());
-				ntfDoorActived();
+				ntfTimeOut();
 				Vehicle::getInstance().reqDeactiveDoor();
 				return;
 			}
@@ -116,8 +117,11 @@ void RemoteUnlockTask::doTask()
 			MessageQueue::Args args;
 			if (msgQueue.out(args)) {
 				if (args.e == AppEvent::AutoEvent) {
-					if (args.param1 == Vehicle::DoorActived) {
-						ntfDoorActived();
+					if (args.param1 == Vehicle::ActiveDoorResult) {
+						if (!args.param2) {
+							rspError(Operation::E_Door);
+							break;
+						}
 					}
 					else if (args.param1 == Vehicle::DoorOpened) {
 						LOG_I("rspDoorOpened %d %d", args.param1,args.param2);
@@ -134,7 +138,7 @@ void RemoteUnlockTask::doTask()
 				else if (args.e == AppEvent::PackageArrived){
 					if (args.param1 == Package::Mqtt) {
 						//check stepid first
-						if (args.param2 == 2) { 
+						if (args.param2 == 2) {
 							rspAck();
 							expireTime.update(Config::getInstance().getDoorActivationTimeOut());
 						}
@@ -167,7 +171,7 @@ void RemoteUnlockTask::rspAck()
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 3, seqID);
-	msg.appendAuthToken();
+	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(0);
 	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
@@ -182,7 +186,7 @@ void RemoteUnlockTask::ntfTimeOut()
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
-	msg.appendAuthToken();
+	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(11);
 	msg.appendFunctionStatus(0);

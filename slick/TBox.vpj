@@ -545,5 +545,13 @@
             <F N="../tbox/src/tasks/VKeyIgnitionTask.cpp"/>
             <F N="../tbox/src/tasks/VKeyIgnitionTask.h"/>
         </Folder>
+        <Folder
+            Name="test"
+            Filters=""
+            GUID="{84A20FBA-D598-4A21-8B20-DB7BC44B197C}">
+            <F N="../tbox/src/test/RemoteUnlockTest.cpp"/>
+            <F N="../tbox/src/test/RemoteUnlockTest.h"/>
+            <F N="../tbox/src/test/VehicleAuthTest.h"/>
+        </Folder>
     </Files>
 </Project>

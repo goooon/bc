@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
 	if (lc) {
 		MainLoop loop(app);
 		loop.start();
-		lc(getCommand, onCommand);
+		lc(getCommand, onCommand,0,0);
 	}
 	else {
 		TestLoop tl;

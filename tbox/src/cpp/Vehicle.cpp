@@ -19,7 +19,7 @@ Operation::Result Vehicle::prepareVKeyIgnition()
 	if (driving) {
 		return Operation::E_Driving;
 	}
-	if (apparatus.door.lh_front) {
+	if (apparatus.vehiState.door.lh_front) {
 		return Operation::E_DoorOpened;
 	}
 	return Operation::Succ;
@@ -42,7 +42,7 @@ Operation::Result Vehicle::prepareActiveDoorByVKey()
 Operation::Result Vehicle::reqActiveDoorByVKey()
 {
 	LOG_I("do reqActiveDoorByVKey()");
-	PostEvent(AppEvent::AutoEvent, Vehicle::DoorActived,0,0);
+	PostEvent(AppEvent::AutoEvent, Vehicle::ActiveDoorResult,true,0);
 	return Operation::Succ;
 }
 
@@ -50,7 +50,7 @@ Operation::Result Vehicle::reqDeactiveDoor()
 {
 	LOG_I("do reqDeactiveDoor()");
 	if (!apparatus.misc.door_actived)return Operation::Succ;
-	PostEvent(AppEvent::AutoEvent, Vehicle::DoorDeactived, 0, 0);
+	PostEvent(AppEvent::AutoEvent, Vehicle::DeactiveDoorResult, true, 0);
 	return Operation::Succ;
 }
 
@@ -64,17 +64,21 @@ Operation::Result Vehicle::reqDeactiveDoor()
 void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 {
 	switch (param1) {
-	case DoorActived:
-		apparatus.misc.door_actived = true;
+	case ActiveDoorResult:
+		if (param2) {
+			apparatus.misc.door_actived = true;
+		}
 		break;
-	case DoorDeactived:
-		apparatus.misc.door_actived = false;
+	case DeactiveDoorResult:
+		if (param2) {
+			apparatus.misc.door_actived = false;
+		}
 		break;
 	case DoorOpened:
-		apparatus.door.lh_front = true;
+		apparatus.vehiState.door.lh_front = true;
 		break;
 	case DoorClosed:
-		apparatus.door.lh_front = false;
+		apparatus.vehiState.door.lh_front = false;
 		break;
 	default:
 		LOG_W("unhandled State %d", param1);

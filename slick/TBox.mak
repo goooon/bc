@@ -34,7 +34,7 @@ COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/bcp_packet.o $(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
 	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
 	$(OUTDIR)/TaskTable.o $(OUTDIR)/VehicleAuthTask.o \
-	$(OUTDIR)/VKeyIgnitionTask.o 
+	$(OUTDIR)/VKeyIgnitionTask.o $(OUTDIR)/RemoteUnlockTest.o 
 OBJ=$(COMMON_OBJ) $(CFG_OBJ)
 ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
@@ -47,7 +47,8 @@ ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/bcp_packet.o $(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
 	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
 	$(OUTDIR)/TaskTable.o $(OUTDIR)/VehicleAuthTask.o \
-	$(OUTDIR)/VKeyIgnitionTask.o -ldl -lpthread -lMqtt -lstdc++ -lrt 
+	$(OUTDIR)/VKeyIgnitionTask.o $(OUTDIR)/RemoteUnlockTest.o -ldl \
+	-lpthread -lMqtt -lstdc++ -lrt 
 
 COMPILE=g++ -c   -g -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
 LINK=g++  -g -o "$(OUTFILE)" $(ALL_OBJ)
@@ -62,6 +63,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.cpp
 	$(COMPILE)
 
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.cpp
+	$(COMPILE)
+
+$(OUTDIR)/%.o : ../tbox/src/test/%.cpp
 	$(COMPILE)
 
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.cpp
@@ -79,6 +83,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.ada
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.ada
 	$(COMPILE_ADA)
 
+$(OUTDIR)/%.o : ../tbox/src/test/%.ada
+	$(COMPILE_ADA)
+
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.ada
 	$(COMPILE_ADA)
 
@@ -92,6 +99,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.d
 	$(COMPILE_D)
 
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.d
+	$(COMPILE_D)
+
+$(OUTDIR)/%.o : ../tbox/src/test/%.d
 	$(COMPILE_D)
 
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.d
@@ -109,6 +119,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.adb
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.adb
 	$(COMPILE_ADB)
 
+$(OUTDIR)/%.o : ../tbox/src/test/%.adb
+	$(COMPILE_ADB)
+
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.adb
 	$(COMPILE_ADB)
 
@@ -124,6 +137,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.f90
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.f90
 	$(COMPILE_F90)
 
+$(OUTDIR)/%.o : ../tbox/src/test/%.f90
+	$(COMPILE_F90)
+
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.f90
 	$(COMPILE_F90)
 
@@ -137,6 +153,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.f
 	$(COMPILE_F)
 
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.f
+	$(COMPILE_F)
+
+$(OUTDIR)/%.o : ../tbox/src/test/%.f
 	$(COMPILE_F)
 
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.f
@@ -189,7 +208,7 @@ COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/bcp_packet.o $(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
 	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
 	$(OUTDIR)/TaskTable.o $(OUTDIR)/VehicleAuthTask.o \
-	$(OUTDIR)/VKeyIgnitionTask.o 
+	$(OUTDIR)/VKeyIgnitionTask.o $(OUTDIR)/RemoteUnlockTest.o 
 OBJ=$(COMMON_OBJ) $(CFG_OBJ)
 ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
@@ -202,7 +221,8 @@ ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/bcp_packet.o $(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
 	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
 	$(OUTDIR)/TaskTable.o $(OUTDIR)/VehicleAuthTask.o \
-	$(OUTDIR)/VKeyIgnitionTask.o -ldl -lpthread -lMqtt -lstdc++ 
+	$(OUTDIR)/VKeyIgnitionTask.o $(OUTDIR)/RemoteUnlockTest.o -ldl \
+	-lpthread -lMqtt -lstdc++ 
 
 COMPILE=g++ -c   -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
 LINK=g++  -o "$(OUTFILE)" $(ALL_OBJ)
@@ -217,6 +237,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.cpp
 	$(COMPILE)
 
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.cpp
+	$(COMPILE)
+
+$(OUTDIR)/%.o : ../tbox/src/test/%.cpp
 	$(COMPILE)
 
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.cpp
@@ -234,6 +257,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.ada
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.ada
 	$(COMPILE_ADA)
 
+$(OUTDIR)/%.o : ../tbox/src/test/%.ada
+	$(COMPILE_ADA)
+
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.ada
 	$(COMPILE_ADA)
 
@@ -247,6 +273,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.d
 	$(COMPILE_D)
 
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.d
+	$(COMPILE_D)
+
+$(OUTDIR)/%.o : ../tbox/src/test/%.d
 	$(COMPILE_D)
 
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.d
@@ -264,6 +293,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.adb
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.adb
 	$(COMPILE_ADB)
 
+$(OUTDIR)/%.o : ../tbox/src/test/%.adb
+	$(COMPILE_ADB)
+
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.adb
 	$(COMPILE_ADB)
 
@@ -279,6 +311,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.f90
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.f90
 	$(COMPILE_F90)
 
+$(OUTDIR)/%.o : ../tbox/src/test/%.f90
+	$(COMPILE_F90)
+
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.f90
 	$(COMPILE_F90)
 
@@ -292,6 +327,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.f
 	$(COMPILE_F)
 
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.f
+	$(COMPILE_F)
+
+$(OUTDIR)/%.o : ../tbox/src/test/%.f
 	$(COMPILE_F)
 
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.f
@@ -344,7 +382,7 @@ COMMON_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/bcp_packet.o $(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
 	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
 	$(OUTDIR)/TaskTable.o $(OUTDIR)/VehicleAuthTask.o \
-	$(OUTDIR)/VKeyIgnitionTask.o 
+	$(OUTDIR)/VKeyIgnitionTask.o $(OUTDIR)/RemoteUnlockTest.o 
 OBJ=$(COMMON_OBJ) $(CFG_OBJ)
 ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/Config.o $(OUTDIR)/dep.o $(OUTDIR)/Event.o \
@@ -357,7 +395,8 @@ ALL_OBJ=$(OUTDIR)/Application.o $(OUTDIR)/CmdParser.o \
 	$(OUTDIR)/bcp_packet.o $(OUTDIR)/binary_formater.o $(OUTDIR)/crc32.o \
 	$(OUTDIR)/RemoteUnlockTask.o $(OUTDIR)/StateUploadTask.o \
 	$(OUTDIR)/TaskTable.o $(OUTDIR)/VehicleAuthTask.o \
-	$(OUTDIR)/VKeyIgnitionTask.o -ldl -lpthread -lMqtt -lstdc++ -lrt 
+	$(OUTDIR)/VKeyIgnitionTask.o $(OUTDIR)/RemoteUnlockTest.o -ldl \
+	-lpthread -lMqtt -lstdc++ -lrt 
 
 COMPILE=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc -c   -g -o "$(OUTDIR)/$(*F).o" $(CFG_INC) $<
 LINK=/usr/local/arm/4.5.1/opt/bin/arm-linux-gcc  -g -o "$(OUTFILE)" $(ALL_OBJ)
@@ -372,6 +411,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.cpp
 	$(COMPILE)
 
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.cpp
+	$(COMPILE)
+
+$(OUTDIR)/%.o : ../tbox/src/test/%.cpp
 	$(COMPILE)
 
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.cpp
@@ -389,6 +431,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.ada
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.ada
 	$(COMPILE_ADA)
 
+$(OUTDIR)/%.o : ../tbox/src/test/%.ada
+	$(COMPILE_ADA)
+
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.ada
 	$(COMPILE_ADA)
 
@@ -402,6 +447,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.d
 	$(COMPILE_D)
 
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.d
+	$(COMPILE_D)
+
+$(OUTDIR)/%.o : ../tbox/src/test/%.d
 	$(COMPILE_D)
 
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.d
@@ -419,6 +467,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.adb
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.adb
 	$(COMPILE_ADB)
 
+$(OUTDIR)/%.o : ../tbox/src/test/%.adb
+	$(COMPILE_ADB)
+
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.adb
 	$(COMPILE_ADB)
 
@@ -434,6 +485,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.f90
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.f90
 	$(COMPILE_F90)
 
+$(OUTDIR)/%.o : ../tbox/src/test/%.f90
+	$(COMPILE_F90)
+
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.f90
 	$(COMPILE_F90)
 
@@ -447,6 +501,9 @@ $(OUTDIR)/%.o : ../fundation/src/cpp/util/%.f
 	$(COMPILE_F)
 
 $(OUTDIR)/%.o : ../fundation/src/cpp/core/%.f
+	$(COMPILE_F)
+
+$(OUTDIR)/%.o : ../tbox/src/test/%.f
 	$(COMPILE_F)
 
 $(OUTDIR)/%.o : ../tbox/src/tasks/%.f

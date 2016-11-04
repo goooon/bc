@@ -56,6 +56,7 @@
     <ClInclude Include="..\src\tasks\BCMessage.h" />
     <ClInclude Include="..\src\tasks\Element.h" />
     <ClInclude Include="..\src\tasks\ErrorCode.h" />
+    <ClInclude Include="..\src\tasks\PackageQueue.h" />
     <ClInclude Include="..\src\tasks\RemoteUnlockTask.h" />
     <ClInclude Include="..\src\tasks\StateUploadTask.h" />
     <ClInclude Include="..\src\tasks\TaskTable.h" />
@@ -79,6 +80,9 @@
     <ClCompile Include="..\src\cpp\Sensor.cpp" />
     <ClCompile Include="..\src\cpp\Task.cpp" />
     <ClCompile Include="..\src\cpp\Vehicle.cpp" />
+    <ClCompile Include="..\src\tasks\BCMessage.cpp" />
+    <ClCompile Include="..\src\tasks\Element.cpp" />
+    <ClCompile Include="..\src\tasks\PackageQueue.cpp" />
     <ClCompile Include="..\src\tasks\RemoteUnlockTask.cpp" />
     <ClCompile Include="..\src\tasks\StateUploadTask.cpp" />
     <ClCompile Include="..\src\tasks\TaskTable.cpp" />
@@ -215,8 +219,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;WIN;ME_DEBUGUI;ME_STDIO;ME_HASLUA;TRACE_MALLOC_PERFORMANCE;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN;ME_DEBUGUI;ME_STDIO;ME_HASLUA;TRACE_MALLOC_PERFORMANCE;_LIB;_DEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <CompileAsManaged>false</CompileAsManaged>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

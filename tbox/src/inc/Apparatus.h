@@ -58,8 +58,9 @@ struct Apparatus {
 	{//和行驶操作有关状态
 		DEF_BIT8(brake);	        //刹车踏板阻尼大小/或者踏下的程度，256 level
 		DEF_BIT8(accelerator);      //油门大小/或者踏下的程度, 256 level
-		DEF_BIT4(shift_level);		//变速杆 0:P,1:R,2:N,3:D,4:S
+		DEF_BIT3(shift_level);		//变速杆 0:P,1:R,2:N,3:D,4:S
 		DEF_BIT1(parking_break);	//驻车制动 on/off
+		DEF_BIT1(ingnition);		//引擎状态
 		DEF_BIT3(reserved1);		//保留以后使用
 		DEF_BIT8(reserved2);		//保留以后使用
 	}DECL_GNU_PACKED;
@@ -102,9 +103,7 @@ struct Apparatus {
 	void refresh() {
 	}
 public:
-	Door door;
-	Window window;
-	Pedal pedal;
+	VehicleState vehiState;
 	Indicator indicator;
 	Misc misc;
 	AirCondition ac;

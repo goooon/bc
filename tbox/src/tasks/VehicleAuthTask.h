@@ -18,12 +18,12 @@ public:
 protected:
 	//the function should be OVERRIDE by its subclass
 	virtual void doTask();
-	virtual bool handlePackage(bcp_packet_t* pkg)OVERRIDE
-	{
-		//::Sleep(3000);
-		msgQueue.post(AppEvent::PackageArrived, Package::Mqtt, 0, (void*)pkg);
-		return true;
-	}
+	//virtual bool handlePackage(bcp_packet_t* pkg)OVERRIDE
+	//{
+	//	//::Sleep(3000);
+	//	msgQueue.post(AppEvent::PackageArrived, Package::Mqtt, 0, (void*)pkg);
+	//	return true;
+	//}
 private:
 	void reqAuth();
 };

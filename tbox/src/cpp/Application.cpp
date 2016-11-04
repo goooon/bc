@@ -101,7 +101,7 @@ bool Application::onDebugCommand(const char* cmd)
 		return true;
 	}
 	if (!strcmp(cmd, "connMqtt")) {
-		mqtt.reqConnect(config.mqttServer, config.sub_topic, 0,config.keepAliveInterval,config.clientid);
+		mqtt.reqConnect(config.mqttServerIp, config.sub_topic, 0,config.keepAliveInterval,config.clientid);
 		return true;
 	}
 	if (!strcmp(cmd, "discMqtt")) {
@@ -134,7 +134,7 @@ void Application::run()
 {
 	while (true) {
 		ThreadEvent::WaitResult wr = taskEvent.wait(1000);
-		LOG_I("tasks run...");
+		//LOG_I("tasks run...");
 		if (wr == ThreadEvent::EventOk) {
 			while (!tasksWaiting.isEmpty()) {
 				Task* task = tasksWaiting.out();
@@ -192,6 +192,9 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 		break;
 	case AppEvent::SensorEvent:
 		break;
+	case AppEvent::AutoEvent:
+		broadcastEvent(e, param1, param2, data);
+		break;
 	case AppEvent::InsertSchedule:
 		schedule.insert(Timestamp(param1, param2), (Task*)data);
 		break;
@@ -230,6 +233,12 @@ Vehicle& Application::getVehicle(void)
 {
 	return vehicle;
 }
+
+PackageQueue& Application::getPackageQueue(void)
+{
+	return pkgQueue;
+}
+
 //
 //Schedule& Application::getSchedule(void)
 //{
@@ -270,7 +279,7 @@ void Application::onNetStateChanged(u32 param)
 {
 	if (param == 1) {
 		LOG_I("onNetConnected");
-		mqtt.reqConnect(config.mqttServer, config.sub_topic, 0, config.keepAliveInterval, config.clientid);
+		mqtt.reqConnect(config.mqttServerIp, config.sub_topic, 0, config.keepAliveInterval, config.clientid);
 	}
 	else if (param == 0) {
 		LOG_I("onNetDisconnected");

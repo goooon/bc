@@ -200,7 +200,7 @@ ThreadEvent::WaitResult MqttClient::reqSendPackage(char* publish, void* payload,
 {
 	int retained = 0;
 	MQTTAsync_responseOptions ropts = MQTTAsync_responseOptions_initializer;
-	LOG_I("reqSendPackage \"%s\" qos:%d Token was %d", publish, qos, ropts.token);
+	LOG_I(">>>>reqSendPackage \"%s\" qos:%d Token was %d", publish, qos, ropts.token);
 	int rc = MQTTAsync_send(client, publish, payloadlen, payload, qos, retained, &ropts);
 	if (MQTTASYNC_SUCCESS != rc) {
 		LOG_E("reqSendPackage() failed %d", rc);
@@ -397,7 +397,8 @@ bool MqttClient::onRecvPackage(void* data, int len)
 			}
 		}
 		else {
-			::PostEvent(AppEvent::InsertTask, 0, 0, TaskCreate(applicationID,p));
+			if(applicationID != APPID_AUTHENTICATION)
+				::PostEvent(AppEvent::InsertTask, 0, 0, TaskCreate(applicationID,p));
 		}
 	}
 	return true;

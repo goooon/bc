@@ -120,9 +120,13 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 //	typedef bool b32;
 //}
 
-me::Tracer*  ShowExampleAppConsole(bool* p_open,bool draw,char* (*)(int),void(*)(char*));
+me::Tracer*  ShowExampleAppConsole(bool* p_open, bool draw, char* (*)(int), void(*)(char*));
+me::Tracer*  ShowVehicleAppConsole(bool* p_open, bool draw, char* (*)(int), void(*)(char*));
+
 WNDCLASSEX wc;
-void loopCallback(char* (*getCommand)(int),void(*onCommand)(char*) )
+void loopCallback(
+	char* (*getCommand)(int),void(*onCommand)(char*),
+	char* (*getVCommand)(int), void(*onVCommand)(char*))
 {
 	MSG msg;
 	ImVec4 clear_col = ImColor(114, 144, 154);
@@ -140,7 +144,7 @@ void loopCallback(char* (*getCommand)(int),void(*onCommand)(char*) )
 		// 2. Show another simple window, this time using an explicit Begin/End pair
 		bool show_test_window = true;
 		ShowExampleAppConsole(&show_test_window, true,getCommand, onCommand);
-
+		ShowVehicleAppConsole(&show_test_window, true, getVCommand, onVCommand);
 		// Rendering
 		g_pd3dDeviceCtx->ClearRenderTargetView(g_mainRenderTargetView, (float*)&clear_col);
 		ImGui::Render();
@@ -152,7 +156,7 @@ void loopCallback(char* (*getCommand)(int),void(*onCommand)(char*) )
 }
 typedef char*(*GetCommand)(int idx);
 typedef void(*OnCommand)(char* cmd);
-typedef void(*LoopBack)(GetCommand,OnCommand);
+typedef void(*LoopBack)(GetCommand,OnCommand, GetCommand, OnCommand);
 LoopBack debugMain(int argc, char** argv)
 {
     // Create application window
