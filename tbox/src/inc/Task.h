@@ -3,7 +3,7 @@
 
 //#include "./Message.h"
 #include "./Event.h"
-
+#include "./Operation.h"
 class MessageQueue
 {
 private:
@@ -39,6 +39,9 @@ public:
 protected:
 	//the function should be OVERRIDE by its subclass
 	virtual void doTask(){return;}
+	void ntfTimeOut();
+	void rspAck();
+	void rspError(Operation::Result ret);
 private:
 	//called by Application
 	virtual void run()OVERRIDE;

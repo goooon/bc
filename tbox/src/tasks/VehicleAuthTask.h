@@ -8,22 +8,10 @@
 class VehicleAuthTask : public Task {
 public:
 	const static int AppId = APPID_AUTHENTICATION;
-	VehicleAuthTask() :Task(APPID_AUTHENTICATION, true) {
-		VehicleAuthTask* p = this;
-	}
-	static Task* Create()
-	{
-		return bc_new VehicleAuthTask();
-	}
+	VehicleAuthTask();
+	static Task* Create();
 protected:
-	//the function should be OVERRIDE by its subclass
 	virtual void doTask();
-	//virtual bool handlePackage(bcp_packet_t* pkg)OVERRIDE
-	//{
-	//	//::Sleep(3000);
-	//	msgQueue.post(AppEvent::PackageArrived, Package::Mqtt, 0, (void*)pkg);
-	//	return true;
-	//}
 private:
 	void reqAuth();
 };

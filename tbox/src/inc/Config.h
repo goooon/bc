@@ -20,8 +20,14 @@ public:
 	void setDoorActivationTimeOut(u32 to) {
 		doorActivationTimeOut = to;
 	}
+	void setIgntActivationTimeOut(u32 to){
+		igntActivationTimeOut = to;
+	}
 	u32 getDoorActivationTimeOut() {
 		return doorActivationTimeOut;
+	}
+	u32 getIgntActivationTimeOut() {
+		return igntActivationTimeOut;
 	}
 	u32  getAuthToken() { return authToken; }
 	void setAuthToken(u32 t) { authToken = t; }
@@ -34,6 +40,7 @@ public:
 		memset(vin, 0, sizeof(vin));
 
 		doorActivationTimeOut = 20000;
+		igntActivationTimeOut = 20000;
 		strncpy(mqttServerIp, "10.28.4.40:1884", sizeof(mqttServerIp));//main server
 		 //strncpy(mqttServer, "139.219.238.66:1883", sizeof(mqttServer));//test server
 		 //strncpy(mqttServer, "10.28.248.71:1883", sizeof(mqttServer));//guzhibin
@@ -121,6 +128,7 @@ public:
 		}
 		return true;
 	}
+	const char* getPublishTopic() { return pub_topic; }
 private:
 public:
 	u32  ip;
@@ -136,5 +144,6 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 private:
 	u32 doorActivationTimeOut;
+	u32 igntActivationTimeOut;
 };
 #endif // GUARD_Config_h__

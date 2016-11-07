@@ -111,6 +111,9 @@
     <ClInclude Include="..\src\tasks\PackageQueue.h">
       <Filter>src\inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\tasks\VKeyDeactiveTask.h">
+      <Filter>src\tasks</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -175,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="..\src\tasks\PackageQueue.cpp">
       <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\VKeyDeactiveTask.cpp">
+      <Filter>src\tasks</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

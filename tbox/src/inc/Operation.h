@@ -12,6 +12,7 @@ struct Operation
 		E_Permission,
 		E_DoorOpened,
 		E_Driving,
+		E_Ignited,
 		E_Brake,
 		E_Door
 	};

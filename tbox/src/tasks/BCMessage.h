@@ -177,7 +177,7 @@ public:
 		bcp_message_append(pkg, msg);
 		return msg;
 	}
-	bool post(char* publish, int qos, int millSec,bool isImportant = false) {
+	bool post(const char* publish, int qos, int millSec,bool isImportant = false) {
 		u8* buf;
 		u32 len;
 		bool ret = false;

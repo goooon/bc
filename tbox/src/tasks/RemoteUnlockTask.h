@@ -18,12 +18,9 @@ public:
 	RemoteUnlockTask();
 private:
 	virtual void doTask()OVERRIDE;
-	void rspError(Operation::Result ret);
-	void rspAck();
-
 	void ntfDoorActived();
 	void ntfDoorOpened();
-	void ntfTimeOut();
+	
 private:
 	Timestamp     expireTime;
 

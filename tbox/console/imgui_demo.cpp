@@ -2489,6 +2489,7 @@ struct VehicleConsole : public me::Tracer
 		}
 
 		int g = vs.pedal.shift_level;
+		ImGui::Text("Shift:"); ImGui::SameLine();
 		if(ImGui::RadioButton("P", &g, 0))vs.pedal.shift_level = 0; ImGui::SameLine();
 		if(ImGui::RadioButton("R", &g, 1))vs.pedal.shift_level = 1;; ImGui::SameLine();
 		if(ImGui::RadioButton("N", &g, 2))vs.pedal.shift_level = 2;; ImGui::SameLine();

@@ -61,6 +61,7 @@
     <ClInclude Include="..\src\tasks\StateUploadTask.h" />
     <ClInclude Include="..\src\tasks\TaskTable.h" />
     <ClInclude Include="..\src\tasks\VehicleAuthTask.h" />
+    <ClInclude Include="..\src\tasks\VKeyDeactiveTask.h" />
     <ClInclude Include="..\src\tasks\VKeyIgnitionTask.h" />
     <ClInclude Include="..\src\test\RemoteUnlockTest.h" />
     <ClInclude Include="..\src\test\VehicleAuthTest.h" />
@@ -87,6 +88,7 @@
     <ClCompile Include="..\src\tasks\StateUploadTask.cpp" />
     <ClCompile Include="..\src\tasks\TaskTable.cpp" />
     <ClCompile Include="..\src\tasks\VehicleAuthTask.cpp" />
+    <ClCompile Include="..\src\tasks\VKeyDeactiveTask.cpp" />
     <ClCompile Include="..\src\tasks\VKeyIgnitionTask.cpp" />
     <ClCompile Include="..\src\test\RemoteUnlockTest.cpp" />
   </ItemGroup>

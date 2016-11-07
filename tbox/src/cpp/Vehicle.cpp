@@ -19,6 +19,9 @@ Operation::Result Vehicle::prepareVKeyIgnition()
 	if (driving) {
 		return Operation::E_Driving;
 	}
+	if (state == Ignited) {
+		return Operation::E_Ignited;
+	}
 	if (apparatus.vehiState.door.lh_front) {
 		return Operation::E_DoorOpened;
 	}

@@ -1,6 +1,17 @@
 #include "./VehicleAuthTask.h"
 #include "./BCMessage.h"
 #include "../inc/Vehicle.h"
+
+VehicleAuthTask::VehicleAuthTask() :Task(APPID_AUTHENTICATION, true)
+{
+	VehicleAuthTask* p = this;
+}
+
+Task* VehicleAuthTask::Create()
+{
+	return bc_new VehicleAuthTask();
+}
+
 void VehicleAuthTask::doTask()
 {
 	reqAuth();

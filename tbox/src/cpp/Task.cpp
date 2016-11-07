@@ -1,7 +1,8 @@
 #include "../inc/Task.h"
 #include "../inc/TaskList.h"
 #include "../inc/Event.h"
-
+#include "../tasks/BCMessage.h"
+#include "../tasks/ErrorCode.h"
 Task::Task(u16 appId, bool async) :
 	prev(NULLPTR),
 	next(NULLPTR),
@@ -99,4 +100,85 @@ bool MessageQueue::out(AppEvent::Type& e, u32& param1, u32& param2, void*& data)
 ThreadEvent::WaitResult MessageQueue::wait(u32 millSecond)
 {
 	return event.wait(millSecond);
+}
+
+void Task::rspAck()
+{
+	BCPackage pkg;
+	BCMessage msg = pkg.appendMessage(appID, 3, seqID);
+	msg.appendIdentity();
+	msg.appendTimeStamp();
+	msg.appendErrorElement(0);
+	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, 5000)) {
+		LOG_E("rspAck failed");
+	}
+	else {
+		LOG_I("rspAck succed");
+	}
+}
+
+void Task::ntfTimeOut()
+{
+	BCPackage pkg;
+	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
+	msg.appendIdentity();
+	msg.appendTimeStamp();
+	msg.appendErrorElement(11);
+	msg.appendFunctionStatus(0);
+
+	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, 5000)) {
+		LOG_E("req Auth failed");
+	}
+	else {
+		//PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);
+	}
+}
+
+void Task::rspError(Operation::Result ret)
+{
+	u8 ecode = 0;
+	switch (ret)
+	{
+	case Operation::Succ:
+		ecode = ERR_SUCC;
+		break;
+	case Operation::W_Aborted:
+		ecode = ERR_CONDITION;
+		break;
+	case Operation::E_Code:
+		ecode = ERR_CONDITION;
+		break;
+	case Operation::E_Auth:
+		ecode = ERR_AUTHFAIL;
+		break;
+	case Operation::E_Permission:
+		ecode = ERR_CONDITION;
+		break;
+	case Operation::E_DoorOpened:
+		ecode = ERR_CONDITION;
+		break;
+	case Operation::E_Driving:
+		ecode = ERR_CONDITION;
+		break;
+	case Operation::E_Brake:
+		ecode = ERR_CONDITION;
+		break;
+	case Operation::E_Door:
+		ecode = ERR_CONDITION;
+		break;
+	case Operation::E_Ignited:
+		ecode = ERR_CONDITION;
+		break;
+	default:
+		break;
+	}
+
+	BCPackage pkg;
+	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
+	msg.appendErrorElement(ecode);
+	msg.appendTimeStamp();
+	msg.appendFunctionStatus(0);
+	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
+		LOG_E("sendResponseError failed %d", ret);
+	}
 }

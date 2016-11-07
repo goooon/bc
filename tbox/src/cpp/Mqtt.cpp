@@ -196,7 +196,7 @@ bool MqttClient::reqConnect(char* url, char* topic,int qos,int keepAliveInterval
 	return true;
 }
 
-ThreadEvent::WaitResult MqttClient::reqSendPackage(char* publish, void* payload, int payloadlen, int qos, int millSec)
+ThreadEvent::WaitResult MqttClient::reqSendPackage(const char* publish, void* payload, int payloadlen, int qos, int millSec)
 {
 	int retained = 0;
 	MQTTAsync_responseOptions ropts = MQTTAsync_responseOptions_initializer;

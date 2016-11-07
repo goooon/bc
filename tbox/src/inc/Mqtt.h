@@ -36,7 +36,7 @@ public:
 	~MqttClient();
 	void setConfig(Config *c);
 	bool reqConnect(char* url, char* topic,int qos,int keepAliveInterval,const char* clientId = "cliend id");;
-	ThreadEvent::WaitResult reqSendPackage(char* publish,void* payload, int payloadlen, int qos,int millSec);
+	ThreadEvent::WaitResult reqSendPackage(const char* publish,void* payload, int payloadlen, int qos,int millSec);
 	bool reqSendPackageAsync(void* payload, int payloadlen, int qos,void (*onResult)(bool));
 	bool reqDisconnect();
 	bool isConnected();
