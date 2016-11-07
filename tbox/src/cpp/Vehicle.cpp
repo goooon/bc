@@ -8,7 +8,7 @@ Vehicle& Vehicle::getInstance()
 
 Vehicle::Vehicle() :authed(Unauthed),state(Enabled)
 {
-	apparatus.reset();
+
 }
 
 Operation::Result Vehicle::prepareVKeyIgnition()
@@ -57,6 +57,27 @@ Operation::Result Vehicle::reqDeactiveDoor()
 	return Operation::Succ;
 }
 
+bool Vehicle::isParkState()
+{
+	if (apparatus.vehiState.door.lh_front == 2 &&
+		apparatus.vehiState.door.rh_front == 2 &&
+		apparatus.vehiState.door.lh_rear == 2 &&
+		apparatus.vehiState.door.rh_rear == 2 &&
+		apparatus.vehiState.door.hood == 2 &&
+		apparatus.vehiState.door.luggage_door == 2 &&
+
+		apparatus.vehiState.window.lh_front == 2 &&
+		apparatus.vehiState.window.rh_front == 2 &&
+		apparatus.vehiState.window.lh_rear == 2 &&
+		apparatus.vehiState.window.rh_rear == 2 &&
+
+		apparatus.vehiState.pedal.shift_level == 1 &&
+		apparatus.vehiState.pedal.parking_break == 3) {
+		return true;
+	}
+	return false;
+}
+
 //Operation::Result Vehicle::reqLockDoor()
 //{
 //	LOG_I("do reqLockDoor()");
@@ -66,7 +87,8 @@ Operation::Result Vehicle::reqDeactiveDoor()
 
 void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 {
-	switch (param1) {
+	Event e = (Event)param1;
+	switch (e) {
 	case ActiveDoorResult:
 		if (param2) {
 			apparatus.misc.door_actived = true;
@@ -82,6 +104,24 @@ void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 		break;
 	case DoorClosed:
 		apparatus.vehiState.door.lh_front = false;
+		break;
+	case Ignite:
+		if (Vehicle::getInstance().getApparatus().vehiState.pedal.ingnition == 3) {
+			LOG_W("Auto already ignited;");
+		}
+		else {
+			Vehicle::getInstance().getApparatus().vehiState.pedal.ingnition = 3;
+			changeState(Ignited);
+		}
+		break;
+	case UnIgnt:
+		if (Vehicle::getInstance().getApparatus().vehiState.pedal.ingnition == 2) {
+			LOG_W("Auto already unignited;");
+		}
+		else {
+			Vehicle::getInstance().getApparatus().vehiState.pedal.ingnition = 2;
+			changeState(ReadyToIgnit);
+		}
 		break;
 	default:
 		LOG_W("unhandled State %d", param1);

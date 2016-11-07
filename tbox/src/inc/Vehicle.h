@@ -42,6 +42,7 @@ public:
 	Operation::Result reqActiveDoorByVKey();
 	Operation::Result reqDeactiveDoor();
 	Apparatus& getApparatus() { return apparatus; }
+	bool isParkState();
 private:
 	void onEvent(u32 param1, u32 param2, void* data);
 	bool changeState(State next);

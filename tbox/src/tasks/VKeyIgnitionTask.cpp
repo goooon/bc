@@ -85,5 +85,13 @@ void VKeyIgnitionTask::doTask()
 
 void VKeyIgnitionTask::ntfIgnited()
 {
-
+	BCPackage pkg;
+	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
+	msg.appendIdentity();
+	msg.appendTimeStamp();
+	msg.appendErrorElement(ERR_SUCC);
+	msg.appendFunctionStatus(0);
+	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, 5000)) {
+		LOG_E("ntfIgnited() failed");
+	}
 }

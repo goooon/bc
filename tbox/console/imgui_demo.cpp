@@ -2124,9 +2124,10 @@ struct ExampleAppConsole : public me::Tracer
 		if (ImGui::SmallButton("ntfState")) { func("ntfState"); } ImGui::SameLine();
 
 		if (ImGui::SmallButton("reqActive")) { func("reqActive"); } ImGui::SameLine();
-		if (ImGui::SmallButton("reqDeact")) { func("reqDeact"); } ImGui::SameLine();
+		if (ImGui::SmallButton("reqDeact")) { func("reqDeact"); } ImGui::Separator();
 		
-		if (ImGui::SmallButton("reqIgnit")) { func("reqIgnit"); } ImGui::Separator(); 
+		//if (ImGui::SmallButton("reqIgnit")) { func("reqIgnit"); } ImGui::SameLine();
+		//if (ImGui::SmallButton("reqUnIgt")) { func("reqUnIgt"); } ImGui::Separator();
 
 		if (ImGui::SmallButton("memory")) { func("memory"); } ImGui::SameLine();
 		if (ImGui::SmallButton("memscan")) { func("memscan"); } ImGui::SameLine();
@@ -2438,70 +2439,70 @@ struct VehicleConsole : public me::Tracer
 		bool s;
 		Apparatus::VehicleState& vs = Vehicle::getInstance().getApparatus().vehiState;
 		ImGui::Text("Door :"); ImGui::SameLine();
-		s = vs.door.lh_front;
+		s = vs.door.lh_front & 1;
 		if (ImGui::Checkbox("lfd", &s)) {
 			vs.door.lh_front = s;
 		}
 		ImGui::SameLine();
-		s = vs.door.rh_front;
+		s = vs.door.rh_front & 1;
 		if (ImGui::Checkbox("rfd", &s)) {
 			vs.door.rh_front = s;
 		}
 		ImGui::SameLine();
-		s = vs.door.lh_rear;
+		s = vs.door.lh_rear & 1;
 		if (ImGui::Checkbox("lrd", &s)) {
 			vs.door.lh_rear = s;
 		}
 		ImGui::SameLine();
-		s = vs.door.rh_rear;
+		s = vs.door.rh_rear & 1;
 		if (ImGui::Checkbox("rrd", &s)) {
 			vs.door.rh_rear = s;
 		}
 		ImGui::SameLine();
-		s = vs.door.hood;
+		s = vs.door.hood & 1;
 		if (ImGui::Checkbox("hood", &s)) {
 			vs.door.hood = s;
 		}
 		ImGui::SameLine();
-		s = vs.door.luggage_door;
+		s = vs.door.luggage_door & 1;
 		if (ImGui::Checkbox("lugd", &s)) {
 			vs.door.luggage_door = s;
 		}
 		ImGui::SameLine();
-		s = vs.door.fuellid;
+		s = vs.door.fuellid & 1;
 		if (ImGui::Checkbox("pd", &s)) {
 			vs.door.fuellid = s;
 		}
 		ImGui::Text("Wind :"); ImGui::SameLine();
-		s = vs.window.lh_front;
+		s = vs.window.lh_front & 1;
 		if (ImGui::Checkbox("lfw", &s)) {
 			vs.window.lh_front = s;
 		}
 		ImGui::SameLine();
-		s = vs.window.rh_front;
+		s = vs.window.rh_front & 1;
 		if (ImGui::Checkbox("rfw", &s)) {
 			vs.window.rh_front = s;
 		}
 		ImGui::SameLine();
-		s = vs.window.lh_rear;
+		s = vs.window.lh_rear & 1;
 		if (ImGui::Checkbox("lrw", &s)) {
 			vs.window.lh_rear = s;
 		}
 		ImGui::SameLine();
-		s = vs.window.rh_rear;
+		s = vs.window.rh_rear & 1;
 		if (ImGui::Checkbox("rrw", &s)) {
 			vs.window.rh_rear = s;
 		}
 
-		int g = vs.pedal.shift_level;
+		int g = vs.pedal.shift_level - 1;
 		ImGui::Text("Shift:"); ImGui::SameLine();
-		if(ImGui::RadioButton("P", &g, 0))vs.pedal.shift_level = 0; ImGui::SameLine();
-		if(ImGui::RadioButton("R", &g, 1))vs.pedal.shift_level = 1;; ImGui::SameLine();
-		if(ImGui::RadioButton("N", &g, 2))vs.pedal.shift_level = 2;; ImGui::SameLine();
-		if(ImGui::RadioButton("D", &g, 3))vs.pedal.shift_level = 3;;
+		if(ImGui::RadioButton("P", &g, 0))vs.pedal.shift_level = 1; ImGui::SameLine();
+		if(ImGui::RadioButton("R", &g, 1))vs.pedal.shift_level = 2;; ImGui::SameLine();
+		if(ImGui::RadioButton("N", &g, 2))vs.pedal.shift_level = 3;; ImGui::SameLine();
+		if(ImGui::RadioButton("D", &g, 3))vs.pedal.shift_level = 4;;
 
 		ImGui::Text("Driv :"); ImGui::SameLine();
-		s = vs.pedal.ingnition;
+		s = vs.pedal.ingnition & 1;
 		if (ImGui::Checkbox("ign", &s)) {
 			vs.pedal.ingnition = s;
 		}

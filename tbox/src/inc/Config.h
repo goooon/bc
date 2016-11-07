@@ -23,11 +23,17 @@ public:
 	void setIgntActivationTimeOut(u32 to){
 		igntActivationTimeOut = to;
 	}
+	void setStateUploadExpireTime(u32 to) {
+		stateUploadExpireTime = to;
+	}
 	u32 getDoorActivationTimeOut() {
 		return doorActivationTimeOut;
 	}
 	u32 getIgntActivationTimeOut() {
 		return igntActivationTimeOut;
+	}
+	u32 getStateUploadExpireTime() {
+		return stateUploadExpireTime;
 	}
 	u32  getAuthToken() { return authToken; }
 	void setAuthToken(u32 t) { authToken = t; }
@@ -41,6 +47,7 @@ public:
 
 		doorActivationTimeOut = 20000;
 		igntActivationTimeOut = 20000;
+		stateUploadExpireTime = 2 * 1000; //2 min
 		strncpy(mqttServerIp, "10.28.4.40:1884", sizeof(mqttServerIp));//main server
 		 //strncpy(mqttServer, "139.219.238.66:1883", sizeof(mqttServer));//test server
 		 //strncpy(mqttServer, "10.28.248.71:1883", sizeof(mqttServer));//guzhibin
@@ -145,5 +152,6 @@ public:
 private:
 	u32 doorActivationTimeOut;
 	u32 igntActivationTimeOut;
+	u32 stateUploadExpireTime;
 };
 #endif // GUARD_Config_h__

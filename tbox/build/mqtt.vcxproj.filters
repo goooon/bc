@@ -22,6 +22,18 @@
     <Filter Include="src\test">
       <UniqueIdentifier>{f33cacdc-6748-4fac-bf46-3d72be4da718}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\tasks\a01">
+      <UniqueIdentifier>{7ec23ae5-f9ca-4b5d-8ce6-723556c8cbb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\tasks\a02">
+      <UniqueIdentifier>{1ab13205-c767-4515-96d0-bf1f9c607992}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\tasks\a03">
+      <UniqueIdentifier>{eef307fe-ced8-4daa-8650-a674e5291aac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\tasks\a04,a05,a06">
+      <UniqueIdentifier>{f9bc0b4f-5ecc-48b5-8dcd-fadf2c2eb60e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\inc\Message.h">
@@ -90,12 +102,6 @@
     <ClInclude Include="..\src\inc\Apparatus.h">
       <Filter>src\inc</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\tasks\StateUploadTask.h">
-      <Filter>src\tasks</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tasks\VKeyIgnitionTask.h">
-      <Filter>src\tasks</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\inc\Schedule.h">
       <Filter>src\inc</Filter>
     </ClInclude>
@@ -105,14 +111,20 @@
     <ClInclude Include="..\src\tasks\PackageQueue.h">
       <Filter>src\inc</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\tasks\VKeyDeactiveTask.h">
-      <Filter>src\tasks</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tasks\VKeyActiveTask.h">
-      <Filter>src\tasks</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\test\ActiveTest.h">
       <Filter>src\test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\VKeyActiveTask.h">
+      <Filter>src\tasks\a01</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\VKeyDeactiveTask.h">
+      <Filter>src\tasks\a02</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\VKeyIgnitionTask.h">
+      <Filter>src\tasks\a03</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\StateUploadTask.h">
+      <Filter>src\tasks\a04,a05,a06</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -149,12 +161,6 @@
     <ClCompile Include="..\src\cpp\Vehicle.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\tasks\StateUploadTask.cpp">
-      <Filter>src\tasks</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tasks\VKeyIgnitionTask.cpp">
-      <Filter>src\tasks</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cpp\Schedule.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
@@ -173,14 +179,20 @@
     <ClCompile Include="..\src\tasks\PackageQueue.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\tasks\VKeyDeactiveTask.cpp">
-      <Filter>src\tasks</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tasks\VKeyActiveTask.cpp">
-      <Filter>src\tasks</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\test\ActiveTest.cpp">
       <Filter>src\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\VKeyActiveTask.cpp">
+      <Filter>src\tasks\a01</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\VKeyDeactiveTask.cpp">
+      <Filter>src\tasks\a02</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\VKeyIgnitionTask.cpp">
+      <Filter>src\tasks\a03</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\StateUploadTask.cpp">
+      <Filter>src\tasks\a04,a05,a06</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

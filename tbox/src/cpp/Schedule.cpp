@@ -19,7 +19,7 @@ void Schedule::triger(Timestamp current)
 	//LOG_V("Schedule::triger(%lld)", current.getValue());
 	while (node != &nodes)
 	{
-		if (node->fireTime >= current) {
+		if (node->fireTime <= current) {
 			if (PostEvent(AppEvent::InsertTask, 0, 0, node->task)) {
 				Node* flag = node->next;
 				node->prev->next = node->next;

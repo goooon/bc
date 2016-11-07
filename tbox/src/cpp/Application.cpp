@@ -3,6 +3,7 @@
 #include "../tasks/VKeyDeactiveTask.h"
 #include "../tasks/VKeyIgnitionTask.h"
 #include "../tasks/VehicleAuthTask.h"
+#include "../tasks//StateUploadTask.h"
 #include "../test/ActiveTest.h"
 #include "../tasks/TaskTable.h"
 static Application* g_inst;
@@ -205,6 +206,7 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 	case AppEvent::SensorEvent:
 		break;
 	case AppEvent::AutoEvent:
+		Vehicle::getInstance().onEvent(param1, param2, 0);
 		broadcastEvent(e, param1, param2, data);
 		break;
 	case AppEvent::InsertSchedule:
@@ -284,7 +286,31 @@ void Application::onMqttEvent(u32 param1, u32 param2, void* data)
 void Application::onAutoEvent(u32 param1, u32 param2, void* data)
 {
 	LOG_I("AutoStateChanged(%d,%d)", param1, param2);
-	vehicle.onEvent(param1,param2,data);
+	Vehicle::State s = (Vehicle::State)param1;
+	switch (s)
+	{
+	case Vehicle::Disabled:
+		break;
+	case Vehicle::Enabled:
+		break;
+	case Vehicle::NotReady:
+		break;
+	case Vehicle::ReadyToIgnit:
+		break;
+	case Vehicle::Ignited:
+	{
+		Timestamp ts;
+		ts.update(Config::getInstance().getStateUploadExpireTime());
+		schedule.insert(ts, bc_new StateUploadTask_NTF());
+	}
+		break;
+	case Vehicle::Forwarding:
+		break;
+	case Vehicle::Backwarding:
+		break;
+	default:
+		break;
+	}
 }
 
 void Application::onNetStateChanged(u32 param)

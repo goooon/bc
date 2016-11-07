@@ -35,34 +35,54 @@ struct Apparatus {
 	}DECL_GNU_PACKED;
 	struct Door	//total 2 bytes
 	{//各个车门打开的状态
-		DEF_BIT1(lh_front);     //左前门 on/off
-		DEF_BIT1(rh_front);	    //右前门 on/off
-		DEF_BIT1(lh_rear);      //左后门 on/off
-		DEF_BIT1(rh_rear);      //右后门 on/off
-		DEF_BIT1(hood);		    //引擎盖 on/off
-		DEF_BIT1(luggage_door); //后备箱 on/off
-		DEF_BIT1(fuellid);	    //充电口 on/off
-		DEF_BIT1(reserved1);	//保留以后使用
+		DEF_BIT2(lh_front);     //左前门 on/off
+		DEF_BIT2(rh_front);	    //右前门 on/off
+		DEF_BIT2(lh_rear);      //左后门 on/off
+		DEF_BIT2(rh_rear);      //右后门 on/off
+		DEF_BIT2(hood);		    //引擎盖 on/off
+		DEF_BIT2(luggage_door); //后备箱 on/off
+		DEF_BIT2(fuellid);	    //充电口 on/off
+		DEF_BIT2(reserved1);	//保留以后使用
 		DEF_BIT8(reserved2);    //保留以后使用
+		Door() {
+			lh_front = 2;
+			rh_front = 2;
+			lh_rear = 2;
+			rh_rear = 2;
+			hood = 2;
+			luggage_door = 2;
+			fuellid = 2;
+		}
 	}DECL_GNU_PACKED;
 	struct Window	//total 2 bytes
 	{//车窗状态
-		DEF_BIT1(lh_front); 	//左前车窗 on/off
-		DEF_BIT1(rh_front); 	//右前车窗 on/off
-		DEF_BIT1(lh_rear); 		//左后车窗 on/off
-		DEF_BIT1(rh_rear); 		//右后车窗 on/off
+		DEF_BIT2(lh_front); 	//左前车窗 on/off
+		DEF_BIT2(rh_front); 	//右前车窗 on/off
+		DEF_BIT2(lh_rear); 		//左后车窗 on/off
+		DEF_BIT2(rh_rear); 		//右后车窗 on/off
 		DEF_BIT4(moon_roof); 	//车顶车窗 档位 0-15 共16个档位
-		DEF_BIT8(reserved);		//保留以后使用
+		DEF_BIT4(reserved);		//保留以后使用
+		Window() {
+			lh_front = 2;
+			rh_front = 2;
+			lh_rear = 2;
+			rh_rear = 2;
+			moon_roof = 2;
+		}
 	}DECL_GNU_PACKED;
 	struct Pedal    //total 4 bytes
 	{//和行驶操作有关状态
 		DEF_BIT8(brake);	        //刹车踏板阻尼大小/或者踏下的程度，256 level
 		DEF_BIT8(accelerator);      //油门大小/或者踏下的程度, 256 level
-		DEF_BIT3(shift_level);		//变速杆 0:P,1:R,2:N,3:D,4:S
-		DEF_BIT1(parking_break);	//驻车制动 on/off
-		DEF_BIT1(ingnition);		//引擎状态
-		DEF_BIT3(reserved1);		//保留以后使用
-		DEF_BIT8(reserved2);		//保留以后使用
+		DEF_BIT3(shift_level);		//0:未采集到,1:P,2:R,3:N,4:D,5:S
+		DEF_BIT2(parking_break);	//驻车制动 on/off
+		DEF_BIT2(ingnition);		//引擎状态
+		DEF_BIT1(reserved1);		//保留以后使用
+		Pedal() {
+			parking_break = 3;
+			ingnition = 2;
+			shift_level = 1;
+		}
 	}DECL_GNU_PACKED;
 	struct Indicator	//total 4 bytes
 	{//仪表板指示数据
@@ -97,9 +117,6 @@ struct Apparatus {
 	{
 		u8 state;			//雨刮器档位
 	}DECL_GNU_PACKED;
-	void reset() {
-		memset(this, 0, sizeof(Apparatus));
-	}
 	void refresh() {
 	}
 public:

@@ -7,13 +7,18 @@ Task* StateUploadTask_NTF::Create()
 
 void StateUploadTask_NTF::doTask()
 {
+	if (Vehicle::getInstance().isParkState()) {
+		LOG_I("ParkState OK,No need report");
+		return;
+	}
+	LOG_I("ParkState is not Ok,notifing ...");
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendVehicleState(Vehicle::getInstance().getApparatus().vehiState);
 	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
-		LOG_E("sendResponseUnlocked failed");
+		LOG_E("StateUploadTask notify failed");
 	}
 }
 
