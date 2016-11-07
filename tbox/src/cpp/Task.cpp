@@ -55,6 +55,11 @@ bool Task::handlePackage(bcp_packet_t* pkg)
 	return true;
 }
 
+void Task::handleDebug()
+{
+	msgQueue.post(AppEvent::PackageArrived, Package::Mqtt, 2, (void*)0);
+}
+
 ThreadEvent::WaitResult Task::waitForEvent(u32 millSeconds)
 {
 	return msgQueue.wait(millSeconds);
@@ -127,7 +132,7 @@ void Task::ntfTimeOut()
 	msg.appendFunctionStatus(0);
 
 	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, 5000)) {
-		LOG_E("req Auth failed");
+		LOG_E("ntfTimeOut() post failed");
 	}
 	else {
 		//PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);

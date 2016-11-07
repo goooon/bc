@@ -1,7 +1,7 @@
-#include "./RemoteUnlockTest.h"
+#include "./ActiveTest.h"
 #include "../tasks/BCMessage.h"
 #include "../inc/Vehicle.h"
-bool RemoteUnlockTest::reqRemoteUnlock()
+bool ActiveTest::reqRemoteUnlock()
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 3, seqID);

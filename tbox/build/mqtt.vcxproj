@@ -57,13 +57,13 @@
     <ClInclude Include="..\src\tasks\Element.h" />
     <ClInclude Include="..\src\tasks\ErrorCode.h" />
     <ClInclude Include="..\src\tasks\PackageQueue.h" />
-    <ClInclude Include="..\src\tasks\RemoteUnlockTask.h" />
     <ClInclude Include="..\src\tasks\StateUploadTask.h" />
     <ClInclude Include="..\src\tasks\TaskTable.h" />
     <ClInclude Include="..\src\tasks\VehicleAuthTask.h" />
+    <ClInclude Include="..\src\tasks\VKeyActiveTask.h" />
     <ClInclude Include="..\src\tasks\VKeyDeactiveTask.h" />
     <ClInclude Include="..\src\tasks\VKeyIgnitionTask.h" />
-    <ClInclude Include="..\src\test\RemoteUnlockTest.h" />
+    <ClInclude Include="..\src\test\ActiveTest.h" />
     <ClInclude Include="..\src\test\VehicleAuthTest.h" />
   </ItemGroup>
   <ItemGroup>
@@ -84,13 +84,13 @@
     <ClCompile Include="..\src\tasks\BCMessage.cpp" />
     <ClCompile Include="..\src\tasks\Element.cpp" />
     <ClCompile Include="..\src\tasks\PackageQueue.cpp" />
-    <ClCompile Include="..\src\tasks\RemoteUnlockTask.cpp" />
     <ClCompile Include="..\src\tasks\StateUploadTask.cpp" />
     <ClCompile Include="..\src\tasks\TaskTable.cpp" />
     <ClCompile Include="..\src\tasks\VehicleAuthTask.cpp" />
+    <ClCompile Include="..\src\tasks\VKeyActiveTask.cpp" />
     <ClCompile Include="..\src\tasks\VKeyDeactiveTask.cpp" />
     <ClCompile Include="..\src\tasks\VKeyIgnitionTask.cpp" />
-    <ClCompile Include="..\src\test\RemoteUnlockTest.cpp" />
+    <ClCompile Include="..\src\test\ActiveTest.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A0138B76-5EFE-41DD-9941-2DE724A03109}</ProjectGuid>

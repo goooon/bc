@@ -1,22 +1,20 @@
-#include "./RemoteUnlockTask.h"
+#include "./VKeyActiveTask.h"
 #include "../inc/Sensor.h"
 #undef TAG
 #define TAG "RemoteUnlockTask"
 
-Task* RemoteUnlockTask::Create()
+Task* VKeyActiveTask::Create()
 {
-	return bc_new RemoteUnlockTask();
+	return bc_new VKeyActiveTask();
 }
 
-RemoteUnlockTask::RemoteUnlockTask() :Task(APPID_VKEY_ACTIVITION, true)
+VKeyActiveTask::VKeyActiveTask() :Task(APPID_VKEY_ACTIVITION, true)
 {
 	expireTime.update(Config::getInstance().getDoorActivationTimeOut());
 	LOG_I("RemoteUnlockTask(%d,%lld) expire: %lld run...", appID, seqID, expireTime.getValue());
 }
 
-
-
-void RemoteUnlockTask::ntfDoorActived()
+void VKeyActiveTask::ntfDoorActived()
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
@@ -29,7 +27,7 @@ void RemoteUnlockTask::ntfDoorActived()
 	}
 }
 
-void RemoteUnlockTask::ntfDoorOpened()
+void VKeyActiveTask::ntfDoorOpened()
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
@@ -42,7 +40,7 @@ void RemoteUnlockTask::ntfDoorOpened()
 	}
 }
 
-void RemoteUnlockTask::doTask()
+void VKeyActiveTask::doTask()
 {
 	Operation::Result ret;
 	for (;;) {

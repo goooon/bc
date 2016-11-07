@@ -2,7 +2,7 @@
 
 Task* VKeyIgnitionTask::Create()
 {
-	bc_new VKeyIgnitionTask();
+	return bc_new VKeyIgnitionTask();
 }
 
 VKeyIgnitionTask::VKeyIgnitionTask() :Task(APPID_VKEY_IGNITION, true)

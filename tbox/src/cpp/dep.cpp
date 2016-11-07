@@ -3,7 +3,7 @@
 #include "../inc/Event.h"
 #include "../inc/Sensor.h"
 #include "../tasks/TaskTable.h"
-#include "../test/RemoteUnlockTest.h"
+#include "../test/ActiveTest.h"
 #include "../tasks/StateUploadTask.h"
 #include <errno.h>
 unsigned int last_error(void)
@@ -24,8 +24,13 @@ bool onClientTest(char* cmd) {
 		::PostEvent(AppEvent::InsertTask, 0, 0, bc_new StateUploadTask_NTF());
 		return true;
 	}
-	if (!strcmp(cmd, "reqRemoteUnlock")) {
-		::Task* t = bc_new RemoteUnlockTest();
+	if (!strcmp(cmd, "ActiveTest")) {
+		::Task* t = bc_new ActiveTest();
+		::PostEvent(AppEvent::InsertTask, 0, 0, t);
+		return true;
+	}
+	if (!strcmp(cmd, "DeactiveTest")) {
+		::Task* t = bc_new ActiveTest();
 		::PostEvent(AppEvent::InsertTask, 0, 0, t);
 		return true;
 	}

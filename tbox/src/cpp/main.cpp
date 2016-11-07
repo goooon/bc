@@ -2,7 +2,6 @@
 #include "../inc/dep.h"
 #include "./CmdParser.h"
 #include "../inc/Application.h"
-#include "../tasks/RemoteUnlockTask.h"
 
 class MainLoop : public Thread
 {

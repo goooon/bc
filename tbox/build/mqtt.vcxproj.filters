@@ -63,14 +63,8 @@
     <ClInclude Include="..\src\inc\Vehicle.h">
       <Filter>src\inc</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\tasks\RemoteUnlockTask.h">
-      <Filter>src\tasks</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\tasks\VehicleAuthTask.h">
       <Filter>src\tasks</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\test\RemoteUnlockTest.h">
-      <Filter>src\test</Filter>
     </ClInclude>
     <ClInclude Include="..\src\test\VehicleAuthTest.h">
       <Filter>src\test</Filter>
@@ -114,6 +108,12 @@
     <ClInclude Include="..\src\tasks\VKeyDeactiveTask.h">
       <Filter>src\tasks</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\tasks\VKeyActiveTask.h">
+      <Filter>src\tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\test\ActiveTest.h">
+      <Filter>src\test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -149,9 +149,6 @@
     <ClCompile Include="..\src\cpp\Vehicle.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\tasks\RemoteUnlockTask.cpp">
-      <Filter>src\tasks</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\tasks\StateUploadTask.cpp">
       <Filter>src\tasks</Filter>
     </ClCompile>
@@ -167,9 +164,6 @@
     <ClCompile Include="..\src\cpp\Sensor.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\test\RemoteUnlockTest.cpp">
-      <Filter>src\test</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\tasks\Element.cpp">
       <Filter>src\tasks</Filter>
     </ClCompile>
@@ -181,6 +175,12 @@
     </ClCompile>
     <ClCompile Include="..\src\tasks\VKeyDeactiveTask.cpp">
       <Filter>src\tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\VKeyActiveTask.cpp">
+      <Filter>src\tasks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\test\ActiveTest.cpp">
+      <Filter>src\test</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

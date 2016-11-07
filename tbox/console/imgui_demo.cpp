@@ -2115,13 +2115,18 @@ struct ExampleAppConsole : public me::Tracer
 		if (ImGui::SmallButton("conn")) { func("connMqtt"); } ImGui::SameLine();
 		if (ImGui::SmallButton("disc")) { func("discMqtt"); } ImGui::Separator();
 
-		ImGui::Text("Action:");ImGui::SameLine();
-		if (ImGui::SmallButton("lock")) { func("lock"); } ImGui::SameLine();
-		if (ImGui::SmallButton("unlock")) { func("unlock"); } ImGui::Separator();
+		//ImGui::Text("Action:");ImGui::SameLine();
+		//if (ImGui::SmallButton("lock")) { func("lock"); } ImGui::SameLine();
+		//if (ImGui::SmallButton("unlock")) { func("unlock"); } ImGui::Separator();
 
 		ImGui::Text("Test:"); ImGui::SameLine();
-		if (ImGui::SmallButton("reqUnlock")) { func("reqUnlock"); } ImGui::SameLine();
-		if (ImGui::SmallButton("authProc")) { func("authProc"); } ImGui::Separator();
+		if (ImGui::SmallButton("authProc")) { func("authProc"); } ImGui::SameLine(); 
+		if (ImGui::SmallButton("ntfState")) { func("ntfState"); } ImGui::SameLine();
+
+		if (ImGui::SmallButton("reqActive")) { func("reqActive"); } ImGui::SameLine();
+		if (ImGui::SmallButton("reqDeact")) { func("reqDeact"); } ImGui::SameLine();
+		
+		if (ImGui::SmallButton("reqIgnit")) { func("reqIgnit"); } ImGui::Separator(); 
 
 		if (ImGui::SmallButton("memory")) { func("memory"); } ImGui::SameLine();
 		if (ImGui::SmallButton("memscan")) { func("memscan"); } ImGui::SameLine();

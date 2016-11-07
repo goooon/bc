@@ -4,15 +4,15 @@
 #include "../inc/Task.h"
 #include "../inc/Mqtt.h"
 #include "../tasks/TaskTable.h"
-class RemoteUnlockTest : public Task
+class ActiveTest : public Task
 {
 	u64 seqId;
 public:
 	const static int AppId = APPID_TEST;
-	RemoteUnlockTest():loop(true),Task(APPID_VKEY_ACTIVITION,false){
+	ActiveTest():loop(true),Task(APPID_VKEY_ACTIVITION,false){
 
 	}
-	~RemoteUnlockTest() {
+	~ActiveTest() {
 		LOG_I("RemoteUnlockTest Deleted!");
 	}
 	void stopTest(){
@@ -52,5 +52,11 @@ private:
 	bool reqRemoteUnlock();
 private:
 	bool loop;
+};
+
+class DeactiveTest : public Task
+{
+public:
+	DeactiveTest(): Task(APPID_VKEY_ACTIVITION, false){}
 };
 #endif // GUARD_RemoteUnlockTest_h__

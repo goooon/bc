@@ -1,7 +1,9 @@
 #include "../inc/Application.h"
-#include "../tasks/RemoteUnlockTask.h"
+#include "../tasks/VKeyActiveTask.h"
+#include "../tasks/VKeyDeactiveTask.h"
+#include "../tasks/VKeyIgnitionTask.h"
 #include "../tasks/VehicleAuthTask.h"
-#include "../test/RemoteUnlockTest.h"
+#include "../test/ActiveTest.h"
 #include "../tasks/TaskTable.h"
 static Application* g_inst;
 Application& Application::getInstance()
@@ -92,12 +94,22 @@ void Application::loop()
 
 bool Application::onDebugCommand(const char* cmd)
 {
-	if (!strcmp(cmd, "unlock")) {
-
+	if (!strcmp(cmd, "reqDeact")) {
+		Task* p = bc_new VKeyDeavtiveTask();
+		p->handleDebug();
+		PostEvent(AppEvent::InsertTask, 0, 0, p);
 		return true;
 	}
-	if (!strcmp(cmd, "lock")) {
-		PostEvent(AppEvent::InsertTask, 0, 0, bc_new RemoteUnlockTask());
+	if (!strcmp(cmd, "reqActive")) {
+		Task* p = bc_new VKeyActiveTask();
+		p->handleDebug();
+		PostEvent(AppEvent::InsertTask, 0, 0, p);
+		return true;
+	}
+	if (!strcmp(cmd, "reqIgnit")){
+		Task* p = bc_new VKeyIgnitionTask();
+		p->handleDebug();
+		PostEvent(AppEvent::InsertTask, 0, 0, p);
 		return true;
 	}
 	if (!strcmp(cmd, "connMqtt")) {
@@ -108,13 +120,13 @@ bool Application::onDebugCommand(const char* cmd)
 		mqtt.reqDisconnect();
 		return true;
 	}
-	if (!strcmp(cmd, "reqUnlock")) {
-		Task* t = bc_new RemoteUnlockTest();
-		::PostEvent(AppEvent::AbortTasks, t->getApplicationId(), 0, 0);
-		::PostEvent(AppEvent::InsertTask, 0, 0, t);
-		return true;
-	}
-	
+	//if (!strcmp(cmd, "reqUnlock")) {
+	//	Task* t = bc_new ActiveTest();
+	//	::PostEvent(AppEvent::AbortTasks, t->getApplicationId(), 0, 0);
+	//	::PostEvent(AppEvent::InsertTask, 0, 0, t);
+	//	return true;
+	//}
+	//
 	if (mqtt.onDebugCommand(cmd))return true;
 	return false;
 }

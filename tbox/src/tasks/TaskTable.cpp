@@ -1,5 +1,6 @@
 #include "./TaskTable.h"
-#include "./RemoteUnlockTask.h"
+#include "./VKeyActiveTask.h"
+#include "./VKeyDeactiveTask.h"
 #include "./VehicleAuthTask.h"
 #include "./StateUploadTask.h"
 #include "../inc/dep.h"
@@ -10,7 +11,8 @@ struct TaskTable
 };
 
 static TaskTable tt[] = {
-	{ APPID_VKEY_ACTIVITION,RemoteUnlockTask::Create },
+	{ APPID_VKEY_ACTIVITION,VKeyActiveTask::Create },
+	{APPID_VKEY_DEACTIVITION,VKeyDeavtiveTask::Create},
 	{ APPID_AUTHENTICATION,VehicleAuthTask::Create},
 	{ APPID_STATE_UPLOADING_VK,StateUploadTask::Create},
 	{-1,0}
