@@ -22,7 +22,7 @@ private:
 class StateUploadTask_NTF : public Task {
 public:
 	static Task* Create();
-	StateUploadTask_NTF() :Task(APPID_STATE_UPLOADING_VK, true) {}
+	StateUploadTask_NTF() :Task(APPID_STATE_UPLOADING_NTF, true) {}
 	StateUploadTask_NTF(int appid) :Task(appid, true) {}
 	virtual void doTask()OVERRIDE;
 private:

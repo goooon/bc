@@ -35,15 +35,20 @@ struct Apparatus {
 	}DECL_GNU_PACKED;
 	struct Door	//total 2 bytes
 	{//各个车门打开的状态
-		DEF_BIT2(lh_front);     //左前门 on/off
-		DEF_BIT2(rh_front);	    //右前门 on/off
-		DEF_BIT2(lh_rear);      //左后门 on/off
-		DEF_BIT2(rh_rear);      //右后门 on/off
-		DEF_BIT2(hood);		    //引擎盖 on/off
-		DEF_BIT2(luggage_door); //后备箱 on/off
-		DEF_BIT2(fuellid);	    //充电口 on/off
-		DEF_BIT2(reserved1);	//保留以后使用
-		DEF_BIT8(reserved2);    //保留以后使用
+		union {
+			struct {
+				DEF_BIT2(lh_front);     //左前门 on/off
+				DEF_BIT2(rh_front);	    //右前门 on/off
+				DEF_BIT2(lh_rear);      //左后门 on/off
+				DEF_BIT2(rh_rear);      //右后门 on/off
+				DEF_BIT2(hood);		    //引擎盖 on/off
+				DEF_BIT2(luggage_door); //后备箱 on/off
+				DEF_BIT2(fuellid);	    //充电口 on/off
+				DEF_BIT2(reserved1);	//保留以后使用
+				DEF_BIT8(reserved2);    //保留以后使用
+			}DECL_GNU_PACKED;
+			u16 doors;
+		};
 		Door() {
 			lh_front = 2;
 			rh_front = 2;
@@ -56,12 +61,17 @@ struct Apparatus {
 	}DECL_GNU_PACKED;
 	struct Window	//total 2 bytes
 	{//车窗状态
-		DEF_BIT2(lh_front); 	//左前车窗 on/off
-		DEF_BIT2(rh_front); 	//右前车窗 on/off
-		DEF_BIT2(lh_rear); 		//左后车窗 on/off
-		DEF_BIT2(rh_rear); 		//右后车窗 on/off
-		DEF_BIT4(moon_roof); 	//车顶车窗 档位 0-15 共16个档位
-		DEF_BIT4(reserved);		//保留以后使用
+		union {
+			struct {
+				DEF_BIT2(lh_front); 	//左前车窗 on/off
+				DEF_BIT2(rh_front); 	//右前车窗 on/off
+				DEF_BIT2(lh_rear); 		//左后车窗 on/off
+				DEF_BIT2(rh_rear); 		//右后车窗 on/off
+				DEF_BIT4(moon_roof); 	//车顶车窗 档位 0-15 共16个档位
+				DEF_BIT4(reserved);		//保留以后使用
+			};
+			u16 winds;
+		};
 		Window() {
 			lh_front = 2;
 			rh_front = 2;

@@ -13,7 +13,7 @@ public:
 		Timestamp fireTime;
 		Task* task;
 	};
-	//static Schedule& getInstance();
+	static Schedule& getInstance();
 public:
 	Schedule();
 	void triger(Timestamp current);

@@ -15,7 +15,7 @@ Task::Task(u16 appId, bool async) :
 
 Task::~Task()
 {
-	LOG_I("Task(%d,%lld) releasing ...", appID, seqID);
+	//LOG_I("Task(%d,%lld) releasing ...", appID, seqID);
 	MessageQueue::Args args;
 	//clear message restored in the queue
 	while (msgQueue.out(args)) {

@@ -100,10 +100,16 @@ void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 		}
 		break;
 	case DoorOpened:
-		apparatus.vehiState.door.lh_front = true;
+		apparatus.vehiState.door.doors |= 1 << (param2 * 2);
 		break;
 	case DoorClosed:
-		apparatus.vehiState.door.lh_front = false;
+		apparatus.vehiState.door.doors &= ~(1 << (param2 * 2));
+		break;
+	case WindOpened:
+		apparatus.vehiState.window.winds |= 1 << (param2 * 2);
+		break;
+	case WindClosed:
+		apparatus.vehiState.window.winds &= ~(1 << (param2 * 2));
 		break;
 	case Ignite:
 		if (Vehicle::getInstance().getApparatus().vehiState.pedal.ingnition == 3) {

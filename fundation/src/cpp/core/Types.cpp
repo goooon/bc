@@ -4,35 +4,35 @@
 #include <stdarg.h>
 void* BCMemory::operator new(bc_size size)
 {
-	return mymalloc(__FILE__, __LINE__, size);
+	return malloc(size);
 }
 
 void* BCMemory::operator new(bc_size size, int line, const char file[])
 {
-	return mymalloc( (char*)file, line,size);
+	return malloc(size);
 }
 
 void* BCMemory::operator new(bc_size size, int line, const char* file, const char* info)
 {
-	return mymalloc( (char*)file, line,size);
+	return malloc(size);
 }
 
 void BCMemory::operator delete(void* p, int line, const char *func)
 {
-	myfree((char*)func, line, p);
+	free(p);
 }
 
 void BCMemory::operator delete(void* p)
 {
-	myfree(__FILE__,__LINE__,p);
+	free(p);
 }
 
 void* BCMemory::operator new[](bc_size size)
 {
-	return mymalloc((char*)__FILE__, __LINE__, size);
+	return malloc(size);
 }
 
 void BCMemory::operator delete[](void* p)
 {
-	return myfree(__FILE__, __LINE__, p);
+	return free(p);
 }

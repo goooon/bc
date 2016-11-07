@@ -38,6 +38,7 @@ bool StateUploadTask::ntfState()
 
 Task* StateUploadTask::Create()
 {
+	Application::getInstance().getSchedule().remove(APPID_STATE_UPLOADING_NTF);
 	return bc_new StateUploadTask();
 }
 

@@ -195,13 +195,15 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 		break;
 	case AppEvent::NetStateChanged:
 		onNetStateChanged(param1);
+		broadcastEvent(AppEvent::NetStateChanged, param1, param2, data);
 		break;
 	case AppEvent::MqttStateChanged:
-		onMqttEvent(param1,param2,data);
+		onMqttStateChanged(param1,param2,data);
+		broadcastEvent(AppEvent::MqttStateChanged, param1, param2, data);
 		break;
 	case AppEvent::AutoStateChanged:
-		onAutoEvent(param1, param2, data);
-		broadcastEvent(e, param1, param2, data);
+		onAutoStateChanged(param1, param2, data);
+		broadcastEvent(AppEvent::AutoStateChanged, param1, param2, data);
 		break;
 	case AppEvent::SensorEvent:
 		break;
@@ -248,6 +250,11 @@ Vehicle& Application::getVehicle(void)
 	return vehicle;
 }
 
+Schedule& Application::getSchedule(void)
+{
+	return schedule;
+}
+
 PackageQueue& Application::getPackageQueue(void)
 {
 	return pkgQueue;
@@ -273,9 +280,9 @@ Task* Application::findTask(u32 applicationId)
 	return tasksWorking.findTask(applicationId);
 }
 
-void Application::onMqttEvent(u32 param1, u32 param2, void* data)
+void Application::onMqttStateChanged(u32 param1, u32 param2, void* data)
 {
-	LOG_I("onMqttEvent(%d,%d,%p)",param1,param2,data);
+	LOG_I("onMqttStateChanged(%d,%d,%p)",param1,param2,data);
 	if (param2 == MqttClient::Subscribed) {
 		if (!config.isServer) { 
 			startTask(TaskCreate(APPID_AUTHENTICATION,0), false);
@@ -283,33 +290,17 @@ void Application::onMqttEvent(u32 param1, u32 param2, void* data)
 	}
 }
 
-void Application::onAutoEvent(u32 param1, u32 param2, void* data)
+void Application::onAutoStateChanged(u32 param1, u32 param2, void* data)
 {
-	LOG_I("AutoStateChanged(%d,%d)", param1, param2);
-	Vehicle::State s = (Vehicle::State)param1;
-	switch (s)
-	{
-	case Vehicle::Disabled:
-		break;
-	case Vehicle::Enabled:
-		break;
-	case Vehicle::NotReady:
-		break;
-	case Vehicle::ReadyToIgnit:
-		break;
-	case Vehicle::Ignited:
+	LOG_I("onAutoStateChanged(%d,%d,%p)", param1, param2, data);
+	Vehicle::State prev = (Vehicle::State)param1;
+	Vehicle::State next = (Vehicle::State)param2;
+	if (prev == Vehicle::Ignited && next == Vehicle::ReadyToIgnit)
 	{
 		Timestamp ts;
 		ts.update(Config::getInstance().getStateUploadExpireTime());
+		schedule.remove(APPID_STATE_UPLOADING_NTF);
 		schedule.insert(ts, bc_new StateUploadTask_NTF());
-	}
-		break;
-	case Vehicle::Forwarding:
-		break;
-	case Vehicle::Backwarding:
-		break;
-	default:
-		break;
 	}
 }
 

@@ -15,12 +15,12 @@ public:
 		m_front(0),
 		m_rear(0)
 	{
-		m_data = new T[size];
+		m_data = ::new T[size];
 	}
 
 	~CycleQueue()
 	{
-		delete[] m_data;
+		::delete[] m_data;
 	}
 
 	bool isEmpty()

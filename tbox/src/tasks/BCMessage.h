@@ -96,7 +96,7 @@ public:
 		token.token.dw = crc;
 		
 		u32 at = Config::getInstance().getAuthToken();
-		LOG_I("TBOX with 0x%x ? 0x%x", at, crc);
+		LOG_I("TBOX Identity authToken 0x%x ? with crc 0x%x", at, crc);
 
 		bcp_element_t *e = bcp_element_create((u8*)&token, sizeof(Identity));
 		bcp_element_append(msg, e);
@@ -196,7 +196,7 @@ public:
 		else {
 			LOG_E("bcp_packet_serialize failed");
 		}
-		LOG_I("bcp_packet_destroy");
+		//LOG_I("bcp_packet_destroy");
 		bcp_packet_destroy(pkg);
 		pkg = NULL;
 		return ret;

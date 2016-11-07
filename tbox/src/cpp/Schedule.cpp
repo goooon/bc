@@ -1,9 +1,10 @@
 #include "../inc/Schedule.h"
 #include "../inc/Application.h"
-//Schedule& Schedule::getInstance()
-//{
-//	return Application::getInstance().getSchedule();
-//}
+
+Schedule& Schedule::getInstance()
+{
+	return Application::getInstance().getSchedule();
+}
 
 Schedule::Schedule()
 {

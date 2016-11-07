@@ -35,17 +35,16 @@ bool onClientTest(char* cmd) {
 		return true;
 	}
 #define OPER_DOOR(op,cc,door_pos,id,bl) if (!strcmp(cc, cmd)) { \
-		Vehicle::getInstance().getApparatus().vehiState.door_pos = bl; \
 		PostEvent(AppEvent::AutoEvent, Vehicle::op, id, 0); \
 		return true; \
 	}
-	OPER_DOOR(DoorOpened, "openDoor0", door.lh_front, 0,true);
+	OPER_DOOR(DoorOpened, "openDoor0", door.lh_front, 0, true);
 	OPER_DOOR(DoorOpened, "openDoor1", door.rh_front, 1, true);
-	OPER_DOOR(DoorOpened, "openDoor2", door.lh_rear, 2, true);
-	OPER_DOOR(DoorOpened, "openDoor3", door.rh_rear, 3, true);
-	OPER_DOOR(DoorOpened, "openHood", door.hood, 4, true);
+	OPER_DOOR(DoorOpened, "openDoor2", door.lh_rear,  2, true);
+	OPER_DOOR(DoorOpened, "openDoor3", door.rh_rear,  3, true);
+	OPER_DOOR(DoorOpened, "openHood",  door.hood,     4, true);
 	OPER_DOOR(DoorOpened, "openLugDoor", door.luggage_door, 5, true);
-	OPER_DOOR(DoorOpened, "openPowerPlug", door.fuellid, 6, true);
+	OPER_DOOR(DoorOpened, "openPowerPlug", door.fuellid,    6, true);
 
 	OPER_DOOR(DoorClosed, "shutDoor0", door.lh_front, 0,false);
 	OPER_DOOR(DoorClosed, "shutDoor1", door.rh_front, 1, false);
