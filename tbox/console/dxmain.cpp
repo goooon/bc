@@ -30,7 +30,7 @@ void CreateRenderTarget()
     g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
     g_pd3ddev->CreateRenderTargetView(pBackBuffer, &render_target_view_desc, &g_mainRenderTargetView);
     g_pd3dDeviceCtx->OMSetRenderTargets(1, &g_mainRenderTargetView, NULL);
-    pBackBuffer->Release();
+    if(pBackBuffer)pBackBuffer->Release();
 }
 
 void CleanupRenderTarget()

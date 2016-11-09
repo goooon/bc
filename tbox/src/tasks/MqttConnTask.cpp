@@ -24,6 +24,12 @@ void MqttConnTask::doTask()
 						return;
 					}
 				}
+				else if (args.e == AppEvent::NetStateChanged) {
+					if (args.param1 == 0) {
+						LOG_I("MqttConnTask Exit By Net Disconnected");
+						return;
+					}
+				}
 			}
 		}
 	}

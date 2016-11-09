@@ -314,8 +314,10 @@ void Application::onAutoStateChanged(u32 param1, u32 param2, void* data)
 	LOG_I("onAutoStateChanged(%d,%d,%p)", param1, param2, data);
 	Vehicle::State prev = (Vehicle::State)param1;
 	Vehicle::State next = (Vehicle::State)param2;
-	if (prev == Vehicle::Ignited && next == Vehicle::ReadyToIgnit)
-	{
+	if (prev == Vehicle::Authing && next == Vehicle::Authed) {
+
+	}
+	else if (prev == Vehicle::Ignited && next == Vehicle::ReadyToIgnit){
 		Timestamp ts;
 		ts.update(Config::getInstance().getStateUploadExpireTime());
 		schedule.remove(APPID_STATE_UPLOADING_NTF);

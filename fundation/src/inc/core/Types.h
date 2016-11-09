@@ -58,7 +58,7 @@ typedef u32             color;
 
 union DWord
 {
-	struct { u8 b[4]; };
+	struct { u8 b0; u8 b1; u8 b2; u8 b3; };
 	u32    dw;
 }DECL_GNU_PACKED;
 

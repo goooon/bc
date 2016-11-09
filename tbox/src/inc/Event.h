@@ -30,7 +30,7 @@ public:
 
 		NetStateChanged,		//param1 1:Connected,0:DisConnected
 
-		MqttStateChanged,		//param1 is Mqtt::State prevState,param2 is Mqtt::State currState
+		MqttStateChanged,		//param1 is MqttStateChanged::State prevState,param2 is MqttStateChanged::State currState
 
 		AutoEvent,				//param1 Vehicle::Event
 		AutoStateChanged,		//param1 is Vehicle::State prevState,param2 is Vehicle::State currState

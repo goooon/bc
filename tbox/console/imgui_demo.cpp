@@ -2446,6 +2446,7 @@ struct VehicleConsole : public me::Tracer
 		SLIDE_SEC("IgnitTimeOut", igntActivationTimeOut);
 		SLIDE_SEC("UploadTimeOut", stateUploadExpireTime);
 		SLIDE_SEC("MqttReConnInterval", mqttReConnInterval);
+		SLIDE_SEC("AuthRetryInterval", authRetryInterval);
 
 		SLIDE_SEC("GPSDriving", gpsIntervalDriving);
 		SLIDE_SEC("GPSStation", gpsIntervalStation);

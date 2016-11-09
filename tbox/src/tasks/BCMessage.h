@@ -24,10 +24,10 @@ public:
 		bcp_element_t *e = bcp_next_element(msg, 0);
 		if (e && e->len == 4) {
 			if (token) {
-				token->token.b[0] = e->data[0];
-				token->token.b[1] = e->data[1];
-				token->token.b[2] = e->data[2];
-				token->token.b[3] = e->data[3];
+				token->token.b0 = e->data[0];
+				token->token.b1 = e->data[1];
+				token->token.b2 = e->data[2];
+				token->token.b3 = e->data[3];
 			}
 			return e;
 		}
@@ -76,7 +76,7 @@ public:
 		return true;
 	}
 	bool appendIdentity() {
-		Identity token;
+		Identity identity;
 //#if BC_TARGET_LINUX == BC_TARGET
 //		//350262672
 //		token.token[0] = 0x90;
@@ -89,18 +89,32 @@ public:
 //		token.token[2] = 0xe0;
 //		token.token[3] = 0x14;
 //#endif
-		token.token.dw = 0x9095E014;
+		//token.token.dw = 0x9095E014;
+		//
+#if BC_TARGET == BC_TARGET_WIN
+#pragma pack(push, 1)
+#endif
+		struct IDS {
+			VehicleDesc desc;
+			Authentication ath;
+		}DECL_GNU_PACKED;
+#if BC_TARGET == BC_TARGET_WIN
+#pragma pack(pop)
+#endif
+		IDS ids;
 		//AuthToken = CRC32(Vehicle Descriptor(¼û4.4.1)(VIN + TBox Serial + IMEI + ICCID) +
-		//	Authentication(¼û4.4.5)(PID))
-		VehicleDesc vdesc;
-		u32 crc = calc_crc32((u8*)&vdesc,sizeof(vdesc));
-
-		token.token.dw = crc;
+			//	Authentication(¼û4.4.5)(PID))
+		DWord dw; 
+		dw.dw = calc_crc32((u8*)&ids,sizeof(ids));
 		
-		u32 at = Config::getInstance().getAuthToken();
-		LOG_I("TBOX Identity authToken 0x%x(%d) ? with crc 0x%x", at,at,crc);
+		identity.token.b0 = dw.b3;
+		identity.token.b1 = dw.b2;
+		identity.token.b2 = dw.b1;
+		identity.token.b3 = dw.b0;
+		
+		LOG_I("TBOX Identity authToken 0x%x(%u)", identity.token.dw, identity.token.dw);
 
-		bcp_element_t *e = bcp_element_create((u8*)&token, sizeof(Identity));
+		bcp_element_t *e = bcp_element_create((u8*)&identity, sizeof(Identity));
 		bcp_element_append(msg, e);
 		return true;
 	}
@@ -136,6 +150,9 @@ public:
 
 		bcp_element_t *e = bcp_element_create((u8*)&ts, sizeof(TimeStamp));
 		bcp_element_append(msg, e);
+		return true;
+	}
+	bool appendGPSData(GPSData& gps) {
 		return true;
 	}
 	bool appendAuthentication() {

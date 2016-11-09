@@ -41,6 +41,12 @@ public:
 	u32 getMqttReConnInterval() {
 		return mqttReConnInterval;
 	}
+	u32 getAuthRetryInterval() {
+		return authRetryInterval;
+	}
+	u32 getGPSQueueSize() {
+		return gpsQueueSize;
+	}
 	u32 getGpsInterval();
 	u32  getAuthToken() { return authToken; }
 	void setAuthToken(u32 t) { authToken = t; }
@@ -52,9 +58,11 @@ public:
 		memset(clientid, 0, sizeof(clientid));
 		memset(vin, 0, sizeof(vin));
 
-		doorActivationTimeOut = 20000;
-		igntActivationTimeOut = 20000;
-		mqttReConnInterval = 10000;
+		gpsQueueSize = 4096;
+		doorActivationTimeOut = 5000;
+		igntActivationTimeOut = 5000;
+		mqttReConnInterval = 5000;
+		authRetryInterval = 5000;
 		gpsIntervalDriving = 30000;
 		gpsIntervalStation = 1000 * 60 * 3;
 		gpsIntervalDriving = 1000 * 10;
@@ -161,7 +169,9 @@ public:
 	u32  authToken;
 	//////////////////////////////////////////////////////////////////////////
 public:
+	u32 gpsQueueSize;
 	u32 mqttReConnInterval;
+	u32 authRetryInterval;
 	u32 gpsIntervalDriving;
 	u32 gpsIntervalStation;
 	u32 doorActivationTimeOut;

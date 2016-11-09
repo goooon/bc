@@ -17,6 +17,7 @@ public:
 	enum Event {
 		ActiveDoorResult,		//param2 true:succ false:falied
 		DeactiveDoorResult,		//param2
+		AuthIdentity,			//param2 AuthState
 		Ignite,				    //µã»ð
 		UnIgnt,				    //Ï¨»ð
 		ShiftLevel,				//param2 curr level

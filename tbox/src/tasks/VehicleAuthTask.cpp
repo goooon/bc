@@ -15,13 +15,15 @@ Task* VehicleAuthTask::Create()
 
 void VehicleAuthTask::doTask()
 {
+	fire.update();
 	for (;;) {
-		reqAuth();
-		ThreadEvent::WaitResult wr = msgQueue.wait(10000);
+		ThreadEvent::WaitResult wr = msgQueue.wait(500);
 		if (wr == ThreadEvent::TimeOut) {
-			LOG_E("Auth TimeOut");
-			PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);
-			return;
+			Timestamp now;
+			if (fire < now) {
+				reqAuth();
+				fire.update(Config::getInstance().getAuthRetryInterval());
+			}
 		}
 		else if (wr == ThreadEvent::EventOk) {
 			AppEvent::Type e;
@@ -29,11 +31,16 @@ void VehicleAuthTask::doTask()
 			u32 param2;
 			void* data;
 			if (msgQueue.out(e, param1, param2, data)) {
-				if (e == AppEvent::AutoStateChanged) {
-					if (param1 == Vehicle::Authed) {
-						LOG_I("auth succed with %d %d", param1, param2);
-						PostEvent(e, param1, param2, data);
-						break;
+				if (e == AppEvent::NetStateChanged) {
+					if (param1 == 0) {
+						LOG_I("VehicleAuthTask Exit By Net Disconnected");
+						return;
+					}
+				}
+				else if (e == AppEvent::MqttStateChanged) {
+					if (param2 == MqttClient::Disconnected) {
+						LOG_I("VehicleAuthTask Exit By Mqtt Disconnected");
+						return;
 					}
 				}
 				else if (e == AppEvent::PackageArrived)
@@ -54,30 +61,30 @@ void VehicleAuthTask::doTask()
 								}
 								else {
 									LOG_E("Auth failed with imcomplete data");
-									PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);
+									PostEvent(AppEvent::AutoEvent, Vehicle::AuthIdentity, Vehicle::Unauthed, 0);
 									return;
 								}
 								TimeStamp ts;
 								if (idx = m.getNextElement(&ts, idx)) {}
 								else {
 									LOG_E("Auth failed with imcomplete data");
-									PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);
+									PostEvent(AppEvent::AutoEvent,Vehicle::AuthIdentity, Vehicle::Unauthed, 0);
 									return;
 								}
 								ErrorElement ee;
 								if (idx = m.getNextElement(&ee, idx)) {
 									if (ee.errorcode == 0) {
-										LOG_I("Vehicle::Authed with Identity 0x%x at %d-%d-%d %d:%d:%d", at.token, 1900 + ts.year, ts.month, ts.day, ts.hour, ts.min, ts.sec);
-										PostEvent(AppEvent::AutoStateChanged, Vehicle::Authed, 0, 0);
+										LOG_I("Vehicle::Authed with Identity 0x%x(%u) at %d-%d-%d %d:%d:%d", at.token, at.token, 1900 + ts.year, ts.month, ts.day, ts.hour, ts.min, ts.sec);
+										PostEvent(AppEvent::AutoEvent, Vehicle::AuthIdentity, Vehicle::Authed, 0);
 									}
 									else {
 										LOG_E("Auth failed whit errcode : %d", ee.errorcode);
-										PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);
+										PostEvent(AppEvent::AutoEvent, Vehicle::AuthIdentity, Vehicle::Unauthed, 0);
 									}
 								}
 								else {
 									LOG_E("Auth failed with imcomplete data");
-									PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);
+									PostEvent(AppEvent::AutoEvent, Vehicle::AuthIdentity, Vehicle::Unauthed, 0);
 									return;
 								}
 							}
@@ -91,7 +98,7 @@ void VehicleAuthTask::doTask()
 			}
 		}
 		else {
-			PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);
+			PostEvent(AppEvent::AutoEvent, Vehicle::AuthIdentity, Vehicle::Unauthed, 0);
 			LOG_E("taskMessage.wait(5000) failed %d", wr);
 		}
 	}
@@ -105,12 +112,12 @@ void VehicleAuthTask::reqAuth()
 	msg.appendAuthentication();
 	msg.appendTimeStamp();
 
+	LOG_I("req Auth ...");
 	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
 		LOG_E("req Auth failed");
 	}
 	else {
-		PostEvent(AppEvent::AutoStateChanged, Vehicle::Authing, 0, 0);
-		LOG_I("req Auth ...");
+		PostEvent(AppEvent::AutoEvent, Vehicle::AuthIdentity, Vehicle::Authing, 0);
 	}
 }
 

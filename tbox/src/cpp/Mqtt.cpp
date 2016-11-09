@@ -11,25 +11,25 @@ void trace_callback(enum MQTTASYNC_TRACE_LEVELS level, char* message)
 	switch (level)
 	{
 	case MQTTASYNC_TRACE_MAXIMUM:
-		LOG_P("%s\r\n", message);
+		LOG_P("T:MAXIMUM %s\r\n", message);
 		break;
 	case MQTTASYNC_TRACE_MEDIUM:
-		LOG_P("%s\r\n", message);
+		LOG_P("T:MEDIUM  %s\r\n", message);
 		break;
 	case MQTTASYNC_TRACE_MINIMUM:
-		LOG_P("%s\r\n", message);
+		LOG_P("T:MINIMUM %s\r\n", message);
 		break;
 	case MQTTASYNC_TRACE_PROTOCOL:
-		LOG_P("%s\r\n", message);
+		LOG_P("T:PROTOCOL %s\r\n", message);
 		break;
 	case MQTTASYNC_TRACE_ERROR:
-		LOG_P("%s\r\n", message);
+		LOG_P("T:ERROR  %s\r\n", message);
 		break;
 	case MQTTASYNC_TRACE_SEVERE:
-		LOG_P("%s\r\n", message);
+		LOG_P("T:SEVERE  %s\r\n", message);
 		break;
 	case MQTTASYNC_TRACE_FATAL:
-		LOG_P("%s\r\n", message);
+		LOG_P("T:FATAL  %s\r\n", message);
 		break;
 	default:
 		break;

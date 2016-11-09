@@ -138,6 +138,9 @@
     <ClInclude Include="..\src\tasks\MqttConnTask.h">
       <Filter>src\tasks\axx</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\tasks\GPSDataQueue.h">
+      <Filter>src\tasks\a07</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -210,6 +213,9 @@
       <Filter>src\tasks\axx</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tasks\GpsUploadTask.cpp">
+      <Filter>src\tasks\a07</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\GPSDataQueue.cpp">
       <Filter>src\tasks\a07</Filter>
     </ClCompile>
   </ItemGroup>

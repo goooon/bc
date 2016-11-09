@@ -5,7 +5,7 @@
 #include "../inc/Mqtt.h"
 #include "./BCMessage.h"
 #include "./TaskTable.h"
-
+#include "./GPSDataQueue.h"
 class GpsUploadTask : public Task
 {
 public:
@@ -14,7 +14,8 @@ public:
 protected:
 	virtual void doTask();
 private:
-	void ntfGps(void* p,void* s);
+	bool getGps(void* p,void* s,GPSData& data);
+	bool ntfGps(GPSData& data);
 private:
 };
 #endif // GUARD_GpsUploadTask_h__

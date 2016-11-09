@@ -9,7 +9,7 @@
 
 struct VehicleDesc
 {
-	VehicleDesc();;
+	VehicleDesc();
 	u8 vin[17];	//utf-8 string
 	u8 tbox_serial[20];//utf-8 string
 	u8 imei[15];//utf-8 string
@@ -49,7 +49,8 @@ struct TimeStamp
 struct Authentication
 {
 	Authentication() {
-		memset(this, 0, sizeof(Authentication));
+		memset(this, ' ', sizeof(Authentication));
+		memcpy(this, "BEECLOUD", 8);
 	}
 	u8 PID[16];
 }DECL_GNU_PACKED;
@@ -64,6 +65,12 @@ struct FuncCmdStatus
 {
 	u8 status;
 	u8 data[1];
+}DECL_GNU_PACKED;
+
+struct GPSData
+{
+	double longitude;
+	double langitude;
 }DECL_GNU_PACKED;
 #if BC_TARGET == BC_TARGET_WIN
 #pragma pack(pop)

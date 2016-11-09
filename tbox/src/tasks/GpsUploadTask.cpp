@@ -46,7 +46,6 @@ static void print_nmea_info(bcp_nmea_info_t *info)
 
 void GpsUploadTask::doTask()
 {
-	
 	void *s;
 	void *p;
 	
@@ -65,32 +64,56 @@ void GpsUploadTask::doTask()
 		ThreadEvent::WaitResult wr = waitForEvent(Config::getInstance().getGpsInterval());
 		if (wr == ThreadEvent::TimeOut)
 		{
-			ntfGps(p, s);
+			GPSData data;
+			if (getGps(p, s, data)) {
+				if (!ntfGps(data)) {
+					GPSDataQueue::getInstance().in(data);
+				}
+			}
 		}
 	}
 	bcp_serial_close(s);
 	bcp_nmea_destroy(p);
 }
 
-void GpsUploadTask::ntfGps(void* p, void* s)
+bool GpsUploadTask::getGps(void* p, void* s,GPSData& data)
 {
 	int r;
 	char buff[2048] = { 0, };
 	bcp_nmea_info_t *info;
-	while ((r = bcp_serial_read(s, buff, 1, 1000)) >= 0) {
+	if((r = bcp_serial_read(s, buff, 1, 1000)) >= 0)
+	{
 		if (r > 0) {
 			if (bcp_nmea_parse(p, buff, 1) > 0) {
 				/* has new sentence */
 				info = bcp_nmea_info(p);
 				if (info) {
 					print_nmea_info(info);
+					data.langitude = 0;
+					data.longitude = 1;
+					return true;
 				}
 			}
-			memset(buff, 0, sizeof(buff));
-		}
-		else {
-			printf("-\n");
 		}
 	}
+	LOG_E("GPS data not ok;");
+	return false;
+}
+
+bool GpsUploadTask::ntfGps(GPSData& data)
+{
+	BCPackage pkg;
+	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
+	msg.appendIdentity();
+	msg.appendTimeStamp();
+	msg.appendGPSData(data);
+	msg.appendFunctionStatus(0);
+	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
+		LOG_E("ntfGps failed");
+	}
+	else{
+		LOG_I("ntfGps() ---> TSP");
+	}
+	return true;
 }
 

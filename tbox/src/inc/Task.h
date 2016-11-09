@@ -22,7 +22,7 @@ public:
 	bool out(AppEvent::Type& e, u32& param1, u32& param2, void*& data);
 	ThreadEvent::WaitResult wait(u32 millSecond);
 };
-
+class base_package_t;
 class Task : public Thread
 {
 	friend class Application;
@@ -34,6 +34,7 @@ public:
 	u64  getSequenceId() { return seqID; }
 public:
 	virtual bool handlePackage(bcp_packet_t* pkg);
+	virtual bool handlePackage(base_package_t* pkg) { return true; }
 	void handleDebug();
 	ThreadEvent::WaitResult waitForEvent(u32 millSeconds);
 	virtual void onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data);

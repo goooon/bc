@@ -94,6 +94,9 @@ void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 {
 	Event e = (Event)param1;
 	switch (e) {
+	case Vehicle::AuthIdentity:
+		authed = (AuthState)param2;
+		break;
 	case ActiveDoorResult:
 		if (param2) {
 			apparatus.misc.door_actived = true;

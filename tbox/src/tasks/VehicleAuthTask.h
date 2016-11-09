@@ -14,5 +14,7 @@ protected:
 	virtual void doTask();
 private:
 	void reqAuth();
+private:
+	Timestamp fire;
 };
 #endif // GUARD_VehicleAuthTask_h__
