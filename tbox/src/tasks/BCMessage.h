@@ -4,6 +4,8 @@
 #include "../inc/dep.h"
 #include "./Element.h"
 #include "../inc/Apparatus.h"
+#undef malloc
+#undef free
 //ref http://jira.oa.beecloud.com:8090/pages/viewpage.action?pageId=2818185
 class BCMessage
 {
@@ -96,7 +98,7 @@ public:
 		token.token.dw = crc;
 		
 		u32 at = Config::getInstance().getAuthToken();
-		LOG_I("TBOX Identity authToken 0x%x ? with crc 0x%x", at, crc);
+		LOG_I("TBOX Identity authToken 0x%x(%d) ? with crc 0x%x", at,at,crc);
 
 		bcp_element_t *e = bcp_element_create((u8*)&token, sizeof(Identity));
 		bcp_element_append(msg, e);

@@ -118,7 +118,7 @@ void Task::rspAck()
 		LOG_E("rspAck failed");
 	}
 	else {
-		LOG_I("rspAck succed");
+		LOG_I("rspAck() ---> TSP");
 	}
 }
 
@@ -135,7 +135,7 @@ void Task::ntfTimeOut()
 		LOG_E("ntfTimeOut() post failed");
 	}
 	else {
-		//PostEvent(AppEvent::AutoStateChanged, Vehicle::Unauthed, 0, 0);
+		LOG_I("ntfTimeOut() ---> TSP");
 	}
 }
 
@@ -180,10 +180,15 @@ void Task::rspError(Operation::Result ret)
 
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
-	msg.appendErrorElement(ecode);
+	msg.appendIdentity();
 	msg.appendTimeStamp();
+	msg.appendErrorElement(ecode);
 	msg.appendFunctionStatus(0);
 	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
 		LOG_E("sendResponseError failed %d", ret);
+	}
+	else
+	{
+		LOG_I("rspError(%d) ---> TSP", ret);
 	}
 }

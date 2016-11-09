@@ -56,6 +56,8 @@
     <ClInclude Include="..\src\tasks\BCMessage.h" />
     <ClInclude Include="..\src\tasks\Element.h" />
     <ClInclude Include="..\src\tasks\ErrorCode.h" />
+    <ClInclude Include="..\src\tasks\GpsUploadTask.h" />
+    <ClInclude Include="..\src\tasks\MqttConnTask.h" />
     <ClInclude Include="..\src\tasks\PackageQueue.h" />
     <ClInclude Include="..\src\tasks\StateUploadTask.h" />
     <ClInclude Include="..\src\tasks\TaskTable.h" />
@@ -83,6 +85,8 @@
     <ClCompile Include="..\src\cpp\Vehicle.cpp" />
     <ClCompile Include="..\src\tasks\BCMessage.cpp" />
     <ClCompile Include="..\src\tasks\Element.cpp" />
+    <ClCompile Include="..\src\tasks\GpsUploadTask.cpp" />
+    <ClCompile Include="..\src\tasks\MqttConnTask.cpp" />
     <ClCompile Include="..\src\tasks\PackageQueue.cpp" />
     <ClCompile Include="..\src\tasks\StateUploadTask.cpp" />
     <ClCompile Include="..\src\tasks\TaskTable.cpp" />
@@ -228,7 +232,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\goooon\svn\lib\win32\Con Debug;$(SolutionDir)lib\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>foundation.lib;paho-mqtt3a.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>foundation.lib;paho-mqtt3a.lib;nmealib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)bin\$(Platform)\$(Configuration)\$(ProjectName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>

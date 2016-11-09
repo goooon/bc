@@ -1,5 +1,6 @@
 #include "./VKeyDeactiveTask.h"
-
+#undef TAG
+#define TAG "VKeyDeavtiveTask"
 Task* VKeyDeavtiveTask::Create()
 {
 	return bc_new VKeyDeavtiveTask();
@@ -33,6 +34,11 @@ void VKeyDeavtiveTask::doTask()
 							rspError(Operation::E_Door);
 							break;
 						}
+						else {
+							LOG_I("Deavtive door OK ---> TSP");
+							rspError(Operation::Succ);
+							break;
+						}
 					}
 					else {
 						LOG_W("Unhandled Vehicle Event %d", args.param1);
@@ -57,6 +63,7 @@ void VKeyDeavtiveTask::doTask()
 								return rspError(ret);
 							}
 							else {
+								LOG_I("Deavtive door OK ---> TSP");
 								rspError(Operation::Succ);
 							}
 						}

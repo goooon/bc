@@ -1,7 +1,7 @@
 #include "./VKeyActiveTask.h"
 #include "../inc/Sensor.h"
 #undef TAG
-#define TAG "RemoteUnlockTask"
+#define TAG "VKeyActiveTask"
 
 Task* VKeyActiveTask::Create()
 {
@@ -38,6 +38,9 @@ void VKeyActiveTask::ntfDoorOpened()
 	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, 5000)) {
 		LOG_E("sendResponseUnlocked failed");
 	}
+	else {
+		LOG_I("ntfDoorOpened() ---> TSP");
+	}
 }
 
 void VKeyActiveTask::doTask()
@@ -48,7 +51,7 @@ void VKeyActiveTask::doTask()
 		if (wr == ThreadEvent::TimeOut) {
 			Timestamp now;
 			if (now > expireTime) {
-				LOG_I("Unlock waiting Time Out %lld",expireTime.getValue());
+				LOG_I("Active waiting Time Out %lld",expireTime.getValue());
 				ntfTimeOut();
 				Vehicle::getInstance().reqDeactiveDoor();
 				return;
@@ -67,6 +70,7 @@ void VKeyActiveTask::doTask()
 					else if (args.param1 == Vehicle::DoorOpened) {
 						LOG_I("rspDoorOpened %d %d", args.param1,args.param2);
 						ntfDoorOpened();
+						break;
 					}
 					else {
 						LOG_W("Unhandled Vehicle Event %d", args.param1);
@@ -96,6 +100,10 @@ void VKeyActiveTask::doTask()
 								LOG_I("reqActiveDoorByVKey() wrong %d", ret);
 								return rspError(ret);
 							}
+						}
+						else {
+							LOG_E("unknown step id %d", args.param2);
+							return;
 						}
 					}
 					else{

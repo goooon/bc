@@ -3,7 +3,8 @@
 #include "../tasks/VKeyDeactiveTask.h"
 #include "../tasks/VKeyIgnitionTask.h"
 #include "../tasks/VehicleAuthTask.h"
-#include "../tasks//StateUploadTask.h"
+#include "../tasks/StateUploadTask.h"
+#include "../tasks/MqttConnTask.h"
 #include "../test/ActiveTest.h"
 #include "../tasks/TaskTable.h"
 static Application* g_inst;
@@ -21,6 +22,7 @@ bool Application::init(int argc, char** argv)
 	})
 		if (!config.parse(argc, argv))return false;
 	//launch thread to do branch task
+	netConnected = false;
 	Thread::startThread(this);
 	mqtt.onDebugCommand("PROTOCOL");
 	return true;
@@ -130,6 +132,16 @@ bool Application::onDebugCommand(const char* cmd)
 	//
 	if (mqtt.onDebugCommand(cmd))return true;
 	return false;
+}
+
+bool Application::isNetConnected()
+{
+	return netConnected;
+}
+
+bool Application::isMqttConnected()
+{
+	return mqtt.isConnected();
 }
 
 bool Application::connectServer()
@@ -288,6 +300,13 @@ void Application::onMqttStateChanged(u32 param1, u32 param2, void* data)
 			startTask(TaskCreate(APPID_AUTHENTICATION,0), false);
 		}
 	}
+	else if (param2 == MqttClient::Disconnected) {
+		if (!config.isServer && netConnected){
+			Timestamp ts;
+			ts.update(config.getMqttReConnInterval());
+			PostEvent(AppEvent::InsertSchedule, ts.h, ts.l, bc_new MqttConnTask());
+		}
+	}
 }
 
 void Application::onAutoStateChanged(u32 param1, u32 param2, void* data)
@@ -308,13 +327,23 @@ void Application::onNetStateChanged(u32 param)
 {
 	if (param == 1) {
 		LOG_I("onNetConnected");
-		mqtt.reqConnect(config.mqttServerIp, config.sub_topic, 0, config.keepAliveInterval, config.clientid);
+		netConnected = true;
+		reConnectMqtt();
 	}
 	else if (param == 0) {
 		LOG_I("onNetDisconnected");
+		netConnected = false;
 		mqtt.reqDisconnect();
+		PostEvent(AppEvent::AbortTasks, APPID_MQTT_CONNECT, 0, 0);
+		PostEvent(AppEvent::RemoveSchedule, APPID_MQTT_CONNECT, 0, 0);
 	}
 	else {
 		LOG_E("unknown state %d", param);
 	}
+}
+
+void Application::reConnectMqtt()
+{
+	LOG_I("reConnectMqtt()");
+	mqtt.reqConnect(config.mqttServerIp, config.sub_topic, 0, config.keepAliveInterval, config.clientid);
 }

@@ -78,6 +78,11 @@ bool Vehicle::isParkState()
 	return false;
 }
 
+bool Vehicle::isDriving()
+{
+	return driving;
+}
+
 //Operation::Result Vehicle::reqLockDoor()
 //{
 //	LOG_I("do reqLockDoor()");

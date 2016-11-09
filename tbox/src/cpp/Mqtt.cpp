@@ -98,7 +98,7 @@ static void Client_connectionLost(void* context, char* cause)
 static int Client_messageArrived(void* context, char* topicName, int topicLen, MQTTAsync_message* message)
 {
 	MqttClient* mh = (MqttClient*)context;
-	LOG_I("MQTT Client_messageArrived: %s %d", topicName,topicLen);
+	LOG_I("MQTT Client_messageArrived: %s", topicName);
 	int ret = mh->onRecvPackage(message->payload,message->payloadlen);
 	MQTTAsync_freeMessage(&message);
 	MQTTAsync_free(topicName);
@@ -206,9 +206,9 @@ ThreadEvent::WaitResult MqttClient::reqSendPackage(const char* publish, void* pa
 		LOG_E("reqSendPackage() failed %d", rc);
 		return ThreadEvent::Errors;
 	}
-	LOG_I("MQTTAsync_waitForCompletion ...");
+	//LOG_I("MQTTAsync_waitForCompletion ...");
 	rc = MQTTAsync_waitForCompletion(client, ropts.token, millSec);
-	LOG_I("MQTTAsync_waitForCompletion done");
+	//LOG_I("MQTTAsync_waitForCompletion done");
 	if (MQTTASYNC_SUCCESS != rc) {
 		rc = MQTTAsync_isComplete(client, ropts.token);
 		if (MQTTASYNC_TRUE != rc) {
@@ -220,7 +220,7 @@ ThreadEvent::WaitResult MqttClient::reqSendPackage(const char* publish, void* pa
 			return ThreadEvent::Errors;
 		}*/
 	}
-	LOG_I("MQTTAsync_waitForCompletion ret");
+	//LOG_I("MQTTAsync_waitForCompletion ret");
 	return ThreadEvent::EventOk;
 }
 

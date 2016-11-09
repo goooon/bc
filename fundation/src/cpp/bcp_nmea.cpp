@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <nmealib/context.h>
-#include <nmealib/info.h>
-#include <nmealib/nmath.h>
-#include <nmealib/parser.h>
+#include "../../../dep/nmealib/include/nmealib/context.h"
+#include "../../../dep/nmealib/include/nmealib/info.h"
+#include "../../../dep/nmealib/include/nmealib/nmath.h"
+#include "../../../dep/nmealib/include/nmealib/parser.h"
 
 #include "../inc/dep.h"
 #include "../inc/util/Thread.h"

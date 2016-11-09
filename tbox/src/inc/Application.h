@@ -26,6 +26,9 @@ public:
 	//debug interface
 	bool onDebugCommand(const char* cmd);
 public:
+	bool isNetConnected();
+	bool isMqttConnected();
+	void reConnectMqtt();
 	bool connectServer();
 	void disconnectServer();
 	Task* findTask(u32 applicationId);
@@ -41,6 +44,7 @@ protected:
 	void onAutoStateChanged(u32 param1, u32 param2, void* data);
 	void onNetStateChanged(u32 param);
 public:
+	bool        netConnected;
 	Vehicle     vehicle;		//vehicle states
 	Schedule    schedule;
 	Config      config;			//setting and configuration

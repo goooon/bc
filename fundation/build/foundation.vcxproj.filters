@@ -170,5 +170,8 @@
     <ClCompile Include="..\src\cpp\bcp_serial.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cpp\bcp_nmea.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

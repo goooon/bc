@@ -34,6 +34,12 @@
     <Filter Include="src\tasks\a04,a05,a06">
       <UniqueIdentifier>{f9bc0b4f-5ecc-48b5-8dcd-fadf2c2eb60e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\tasks\a07">
+      <UniqueIdentifier>{aa6a01c4-ef87-4cda-b8f3-25b55755dafe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\tasks\axx">
+      <UniqueIdentifier>{49682c40-143f-4627-8a48-e71dc9a20c45}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\inc\Message.h">
@@ -126,6 +132,12 @@
     <ClInclude Include="..\src\tasks\StateUploadTask.h">
       <Filter>src\tasks\a04,a05,a06</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\tasks\GpsUploadTask.h">
+      <Filter>src\tasks\a07</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\MqttConnTask.h">
+      <Filter>src\tasks\axx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -193,6 +205,12 @@
     </ClCompile>
     <ClCompile Include="..\src\tasks\StateUploadTask.cpp">
       <Filter>src\tasks\a04,a05,a06</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\MqttConnTask.cpp">
+      <Filter>src\tasks\axx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\GpsUploadTask.cpp">
+      <Filter>src\tasks\a07</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -26,6 +26,9 @@ public:
 	void setStateUploadExpireTime(u32 to) {
 		stateUploadExpireTime = to;
 	}
+	void setGpsIntervalInDriving(u32 it) {
+		gpsIntervalDriving = it;
+	}
 	u32 getDoorActivationTimeOut() {
 		return doorActivationTimeOut;
 	}
@@ -35,6 +38,10 @@ public:
 	u32 getStateUploadExpireTime() {
 		return stateUploadExpireTime;
 	}
+	u32 getMqttReConnInterval() {
+		return mqttReConnInterval;
+	}
+	u32 getGpsInterval();
 	u32  getAuthToken() { return authToken; }
 	void setAuthToken(u32 t) { authToken = t; }
 public:
@@ -47,6 +54,10 @@ public:
 
 		doorActivationTimeOut = 20000;
 		igntActivationTimeOut = 20000;
+		mqttReConnInterval = 10000;
+		gpsIntervalDriving = 30000;
+		gpsIntervalStation = 1000 * 60 * 3;
+		gpsIntervalDriving = 1000 * 10;
 		stateUploadExpireTime = 2 * 1000; //2 min
 		strncpy(mqttServerIp, "10.28.4.40:1884", sizeof(mqttServerIp));//main server
 		 //strncpy(mqttServer, "139.219.238.66:1883", sizeof(mqttServer));//test server
@@ -149,7 +160,10 @@ public:
 	char vin[17];	//utf-8 string
 	u32  authToken;
 	//////////////////////////////////////////////////////////////////////////
-private:
+public:
+	u32 mqttReConnInterval;
+	u32 gpsIntervalDriving;
+	u32 gpsIntervalStation;
 	u32 doorActivationTimeOut;
 	u32 igntActivationTimeOut;
 	u32 stateUploadExpireTime;

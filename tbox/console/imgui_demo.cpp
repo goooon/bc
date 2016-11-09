@@ -2435,7 +2435,21 @@ struct VehicleConsole : public me::Tracer
 			return;
 		}
 
-		
+		int second;
+
+#define SLIDE_SEC(n,v)	\
+		second = Config::getInstance().v / 1000;	\
+		if (ImGui::SliderInt(n, &second, 0, 10 * 18)) {	\
+			Config::getInstance().v = second * 1000;	\
+		}
+		SLIDE_SEC("doorTimeOut", doorActivationTimeOut);
+		SLIDE_SEC("IgnitTimeOut", igntActivationTimeOut);
+		SLIDE_SEC("UploadTimeOut", stateUploadExpireTime);
+		SLIDE_SEC("MqttReConnInterval", mqttReConnInterval);
+
+		SLIDE_SEC("GPSDriving", gpsIntervalDriving);
+		SLIDE_SEC("GPSStation", gpsIntervalStation);
+
 		bool s;
 		Apparatus::VehicleState& vs = Vehicle::getInstance().getApparatus().vehiState;
 		ImGui::Text("Door :"); ImGui::SameLine();
@@ -2502,8 +2516,13 @@ struct VehicleConsole : public me::Tracer
 		if(ImGui::RadioButton("D", &g, 3))vs.pedal.shift_level = 4;;
 
 		ImGui::Text("Driv :"); ImGui::SameLine();
+		s = Vehicle::getInstance().getApparatus().misc.door_actived;
+		if (ImGui::Checkbox("acted", &s)) {
+			Vehicle::getInstance().getApparatus().misc.door_actived = s;
+		}
+		ImGui::SameLine();
 		s = vs.pedal.ingnition & 1;
-		if (ImGui::Checkbox("ign", &s)) {
+		if (ImGui::Checkbox("igned", &s)) {
 			vs.pedal.ingnition = s;
 		}
 

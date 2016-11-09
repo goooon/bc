@@ -373,7 +373,7 @@ void MQTTAsync_lock_mutex(mutex_type amutex)
 {
 	int rc = Thread_lock_mutex(amutex);
 	if (rc != 0)
-		Log(LOG_ERROR, 0, "Error %s locking mutex", strerror(rc));
+		Log(LOG_ERROR, 0, "Error %s(%d) locking mutex", strerror(rc),rc);
 }
 
 
@@ -381,7 +381,7 @@ void MQTTAsync_unlock_mutex(mutex_type amutex)
 {
 	int rc = Thread_unlock_mutex(amutex);
 	if (rc != 0)
-		Log(LOG_ERROR, 0, "Error %s unlocking mutex", strerror(rc));
+		Log(LOG_ERROR, 0, "Error %s(%d) unlocking mutex", strerror(rc),rc);
 }
 
 
@@ -3096,31 +3096,29 @@ int MQTTAsync_waitForCompletion(MQTTAsync handle, MQTTAsync_token dt, unsigned l
 	if (m == NULL || m->c == NULL)
 	{
 		rc = MQTTASYNC_FAILURE;
-		printf("EEEEEEEEEEEEEEEEEEEEEEE what a xxxx(0)\r\n");
-		Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
+		Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);
+		MQTTAsync_unlock_mutex(mqttasync_mutex);
 		goto exit;
 	}
 	if (m->c->connected == 0)
 	{
 		rc = MQTTASYNC_DISCONNECTED;
-		printf("what a xxxx(1)\r\n");
-		Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
+		Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);
+		MQTTAsync_unlock_mutex(mqttasync_mutex);
 		goto exit;
 	}
 	
-	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
+	Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);
+	MQTTAsync_unlock_mutex(mqttasync_mutex);
 	
 	if (MQTTAsync_isComplete(handle, dt) == 1)
 	{
 		rc = MQTTASYNC_SUCCESS; /* well we couldn't find it */
 		goto exit;
 	}
-	printf("MQTTAsync_elapsed1(%d)\r\n", start);
 	elapsed = MQTTAsync_elapsed(start);
-	printf("MQTTAsync_elapsed(%d)\r\n",elapsed);
 	while (elapsed < timeout)
 	{
-		printf(".....\r\n");
 		MQTTAsync_sleep(100);
 		if (MQTTAsync_isComplete(handle, dt) == 1)
 		{
@@ -3130,7 +3128,6 @@ int MQTTAsync_waitForCompletion(MQTTAsync handle, MQTTAsync_token dt, unsigned l
 		elapsed = MQTTAsync_elapsed(start);
 	}
 exit:
-	printf("exit(...)\r\n");
 	FUNC_EXIT_RC(rc);
 	return rc;
 }

@@ -1,5 +1,6 @@
 #include "./VKeyIgnitionTask.h"
-
+#undef TAG
+#define TAG "VKeyIgnitionTask"
 Task* VKeyIgnitionTask::Create()
 {
 	return bc_new VKeyIgnitionTask();
