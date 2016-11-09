@@ -44,6 +44,7 @@ public:
 	Operation::Result reqDeactiveDoor();
 	Apparatus& getApparatus() { return apparatus; }
 	bool isParkState();
+	bool isAuthed();
 	bool isDriving();
 private:
 	void onEvent(u32 param1, u32 param2, void* data);

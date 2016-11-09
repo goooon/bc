@@ -2517,6 +2517,13 @@ struct VehicleConsole : public me::Tracer
 		if(ImGui::RadioButton("D", &g, 3))vs.pedal.shift_level = 4;;
 
 		ImGui::Text("Driv :"); ImGui::SameLine();
+		s = Application::getInstance().isNetConnected();
+		ImGui::Checkbox("net", &s); ImGui::SameLine();
+		s = Application::getInstance().isMqttConnected();
+		ImGui::Checkbox("mqtt", &s); ImGui::SameLine();
+		s = Vehicle::getInstance().isAuthed();
+		ImGui::Checkbox("auth", &s); ImGui::SameLine();
+
 		s = Vehicle::getInstance().getApparatus().misc.door_actived;
 		if (ImGui::Checkbox("acted", &s)) {
 			Vehicle::getInstance().getApparatus().misc.door_actived = s;

@@ -78,6 +78,11 @@ bool Vehicle::isParkState()
 	return false;
 }
 
+bool Vehicle::isAuthed()
+{
+	return authed == Authed;
+}
+
 bool Vehicle::isDriving()
 {
 	return driving;

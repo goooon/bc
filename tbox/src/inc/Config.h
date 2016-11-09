@@ -55,7 +55,7 @@ public:
 		memset(pub_topic, 0, sizeof(pub_topic));
 		memset(sub_topic, 0, sizeof(sub_topic));
 		memset(mqttServerIp, 0, sizeof(mqttServerIp));
-		memset(clientid, 0, sizeof(clientid));
+		//memset(clientid, 0, sizeof(clientid));
 		memset(vin, 0, sizeof(vin));
 
 		gpsQueueSize = 4096;
@@ -108,14 +108,14 @@ public:
 				strncpy(vin, argv[i + 1], sizeof(vin));
 				i++;
 			}
-			else if (!strcmp(argv[i], "-cid")) {
+			/*else if (!strcmp(argv[i], "-cid")) {
 				if (i + 1 == argc) {
 					showCmdLine();
 					return false;
 				}
 				strncpy(clientid, argv[i + 1], sizeof(clientid));
 				i++;
-			}
+			}*/
 			else if (!strcmp(argv[i], "-dto")){
 				if (i + 1 == argc) {
 					showCmdLine();
@@ -141,16 +141,16 @@ public:
 		if (isServer) {
 			strncpy(pub_topic, topic, sizeof(pub_topic));
 			strncpy(sub_topic, "mqtt/server", sizeof(sub_topic));
-			strncpy(clientid, "serverid", sizeof(clientid));
+			//strncpy(clientid, "serverid", sizeof(clientid));
 		}
 		else {
 			strncpy(pub_topic, "mqtt/server", sizeof(pub_topic));
 			strncpy(sub_topic, topic, sizeof(sub_topic));
-#if BC_TARGET_LINUX == BC_TARGET
-			strncpy(clientid, "clientidl", sizeof(clientid));
-#else
-			strncpy(clientid, "clientidw", sizeof(clientid));
-#endif
+//#if BC_TARGET_LINUX == BC_TARGET
+//			strncpy(clientid, "clientidl", sizeof(clientid));
+//#else
+//			strncpy(clientid, "clientidw", sizeof(clientid));
+//#endif
 		}
 		return true;
 	}
@@ -164,7 +164,6 @@ public:
 	char pub_topic[64];
 	char sub_topic[64];
 	char mqttServerIp[256];
-	char clientid[64];
 	char vin[17];	//utf-8 string
 	u32  authToken;
 	//////////////////////////////////////////////////////////////////////////

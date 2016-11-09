@@ -116,7 +116,7 @@ bool Application::onDebugCommand(const char* cmd)
 		return true;
 	}
 	if (!strcmp(cmd, "connMqtt")) {
-		mqtt.reqConnect(config.mqttServerIp, config.sub_topic, 0,config.keepAliveInterval,config.clientid);
+		mqtt.reqConnect(config.mqttServerIp, config.sub_topic, 0,config.keepAliveInterval,config.vin);
 		return true;
 	}
 	if (!strcmp(cmd, "discMqtt")) {
@@ -301,10 +301,15 @@ void Application::onMqttStateChanged(u32 param1, u32 param2, void* data)
 		}
 	}
 	else if (param2 == MqttClient::Disconnected) {
-		if (!config.isServer && netConnected){
-			Timestamp ts;
-			ts.update(config.getMqttReConnInterval());
-			PostEvent(AppEvent::InsertSchedule, ts.h, ts.l, bc_new MqttConnTask());
+		if (!config.isServer){
+			if (netConnected) {
+				Timestamp ts;
+				ts.update(config.getMqttReConnInterval());
+				PostEvent(AppEvent::InsertSchedule, ts.h, ts.l, bc_new MqttConnTask());
+			}
+			else {
+				PostEvent(AppEvent::AutoEvent, Vehicle::AuthIdentity, Vehicle::Unauthed, 0);
+			}
 		}
 	}
 }
@@ -347,5 +352,5 @@ void Application::onNetStateChanged(u32 param)
 void Application::reConnectMqtt()
 {
 	LOG_I("reConnectMqtt()");
-	mqtt.reqConnect(config.mqttServerIp, config.sub_topic, 0, config.keepAliveInterval, config.clientid);
+	mqtt.reqConnect(config.mqttServerIp, config.sub_topic, 0, config.keepAliveInterval, config.vin);
 }
