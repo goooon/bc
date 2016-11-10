@@ -1,11 +1,11 @@
 #include "./StateUploadTask.h"
 #include "../inc/Application.h"
-Task* StateUploadTask_NTF::Create()
+Task* UnIgnitStateUploadTask_NTF::Create()
 {
-	return bc_new StateUploadTask_NTF();
+	return bc_new UnIgnitStateUploadTask_NTF();
 }
 
-void StateUploadTask_NTF::doTask()
+void UnIgnitStateUploadTask_NTF::doTask()
 {
 	if (Vehicle::getInstance().isParkState()) {
 		LOG_I("ParkState OK,No need report");
@@ -22,7 +22,7 @@ void StateUploadTask_NTF::doTask()
 	}
 }
 
-bool StateUploadTask::ntfState()
+bool UnIgnitStateUploadTask::ntfState()
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
@@ -36,19 +36,19 @@ bool StateUploadTask::ntfState()
 	return true;
 }
 
-Task* StateUploadTask::Create()
+Task* UnIgnitStateUploadTask::Create()
 {
-	Application::getInstance().getSchedule().remove(APPID_STATE_UPLOADING_NTF);
-	return bc_new StateUploadTask();
+	Application::getInstance().getSchedule().remove(APPID_STATE_UNIGNITION_NTF);
+	return bc_new UnIgnitStateUploadTask();
 }
 
-StateUploadTask::StateUploadTask() :Task(APPID_STATE_UPLOADING_VK, true)
+UnIgnitStateUploadTask::UnIgnitStateUploadTask() :Task(APPID_STATE_UNIGNITION_VK, true)
 {
 	rspAck();
 	expireTime.update(Config::getInstance().getDoorActivationTimeOut());
 }
 
-void StateUploadTask::rspAck()
+void UnIgnitStateUploadTask::rspAck()
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 3, seqID);
@@ -63,7 +63,7 @@ void StateUploadTask::rspAck()
 	}
 }
 
-void StateUploadTask::doTask()
+void UnIgnitStateUploadTask::doTask()
 {
 	for (;;) {
 		ThreadEvent::WaitResult wr = waitForEvent(500);
@@ -77,5 +77,22 @@ void StateUploadTask::doTask()
 		else {
 			if (ntfState())return;
 		}
+	}
+}
+
+Task* IgnitStateUploadTask_NTF::Create()
+{
+	return bc_new IgnitStateUploadTask_NTF();
+}
+
+void IgnitStateUploadTask_NTF::doTask()
+{
+	BCPackage pkg;
+	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
+	msg.appendIdentity();
+	msg.appendTimeStamp();
+	msg.appendVehicleState(Vehicle::getInstance().getApparatus().vehiState);
+	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
+		LOG_E("IgnitStateUploadTask_NTF notify failed");
 	}
 }

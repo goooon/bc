@@ -14,9 +14,20 @@ public:
 protected:
 	virtual void doTask();
 private:
-	bool getGps(void* p,void* s,GPSData& data);
-	bool ntfGps(GPSData& data);
+	bool getGps(void* p,void* s, AutoLocation& data);
+	bool ntfGps(AutoLocation& data);
 private:
 	Timestamp fire;
+};
+
+class GpsUploadTask : public Task
+{
+public:
+	GpsUploadTask();
+	static Task* Create();
+protected:
+	virtual void doTask();
+private:
+	bool ntfGps(AutoLocation& data);
 };
 #endif // GUARD_GpsUploadTask_h__

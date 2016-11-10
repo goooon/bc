@@ -3,7 +3,8 @@
 #include "./dep.h"
 #include "./Operation.h"
 #include "./Apparatus.h"
-
+#include "../tasks/Element.h"
+struct AutoLocation;
 class Vehicle
 {
 	friend class Application;
@@ -43,6 +44,8 @@ public:
 	Operation::Result reqActiveDoorByVKey();
 	Operation::Result reqDeactiveDoor();
 	Apparatus& getApparatus() { return apparatus; }
+	void setGpsInfo(AutoLocation& info);
+	bool getGpsInfo(AutoLocation& info);
 	bool isParkState();
 	bool isAuthed();
 	bool isDriving();
@@ -53,6 +56,7 @@ private:
 	bool driving;
 	AuthState authed;
 	State     state;
+	AutoLocation  gpsInfo;
 	Apparatus apparatus;
 };
 

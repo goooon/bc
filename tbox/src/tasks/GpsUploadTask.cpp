@@ -1,4 +1,5 @@
 #include "./GpsUploadTask.h"
+#include "../inc/Vehicle.h"
 GpsUploadTask_NTF::GpsUploadTask_NTF() : Task(APPID_GPS_UPLOADING_NTF, true)
 {
 }
@@ -68,15 +69,16 @@ void GpsUploadTask_NTF::doTask()
 		return;
 	}
 	fire.update(Config::getInstance().getGpsInterval());
-	GPSData data;
+	AutoLocation data;
 	bool hasData = false;
 	for (;;) {
 		ThreadEvent::WaitResult wr = waitForEvent(500);
 		if (wr == ThreadEvent::TimeOut){
-			GPSData tmp;
+			AutoLocation tmp;
 			if (getGps(p, s, tmp)) {
 				data = tmp;
 				hasData = true;
+				Vehicle::getInstance().setGpsInfo(tmp);
 			}
 		}
 		else if (wr == ThreadEvent::EventOk){
@@ -93,14 +95,19 @@ void GpsUploadTask_NTF::doTask()
 				hasData = false;
 				fire.update(Config::getInstance().getGpsInterval());
 				if (GPSDataQueue::getInstance().isFull()) {
-					GPSData d;
+					AutoLocation d;
 					GPSDataQueue::getInstance().out(d);
 					GPSDataQueue::getInstance().in(data);
 				}
-				GPSData* next;
+				AutoLocation* next;
 				while (next = GPSDataQueue::getInstance().getNext()) {
-					if (ntfGps(*next)) {
-						GPSDataQueue::getInstance().out(data);
+					if (Vehicle::getInstance().isAuthed()) {
+						if (ntfGps(*next)) {
+							GPSDataQueue::getInstance().out(data);
+						}
+						else {
+							break;
+						}
 					}
 					else {
 						break;
@@ -116,24 +123,33 @@ void GpsUploadTask_NTF::doTask()
 	bcp_nmea_destroy(p);
 #else
 	fire.update(Config::getInstance().getGpsInterval());
-	GPSData data;
-	data.longitude = 104.06f;
-	data.latitude = 30.67f;
+	AutoLocation data;
+	data.Latitude = (180.f + 104.06f) * 1000000;
+	data.Longitude = (90.0f + 30.67f) * 1000000;
 	for (;;) {
 		ThreadEvent::WaitResult wr = waitForEvent(500);
 		if (wr == ThreadEvent::TimeOut) {
 			Timestamp now;
+			Vehicle::getInstance().setGpsInfo(data);
 			if (fire < now) {
 				fire.update(Config::getInstance().getGpsInterval());
 				if (GPSDataQueue::getInstance().isFull()) {
-					GPSData d;
+					AutoLocation d;
 					GPSDataQueue::getInstance().out(d);
 					GPSDataQueue::getInstance().in(data);
 				}
-				GPSData* next;
+				else {
+					GPSDataQueue::getInstance().in(data);
+				}
+				AutoLocation* next;
 				while (next = GPSDataQueue::getInstance().getNext()) {
-					if (ntfGps(*next)) {
-						GPSDataQueue::getInstance().out(data);
+					if (Vehicle::getInstance().isAuthed()) {
+						if (ntfGps(*next)) {
+							GPSDataQueue::getInstance().out(data);
+						}
+						else {
+							break;
+						}
 					}
 					else {
 						break;
@@ -151,7 +167,7 @@ void GpsUploadTask_NTF::doTask()
 #endif
 }
 
-bool GpsUploadTask_NTF::getGps(void* p, void* s,GPSData& data)
+bool GpsUploadTask_NTF::getGps(void* p, void* s, AutoLocation& data)
 {
 	int r;
 	char buff[2048] = { 0, };
@@ -168,8 +184,13 @@ bool GpsUploadTask_NTF::getGps(void* p, void* s,GPSData& data)
 						//LOG_I("invalid gps data");
 					}
 					else {
-						data.longitude = info->longitude;
-						data.latitude = info->latitude;
+						data.Longitude = (info->longitude + 180.f) * 1000000;
+						data.Latitude = (info->latitude + 90.f) * 1000000;
+						data.Altitude = (info->elevation * 10) + 100000;
+						data.SatelliteNumber = (info->satellites.use_count);
+						data.DirectionAngel = (info->mtrack);
+						data.Speed = (info->speed) * 100;
+
 					}
 					return true;
 				}
@@ -180,7 +201,7 @@ bool GpsUploadTask_NTF::getGps(void* p, void* s,GPSData& data)
 	return false;
 }
 
-bool GpsUploadTask_NTF::ntfGps(GPSData& data)
+bool GpsUploadTask_NTF::ntfGps(AutoLocation& data)
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
@@ -197,3 +218,35 @@ bool GpsUploadTask_NTF::ntfGps(GPSData& data)
 	return true;
 }
 
+GpsUploadTask::GpsUploadTask() : Task(APPID_GPS_UPLOADING, true)
+{
+}
+
+Task* GpsUploadTask::Create()
+{
+	return bc_new GpsUploadTask();
+}
+
+void GpsUploadTask::doTask()
+{
+	AutoLocation data;
+	Vehicle::getInstance().getGpsInfo(data);
+	ntfGps(data);
+}
+
+bool GpsUploadTask::ntfGps(AutoLocation& data)
+{
+	BCPackage pkg;
+	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
+	msg.appendIdentity();
+	msg.appendTimeStamp();
+	msg.appendGPSData(data);
+	msg.appendFunctionStatus(0);
+	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
+		LOG_E("ntfGps failed");
+	}
+	else {
+		LOG_I("ntfGps() ---> TSP");
+	}
+	return true;
+}

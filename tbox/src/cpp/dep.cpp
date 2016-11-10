@@ -21,7 +21,7 @@ bool onClientTest(char* cmd) {
 		return true;
 	}
 	if (!strcmp(cmd, "ntfState")) {
-		::PostEvent(AppEvent::InsertTask, 0, 0, bc_new StateUploadTask_NTF());
+		::PostEvent(AppEvent::InsertTask, 0, 0, bc_new UnIgnitStateUploadTask_NTF());
 		return true;
 	}
 	if (!strcmp(cmd, "ActiveTest")) {

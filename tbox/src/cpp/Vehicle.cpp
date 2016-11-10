@@ -1,6 +1,7 @@
 #include "../inc/Vehicle.h"
 #include "../inc/Application.h"
 #include "../inc/Event.h"
+#include "../tasks/Element.h"
 Vehicle& Vehicle::getInstance()
 {
 	return Application::getInstance().getVehicle();
@@ -55,6 +56,17 @@ Operation::Result Vehicle::reqDeactiveDoor()
 	if (!apparatus.misc.door_actived)return Operation::Succ;
 	PostEvent(AppEvent::AutoEvent, Vehicle::DeactiveDoorResult, true, 0);
 	return Operation::Succ;
+}
+
+void Vehicle::setGpsInfo(AutoLocation& loc)
+{
+	gpsInfo = loc;
+}
+
+bool Vehicle::getGpsInfo(AutoLocation& info)
+{
+	info = gpsInfo;
+	return true;
 }
 
 bool Vehicle::isParkState()

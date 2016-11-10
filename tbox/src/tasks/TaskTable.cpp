@@ -15,12 +15,13 @@ struct TaskTable
 
 static TaskTable tt[] = {
 	{ APPID_VKEY_ACTIVITION,VKeyActiveTask::Create },
-	{APPID_VKEY_DEACTIVITION,VKeyDeavtiveTask::Create},
+	{ APPID_VKEY_DEACTIVITION,VKeyDeavtiveTask::Create},
 	{ APPID_AUTHENTICATION,VehicleAuthTask::Create},
 	{ APPID_VKEY_IGNITION ,VKeyIgnitionTask::Create},
-	{ APPID_STATE_UPLOADING_VK,StateUploadTask::Create},
+	{ APPID_STATE_UNIGNITION_VK,UnIgnitStateUploadTask::Create},
 	{ APPID_GPS_UPLOADING_NTF,GpsUploadTask_NTF::Create},
 	{ APPID_VKEY_UNIGNITION ,VKeyUnIgnitTask::Create},
+	{ APPID_STATE_IGNITION ,IgnitStateUploadTask_NTF::Create },
 	{-1,0}
 };
 Task* TaskCreate(u16 appId, bcp_packet_t* pkg)

@@ -55,6 +55,17 @@ struct Authentication
 	u8 PID[16];
 }DECL_GNU_PACKED;
 
+struct AutoLocation
+{
+	u8 locationType;
+	u32 Latitude;
+	u32 Longitude;
+	u32 Altitude;
+	u16 Speed;
+	u8 SatelliteNumber;
+	u16 DirectionAngel;
+}DECL_GNU_PACKED;
+
 struct RemoteControl
 {
 	u8 command;
@@ -67,11 +78,6 @@ struct FuncCmdStatus
 	u8 data[1];
 }DECL_GNU_PACKED;
 
-struct GPSData
-{
-	double latitude;
-	double longitude;
-}DECL_GNU_PACKED;
 #if BC_TARGET == BC_TARGET_WIN
 #pragma pack(pop)
 #endif

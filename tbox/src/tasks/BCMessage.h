@@ -155,7 +155,9 @@ public:
 		bcp_element_append(msg, e);
 		return true;
 	}
-	bool appendGPSData(GPSData& gps) {
+	bool appendGPSData(AutoLocation& gps) {
+		bcp_element_t *e = bcp_element_create((u8*)&gps, sizeof(gps));
+		bcp_element_append(msg, e);
 		return true;
 	}
 	bool appendAuthentication() {

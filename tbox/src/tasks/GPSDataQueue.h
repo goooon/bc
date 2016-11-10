@@ -8,7 +8,7 @@ class GPSDataQueue
 public:
 	GPSDataQueue();
 	static GPSDataQueue& getInstance();
-	bool in(GPSData& data)
+	bool in(AutoLocation& data)
 	{
 		if (mutex.lock() == ThreadMutex::Succed)
 		{
@@ -23,7 +23,7 @@ public:
 			return false;
 		}
 	}
-	bool out(GPSData& data)
+	bool out(AutoLocation& data)
 	{
 		if (mutex.lock() == ThreadMutex::Succed)
 		{
@@ -38,10 +38,10 @@ public:
 			return false;
 		}
 	}
-	GPSData* getNext() {
+	AutoLocation* getNext() {
 		if (mutex.lock() == ThreadMutex::Succed)
 		{
-			GPSData* r = pkgs.atPop();
+			AutoLocation* r = pkgs.atPop();
 			mutex.unlock();
 			return r;
 		}
@@ -81,7 +81,7 @@ public:
 		}
 	}
 private:
-	CycleQueue<GPSData> pkgs;
+	CycleQueue<AutoLocation> pkgs;
 	ThreadMutex       mutex;
 };
 

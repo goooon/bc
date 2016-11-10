@@ -333,10 +333,13 @@ void Application::onAutoStateChanged(u32 param1, u32 param2, void* data)
 	else if (prev == Vehicle::Ignited && next == Vehicle::ReadyToIgnit){
 		Timestamp ts;
 		ts.update(Config::getInstance().getStateUploadExpireTime());
-		schedule.remove(APPID_STATE_UPLOADING_NTF);
-		schedule.insert(ts, bc_new StateUploadTask_NTF());
+		schedule.remove(APPID_STATE_UNIGNITION_NTF);
+		schedule.insert(ts, bc_new UnIgnitStateUploadTask_NTF());
 
 		startTask(TaskCreate(APPID_VKEY_UNIGNITION, 0), true);
+	}
+	else if (prev == Vehicle::ReadyToIgnit && next == Vehicle::Ignited) {
+		startTask(TaskCreate(APPID_STATE_IGNITION, 0), true);
 	}
 }
 
