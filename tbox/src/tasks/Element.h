@@ -69,8 +69,8 @@ struct FuncCmdStatus
 
 struct GPSData
 {
+	double latitude;
 	double longitude;
-	double langitude;
 }DECL_GNU_PACKED;
 #if BC_TARGET == BC_TARGET_WIN
 #pragma pack(pop)

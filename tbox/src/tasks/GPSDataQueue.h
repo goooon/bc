@@ -35,6 +35,20 @@ public:
 		{
 			unsigned int e = last_error();
 			LOG_E("mutex.lock() failed %d", e);
+			return false;
+		}
+	}
+	GPSData* getNext() {
+		if (mutex.lock() == ThreadMutex::Succed)
+		{
+			GPSData* r = pkgs.atPop();
+			mutex.unlock();
+			return r;
+		}
+		else
+		{
+			unsigned int e = last_error();
+			LOG_E("mutex.lock() failed %d", e);
 			return NULL;
 		}
 	}

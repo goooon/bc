@@ -6,10 +6,10 @@
 #include "./BCMessage.h"
 #include "./TaskTable.h"
 #include "./GPSDataQueue.h"
-class GpsUploadTask : public Task
+class GpsUploadTask_NTF : public Task
 {
 public:
-	GpsUploadTask();
+	GpsUploadTask_NTF();
 	static Task* Create();
 protected:
 	virtual void doTask();
@@ -17,5 +17,6 @@ private:
 	bool getGps(void* p,void* s,GPSData& data);
 	bool ntfGps(GPSData& data);
 private:
+	Timestamp fire;
 };
 #endif // GUARD_GpsUploadTask_h__

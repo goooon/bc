@@ -1,14 +1,14 @@
 #include "./GpsUploadTask.h"
-GpsUploadTask::GpsUploadTask() : Task(APPID_GPS_UPLOADING_NTF, true)
+GpsUploadTask_NTF::GpsUploadTask_NTF() : Task(APPID_GPS_UPLOADING_NTF, true)
 {
 }
 
-Task* GpsUploadTask::Create()
+Task* GpsUploadTask_NTF::Create()
 {
-	return bc_new GpsUploadTask();
+	return bc_new GpsUploadTask_NTF();
 }
 #if defined (_WIN32) || defined(_WIN64)
-#define SERIAL_DEVNAME "COM6"
+#define SERIAL_DEVNAME "COM8"
 #else
 #define SERIAL_DEVNAME "/dev/ttySAC2"
 #endif
@@ -44,53 +44,133 @@ static void print_nmea_info(bcp_nmea_info_t *info)
 	LOG_I("vdop: %f\n", info->vdop);
 }
 
-void GpsUploadTask::doTask()
+static void trace(const char *str, size_t str_size) {
+	LOG_V(str);
+}
+static void error(const char *str, size_t str_size) {
+	LOG_E(str);
+}
+
+void GpsUploadTask_NTF::doTask()
 {
 	void *s;
 	void *p;
-	
-	p = bcp_nmea_create();
+#if BC_TARGET == BC_TARGET_LINUX
+	p = bcp_nmea_create(trace,error);
 	if (!p) {
 		LOG_I("bcp nmea create failed\n");
 		return;
 	}
 
 	if (!(s = bcp_serial_open(SERIAL_DEVNAME, 9600, 8, P_NONE, 1))) {
-		LOG_I("open %s failed.\n", SERIAL_DEVNAME);
+		LOG_I("open %s failed.", SERIAL_DEVNAME);
 		bcp_nmea_destroy(p);
 		return;
 	}
+	fire.update(Config::getInstance().getGpsInterval());
+	GPSData data;
+	bool hasData = false;
 	for (;;) {
-		ThreadEvent::WaitResult wr = waitForEvent(Config::getInstance().getGpsInterval());
-		if (wr == ThreadEvent::TimeOut)
-		{
-			GPSData data;
-			if (getGps(p, s, data)) {
-				if (!ntfGps(data)) {
-					GPSDataQueue::getInstance().in(data);
+		ThreadEvent::WaitResult wr = waitForEvent(500);
+		if (wr == ThreadEvent::TimeOut){
+			GPSData tmp;
+			if (getGps(p, s, tmp)) {
+				data = tmp;
+				hasData = true;
+			}
+		}
+		else if (wr == ThreadEvent::EventOk){
+			MessageQueue::Args args;
+			if (msgQueue.out(args)) {
+				if (args.e == AppEvent::AbortTasks){
+					return;
 				}
 			}
+		}
+		Timestamp now;
+		if (fire < now) {
+			if (hasData) {
+				hasData = false;
+				fire.update(Config::getInstance().getGpsInterval());
+				if (GPSDataQueue::getInstance().isFull()) {
+					GPSData d;
+					GPSDataQueue::getInstance().out(d);
+					GPSDataQueue::getInstance().in(data);
+				}
+				GPSData* next;
+				while (next = GPSDataQueue::getInstance().getNext()) {
+					if (ntfGps(*next)) {
+						GPSDataQueue::getInstance().out(data);
+					}
+					else {
+						break;
+					}
+				}
+			}
+		}
+		else {
+			LOG_W("NO valid gps data");
 		}
 	}
 	bcp_serial_close(s);
 	bcp_nmea_destroy(p);
+#else
+	fire.update(Config::getInstance().getGpsInterval());
+	GPSData data;
+	data.longitude = 104.06f;
+	data.latitude = 30.67f;
+	for (;;) {
+		ThreadEvent::WaitResult wr = waitForEvent(500);
+		if (wr == ThreadEvent::TimeOut) {
+			Timestamp now;
+			if (fire < now) {
+				fire.update(Config::getInstance().getGpsInterval());
+				if (GPSDataQueue::getInstance().isFull()) {
+					GPSData d;
+					GPSDataQueue::getInstance().out(d);
+					GPSDataQueue::getInstance().in(data);
+				}
+				GPSData* next;
+				while (next = GPSDataQueue::getInstance().getNext()) {
+					if (ntfGps(*next)) {
+						GPSDataQueue::getInstance().out(data);
+					}
+					else {
+						break;
+					}
+				}
+			}
+		}
+		else {
+			MessageQueue::Args args;
+			if (msgQueue.out(args)){
+
+			}
+		}
+	}
+#endif
 }
 
-bool GpsUploadTask::getGps(void* p, void* s,GPSData& data)
+bool GpsUploadTask_NTF::getGps(void* p, void* s,GPSData& data)
 {
 	int r;
 	char buff[2048] = { 0, };
 	bcp_nmea_info_t *info;
-	if((r = bcp_serial_read(s, buff, 1, 1000)) >= 0)
+	while((r = bcp_serial_read(s, buff,sizeof(buff), 1000)) >= 0)
 	{
 		if (r > 0) {
-			if (bcp_nmea_parse(p, buff, 1) > 0) {
+			if (bcp_nmea_parse(p, buff, r) > 0) {
 				/* has new sentence */
 				info = bcp_nmea_info(p);
 				if (info) {
-					print_nmea_info(info);
-					data.langitude = 0;
-					data.longitude = 1;
+					//print_nmea_info(info);
+					if (info->sig == 0) {
+						//LOG_I("invalid gps data");
+					}
+					else {
+						data.longitude = info->longitude;
+						data.latitude = info->latitude;
+					}
 					return true;
 				}
 			}
@@ -100,7 +180,7 @@ bool GpsUploadTask::getGps(void* p, void* s,GPSData& data)
 	return false;
 }
 
-bool GpsUploadTask::ntfGps(GPSData& data)
+bool GpsUploadTask_NTF::ntfGps(GPSData& data)
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 5, seqID);

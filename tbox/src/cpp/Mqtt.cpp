@@ -173,6 +173,7 @@ bool MqttClient::reqConnect(char* url, char* topic,int qos,int keepAliveInterval
 		LOG_E("MQTTClient_create Failed %d", rc);
 		MQTTAsync_destroy(&client);
 		client = NULL;
+		changeState(Disconnected);
 		return false;
 	}
 	rc = MQTTAsync_setCallbacks(client, this, Client_connectionLost, Client_messageArrived, Client_deliveryComplete);
@@ -191,6 +192,7 @@ bool MqttClient::reqConnect(char* url, char* topic,int qos,int keepAliveInterval
 
 	if (MQTTASYNC_SUCCESS != rc) {
 		LOG_E("MQTTClient_connect failed");
+		changeState(Disconnected);
 		return false;
 	}
 	return true;

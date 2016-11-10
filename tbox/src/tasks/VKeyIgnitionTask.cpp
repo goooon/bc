@@ -68,7 +68,7 @@ void VKeyIgnitionTask::doTask()
 					}
 				}
 				else  if (args.e == AppEvent::AutoStateChanged) {
-					LOG_W("Unhandled Event %d %d %d %lld", args.e, args.param1, args.param2, args.data);
+					//LOG_W("Unhandled Event %d %d %d %lld", args.e, args.param1, args.param2, args.data);
 				}
 				else {
 					LOG_E("Unhandled Event %d", args.e);

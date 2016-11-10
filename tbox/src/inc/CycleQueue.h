@@ -54,6 +54,10 @@ public:
 		m_front = (m_front + 1) % m_size;
 		return true;
 	}
+	T* atPop() {
+		if (isEmpty())return NULL;
+		return &m_data[m_front];
+	}
 	T getDataAt(unsigned int idx) {
 		if (idx >= (m_size + m_rear - m_front) % m_size)return NULL;
 		return m_data[(idx + m_front) % m_size];

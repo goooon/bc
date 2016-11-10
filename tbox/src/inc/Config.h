@@ -47,6 +47,9 @@ public:
 	u32 getGPSQueueSize() {
 		return gpsQueueSize;
 	}
+	bool isGpsTaskAtStartup() {
+		return gpsTaskAtStartup;
+	}
 	u32 getGpsInterval();
 	u32  getAuthToken() { return authToken; }
 	void setAuthToken(u32 t) { authToken = t; }
@@ -58,13 +61,14 @@ public:
 		//memset(clientid, 0, sizeof(clientid));
 		memset(vin, 0, sizeof(vin));
 
+		gpsTaskAtStartup = true;
 		gpsQueueSize = 4096;
 		doorActivationTimeOut = 5000;
 		igntActivationTimeOut = 5000;
 		mqttReConnInterval = 5000;
 		authRetryInterval = 5000;
 		gpsIntervalDriving = 30000;
-		gpsIntervalStation = 1000 * 60 * 3;
+		gpsIntervalStation = 3000;// *60 * 3;
 		gpsIntervalDriving = 1000 * 10;
 		stateUploadExpireTime = 2 * 1000; //2 min
 		strncpy(mqttServerIp, "10.28.4.40:1884", sizeof(mqttServerIp));//main server
@@ -168,6 +172,7 @@ public:
 	u32  authToken;
 	//////////////////////////////////////////////////////////////////////////
 public:
+	bool gpsTaskAtStartup;
 	u32 gpsQueueSize;
 	u32 mqttReConnInterval;
 	u32 authRetryInterval;

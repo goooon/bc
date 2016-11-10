@@ -74,6 +74,7 @@
     <ClInclude Include="..\src\tasks\VKeyActiveTask.h" />
     <ClInclude Include="..\src\tasks\VKeyDeactiveTask.h" />
     <ClInclude Include="..\src\tasks\VKeyIgnitionTask.h" />
+    <ClInclude Include="..\src\tasks\VKeyUnIgnitTask.h" />
     <ClInclude Include="..\src\test\ActiveTest.h" />
     <ClInclude Include="..\src\test\VehicleAuthTest.h" />
   </ItemGroup>
@@ -104,6 +105,7 @@
     <ClCompile Include="..\src\tasks\VKeyActiveTask.cpp" />
     <ClCompile Include="..\src\tasks\VKeyDeactiveTask.cpp" />
     <ClCompile Include="..\src\tasks\VKeyIgnitionTask.cpp" />
+    <ClCompile Include="..\src\tasks\VKeyUnIgnitTask.cpp" />
     <ClCompile Include="..\src\test\ActiveTest.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

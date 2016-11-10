@@ -19,7 +19,7 @@ public:
 	enum Type{
 		Customized = 0,
 
-		InsertTask,				//data is Task*
+		InsertTask,				//data is Task*,if data is null,param1 is applicationid
 		AbortTasks,				//param1 applicationID
 		RemoveTask,				//data is Task*
 
@@ -30,7 +30,7 @@ public:
 
 		NetStateChanged,		//param1 1:Connected,0:DisConnected
 
-		MqttStateChanged,		//param1 is MqttStateChanged::State prevState,param2 is MqttStateChanged::State currState
+		MqttStateChanged,		//param1 is MqttClient::State prevState,param2 is MqttClient::State currState
 
 		AutoEvent,				//param1 Vehicle::Event
 		AutoStateChanged,		//param1 is Vehicle::State prevState,param2 is Vehicle::State currState

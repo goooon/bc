@@ -114,6 +114,9 @@ public:
 		
 		LOG_I("TBOX Identity authToken 0x%x(%u)", identity.token.dw, identity.token.dw);
 
+		identity.token.dw = Config::getInstance().getAuthToken();
+		LOG_I("TBOX new identity 0x%x", identity.token.dw);
+
 		bcp_element_t *e = bcp_element_create((u8*)&identity, sizeof(Identity));
 		bcp_element_append(msg, e);
 		return true;

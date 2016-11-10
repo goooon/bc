@@ -68,23 +68,19 @@ bool onClientTest(char* cmd) {
 	OPER_DOOR(UnIgnt, "UnIgnt", pedal.ingnition, 0, false);
 
 	if (!strcmp(cmd, "P")) {
-		Vehicle::getInstance().getApparatus().vehiState.pedal.shift_level = 0;
-		PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 0, 0);
-		return true;
-	}
-	if (!strcmp(cmd, "R")) {
-		Vehicle::getInstance().getApparatus().vehiState.pedal.shift_level = 1;
 		PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 1, 0);
 		return true;
 	}
-	if (!strcmp(cmd, "N")) {
-		Vehicle::getInstance().getApparatus().vehiState.pedal.shift_level = 2;
+	if (!strcmp(cmd, "R")) {
 		PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 2, 0);
 		return true;
 	}
-	if (!strcmp(cmd, "D")) {
-		Vehicle::getInstance().getApparatus().vehiState.pedal.shift_level = 3;
+	if (!strcmp(cmd, "N")) {
 		PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 3, 0);
+		return true;
+	}
+	if (!strcmp(cmd, "D")) {
+		PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 4, 0);
 		return true;
 	}
 
@@ -173,18 +169,19 @@ void uninitDebugLib(void* lib)
 	Memory::dispalyInfo();
 	Memory::checkMemory(vTrue);
 }
+//if (ImGui::SmallButton("reqActive")) { func("reqActive"); } ImGui::SameLine();
+//if (ImGui::SmallButton("reqDeact")) { func("reqDeact"); } ImGui::Separator();
 char* getCommand(int i)
 {
 	const char* cmd[] = {
 		"ssh","auth", "\0",
 		"ntfState","\0",
-		"reqRemoteUnlock","\0",
 		"openDoor0", "openDoor1", "openDoor2", "openDoor3", "openHood", "openLugDoor", "openPowerPlug","\0",
 		"shutDoor0", "shutDoor1", "shutDoor2", "shutDoor3", "shutHood", "shutLugDoor", "shutPowerPlug","\0",
 		"openWind0","openWind1","openWind2","openWind3","\0",
 		"shutWind0","shutWind1","shutWind2","shutWind3","\0",
 		"P","R","N","D","\0",
-		"Ignite","UnIgnt","\0",
+		"reqActive","reqDeact","Ignite","UnIgnt","\0",
 		0
 	};
 	return (char*)cmd[i];

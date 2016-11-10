@@ -65,6 +65,7 @@ void VKeyDeavtiveTask::doTask()
 							else {
 								LOG_I("Deavtive door OK ---> TSP");
 								rspError(Operation::Succ);
+								return;
 							}
 						}
 					}

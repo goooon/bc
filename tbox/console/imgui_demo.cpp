@@ -2121,10 +2121,9 @@ struct ExampleAppConsole : public me::Tracer
 
 		ImGui::Text("Test:"); ImGui::SameLine();
 		if (ImGui::SmallButton("authProc")) { func("authProc"); } ImGui::SameLine(); 
-		if (ImGui::SmallButton("ntfState")) { func("ntfState"); } ImGui::SameLine();
+		if (ImGui::SmallButton("ntfState")) { func("ntfState"); } ImGui::Separator();
 
-		if (ImGui::SmallButton("reqActive")) { func("reqActive"); } ImGui::SameLine();
-		if (ImGui::SmallButton("reqDeact")) { func("reqDeact"); } ImGui::Separator();
+		
 		
 		//if (ImGui::SmallButton("reqIgnit")) { func("reqIgnit"); } ImGui::SameLine();
 		//if (ImGui::SmallButton("reqUnIgt")) { func("reqUnIgt"); } ImGui::Separator();

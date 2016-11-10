@@ -22,9 +22,9 @@ Operation::Result Vehicle::prepareVKeyIgnition()
 	if (state == Ignited) {
 		return Operation::E_Ignited;
 	}
-	if (apparatus.vehiState.door.lh_front) {
-		return Operation::E_DoorOpened;
-	}
+	//if (apparatus.vehiState.door.lh_front) {
+	//	return Operation::E_DoorOpened;
+	//}
 	return Operation::Succ;
 }
 
@@ -140,6 +140,14 @@ void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 		else {
 			Vehicle::getInstance().getApparatus().vehiState.pedal.ingnition = 2;
 			changeState(ReadyToIgnit);
+		}
+		break;
+	case ShiftLevel:
+		if (param2 >= 5 || param1 == 0) {
+			LOG_E("Unknow ShiftLevel %d", param1);
+		}
+		else{
+			Vehicle::getInstance().getApparatus().vehiState.pedal.shift_level = param2;
 		}
 		break;
 	default:

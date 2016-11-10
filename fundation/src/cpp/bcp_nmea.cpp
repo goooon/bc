@@ -34,7 +34,7 @@ static void error(const char *str, size_t str_size) {
 	LOG_E(str);
 }
 
-void *bcp_nmea_create(void)
+void *bcp_nmea_create(void (*fun_trace)(const char*,size_t),void(*fun_error)(const char*,size_t))
 {
 	bcp_nmea_t *n;
 	nmea_parser_t *p;
@@ -62,8 +62,8 @@ void *bcp_nmea_create(void)
 		return NULL;
 	}
 
-	nmeaContextSetTraceFunction(&trace);
-	nmeaContextSetErrorFunction(&error);
+	nmeaContextSetTraceFunction(fun_trace ? fun_trace : &trace);
+	nmeaContextSetErrorFunction(fun_error ? fun_error : &error);
 
 	nmeaInfoClear(&p->info);
 	nmeaParserInit(&p->parser, 0);

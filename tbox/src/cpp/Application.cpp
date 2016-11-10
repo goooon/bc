@@ -25,6 +25,9 @@ bool Application::init(int argc, char** argv)
 	netConnected = false;
 	Thread::startThread(this);
 	mqtt.onDebugCommand("PROTOCOL");
+	if (config.isGpsTaskAtStartup()) {
+		PostEvent(AppEvent::InsertTask, APPID_GPS_UPLOADING_NTF, 0, 0);
+	}
 	return true;
 }
 
@@ -193,8 +196,12 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 	switch (e)
 	{
 	case AppEvent::InsertTask:
-		LOG_A(data, "should not be null");
-		startTask((Task*)data, true);
+		if (data != NULL) {
+			startTask((Task*)data, true);
+		}
+		else {
+			startTask(TaskCreate(param1, 0), true);
+		}
 		break;
 	case AppEvent::AbortTasks:
 		tasksWaiting.abortTask(param1);
@@ -306,9 +313,10 @@ void Application::onMqttStateChanged(u32 param1, u32 param2, void* data)
 				Timestamp ts;
 				ts.update(config.getMqttReConnInterval());
 				PostEvent(AppEvent::InsertSchedule, ts.h, ts.l, bc_new MqttConnTask());
+				PostEvent(AppEvent::AutoEvent, Vehicle::AuthIdentity, Vehicle::Unauthed, 0);
 			}
 			else {
-				PostEvent(AppEvent::AutoEvent, Vehicle::AuthIdentity, Vehicle::Unauthed, 0);
+				
 			}
 		}
 	}
@@ -327,6 +335,8 @@ void Application::onAutoStateChanged(u32 param1, u32 param2, void* data)
 		ts.update(Config::getInstance().getStateUploadExpireTime());
 		schedule.remove(APPID_STATE_UPLOADING_NTF);
 		schedule.insert(ts, bc_new StateUploadTask_NTF());
+
+		startTask(TaskCreate(APPID_VKEY_UNIGNITION, 0), true);
 	}
 }
 

@@ -82,7 +82,7 @@ typedef struct bcp_nmea_s
 	void *parser;
 } bcp_nmea_t;
 
-void *bcp_nmea_create(void);
+void *bcp_nmea_create(void(*fun_trace)(const char*, size_t), void(*fun_error)(const char*, size_t));
 void bcp_nmea_destroy(void *hdl);
 
 int bcp_nmea_parse(void *hdl, const char *buf, int len);

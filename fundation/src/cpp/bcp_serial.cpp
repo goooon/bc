@@ -90,14 +90,14 @@ void *bcp_serial_open(const char *port, int baud, char bits, parity parity, char
 				  NULL);
 
 	if (s->hdl == INVALID_HANDLE_VALUE) {
-        printf("Error Opening %s Port\n", tmp);
+        printf("E:Error bcp_serial_open %s Port error(%d)\n", tmp,GetLastError());
         goto __failed;
     }
 
 	SetupComm(s->hdl, 4096, 4096);
 
 	if (!GetCommState(s->hdl, &s->conf)) {
-		printf("Error GetCommState %s Port\n", tmp);
+		printf("E:Error bcp_serial_open GetCommState %s Port\n", tmp);
 		goto __failed;
 	}
 
