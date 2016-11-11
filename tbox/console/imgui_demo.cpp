@@ -2527,6 +2527,13 @@ struct VehicleConsole : public me::Tracer
 		if (ImGui::Checkbox("acted", &s)) {
 			Vehicle::getInstance().getApparatus().misc.door_actived = s;
 		}
+
+		ImGui::SameLine();
+		s = Vehicle::getInstance().isReadyToIgnit();
+		if (ImGui::Checkbox("ready", &s)) {
+			Vehicle::getInstance().prepareVKeyIgnition(s);
+		}
+
 		ImGui::SameLine();
 		s = vs.pedal.ingnition & 1;
 		if (ImGui::Checkbox("igned", &s)) {

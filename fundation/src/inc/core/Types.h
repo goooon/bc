@@ -56,11 +56,50 @@ typedef u32             color;
 #pragma pack(push, 1)
 #endif
 
-union DWord
+union UByte2
+{
+	struct { u8 b0; u8 b1; };
+	u16 wd;
+	void from(u8 bs[2]) {
+		b0 = bs[0];
+		b1 = bs[1];
+	}
+	void from(u16 v) {
+		UByte2 tmp;
+		tmp.wd = v;
+		b0 = tmp.b1;
+		b1 = tmp.b0;
+	}
+};
+
+union UByte4
 {
 	struct { u8 b0; u8 b1; u8 b2; u8 b3; };
 	u32    dw;
+	void from(u8 bs[4]) {
+		b0 = bs[0];
+		b1 = bs[1];
+		b2 = bs[2];
+		b3 = bs[3];
+	}
+	void from(u32 v) {
+		UByte4 tmp;
+		tmp.dw = v;
+		b0 = tmp.b3;
+		b1 = tmp.b2;
+		b2 = tmp.b1;
+		b3 = tmp.b0;
+	}
 }DECL_GNU_PACKED;
+
+struct Endian
+{
+	static u32 toU32(u8 v[4]);
+	static u16 toU16(u8 v[2]);
+	static f32 toF32(u8 v[4]);
+	static void toByte(u8* v, u32 u);
+	static void toByte(u8* v, u16 u);
+};
 
 #if BC_TARGET == BC_TARGET_WIN
 #pragma pack(pop)

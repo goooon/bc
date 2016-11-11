@@ -124,8 +124,10 @@ void GpsUploadTask_NTF::doTask()
 #else
 	fire.update(Config::getInstance().getGpsInterval());
 	AutoLocation data;
-	data.Latitude = (180.f + 104.06f) * 1000000;
-	data.Longitude = (90.0f + 30.67f) * 1000000;
+	u32 Latitude = (180.f + 104.06f) * 1000000;
+	u32 Longitude = (90.0f + 30.67f) * 1000000;
+	data.set(Latitude, Longitude, 0, 0, 0);
+	data.SatelliteNumber = 1;
 	for (;;) {
 		ThreadEvent::WaitResult wr = waitForEvent(500);
 		if (wr == ThreadEvent::TimeOut) {
@@ -184,12 +186,14 @@ bool GpsUploadTask_NTF::getGps(void* p, void* s, AutoLocation& data)
 						//LOG_I("invalid gps data");
 					}
 					else {
-						data.Longitude = (info->longitude + 180.f) * 1000000;
-						data.Latitude = (info->latitude + 90.f) * 1000000;
-						data.Altitude = (info->elevation * 10) + 100000;
-						data.SatelliteNumber = (info->satellites.use_count);
-						data.DirectionAngel = (info->mtrack);
-						data.Speed = (info->speed) * 100;
+						u32 Longitude = (info->longitude + 180.f) * 1000000;
+						u32 Latitude = (info->latitude + 90.f) * 1000000;
+						u32 Altitude = (info->elevation * 10) + 100000;
+						u32 SatelliteNumber = (info->satellites.use_count);
+						u32 DirectionAngel = (info->mtrack);
+						u32 Speed = (info->speed) * 100;
+						data.set(Latitude, Longitude, Altitude, Speed, DirectionAngel);
+						data.SatelliteNumber = SatelliteNumber;
 
 					}
 					return true;

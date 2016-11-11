@@ -118,6 +118,12 @@ bool Application::onDebugCommand(const char* cmd)
 		PostEvent(AppEvent::InsertTask, 0, 0, p);
 		return true;
 	}
+	if (!strcmp(cmd, "reqReady")) {
+		Task* p = bc_new VKeyIgnitionTask();
+		p->handleDebug();
+		PostEvent(AppEvent::InsertTask, 0, 0, p);
+		return true;
+	}
 	if (!strcmp(cmd, "connMqtt")) {
 		mqtt.reqConnect(config.mqttServerIp, config.sub_topic, 0,config.keepAliveInterval,config.vin);
 		return true;
@@ -312,7 +318,9 @@ void Application::onMqttStateChanged(u32 param1, u32 param2, void* data)
 			if (netConnected) {
 				Timestamp ts;
 				ts.update(config.getMqttReConnInterval());
-				PostEvent(AppEvent::InsertSchedule, ts.h, ts.l, bc_new MqttConnTask());
+				if (param1 != MqttClient::Connecting) {
+					PostEvent(AppEvent::InsertSchedule, ts.h, ts.l, bc_new MqttConnTask());
+				}
 				PostEvent(AppEvent::AutoEvent, Vehicle::AuthIdentity, Vehicle::Unauthed, 0);
 			}
 			else {
@@ -328,7 +336,7 @@ void Application::onAutoStateChanged(u32 param1, u32 param2, void* data)
 	Vehicle::State prev = (Vehicle::State)param1;
 	Vehicle::State next = (Vehicle::State)param2;
 	if (prev == Vehicle::Authing && next == Vehicle::Authed) {
-
+		startTask(TaskCreate(APPID_ACQUIRE_CONFIG, 0), true);
 	}
 	else if (prev == Vehicle::Ignited && next == Vehicle::ReadyToIgnit){
 		Timestamp ts;
@@ -354,6 +362,7 @@ void Application::onNetStateChanged(u32 param)
 		LOG_I("onNetDisconnected");
 		netConnected = false;
 		mqtt.reqDisconnect();
+		PostEvent(AppEvent::AutoEvent, Vehicle::AuthIdentity, Vehicle::Unauthed, 0);
 		PostEvent(AppEvent::AbortTasks, APPID_MQTT_CONNECT, 0, 0);
 		PostEvent(AppEvent::RemoveSchedule, APPID_MQTT_CONNECT, 0, 0);
 	}

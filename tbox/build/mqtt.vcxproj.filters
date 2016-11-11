@@ -40,6 +40,9 @@
     <Filter Include="src\tasks\a07,a08">
       <UniqueIdentifier>{aa6a01c4-ef87-4cda-b8f3-25b55755dafe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\tasks\auth">
+      <UniqueIdentifier>{ec039d8c-db32-435e-926e-39755566dbc9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\inc\Message.h">
@@ -80,9 +83,6 @@
     </ClInclude>
     <ClInclude Include="..\src\inc\Vehicle.h">
       <Filter>src\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tasks\VehicleAuthTask.h">
-      <Filter>src\tasks</Filter>
     </ClInclude>
     <ClInclude Include="..\src\test\VehicleAuthTest.h">
       <Filter>src\test</Filter>
@@ -144,6 +144,12 @@
     <ClInclude Include="..\src\tasks\VKeyUnIgnitTask.h">
       <Filter>src\tasks\a03</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\tasks\VehicleAuthTask.h">
+      <Filter>src\tasks\auth</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\AcquireConfigTask.h">
+      <Filter>src\tasks</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -181,9 +187,6 @@
     </ClCompile>
     <ClCompile Include="..\src\cpp\Schedule.cpp">
       <Filter>src\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tasks\VehicleAuthTask.cpp">
-      <Filter>src\tasks</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cpp\Sensor.cpp">
       <Filter>src\cpp</Filter>
@@ -223,6 +226,12 @@
     </ClCompile>
     <ClCompile Include="..\src\tasks\VKeyUnIgnitTask.cpp">
       <Filter>src\tasks\a03</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\VehicleAuthTask.cpp">
+      <Filter>src\tasks\auth</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\AcquireConfigTask.cpp">
+      <Filter>src\tasks</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

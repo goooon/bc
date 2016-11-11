@@ -181,7 +181,7 @@ char* getCommand(int i)
 		"openWind0","openWind1","openWind2","openWind3","\0",
 		"shutWind0","shutWind1","shutWind2","shutWind3","\0",
 		"P","R","N","D","\0",
-		"reqActive","reqDeact","Ignite","UnIgnt","\0",
+		"reqActive","reqDeact","reqReady","Ignite","UnIgnt","\0",
 		0
 	};
 	return (char*)cmd[i];

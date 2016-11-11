@@ -28,12 +28,28 @@ struct Identity
 	//AuthToken() {
 
 	//}
-	DWord token;
+	UByte4 token;
 }DECL_GNU_PACKED;
 
 struct ErrorElement
 {
 	u8 errorcode;	//ref errorcode.h
+}DECL_GNU_PACKED;
+
+struct ConfigElement
+{
+	struct Node
+	{
+		u8 index;
+		u8 arglen;
+		u8 arg[1];
+	}DECL_GNU_PACKED;
+	u8 count;
+	Node node;
+	Node* getNextNode(Node* n) {
+		if (n == 0)return &node;
+		return (Node*)(n->arglen + &n->arg[0]);
+	}
 }DECL_GNU_PACKED;
 
 struct TimeStamp
@@ -58,12 +74,20 @@ struct Authentication
 struct AutoLocation
 {
 	u8 locationType;
-	u32 Latitude;
-	u32 Longitude;
-	u32 Altitude;
-	u16 Speed;
+	u8 Latitude[4];
+	u8 Longitude[4];
+	u8 Altitude[4];
+	u8 Speed[2];
 	u8 SatelliteNumber;
-	u16 DirectionAngel;
+	u8 DirectionAngel[2];
+	void set(u32 lat, u32 lon, u32 alt, u32 s, u32 a)
+	{
+		Endian::toByte(Latitude, lat);
+		Endian::toByte(Longitude, lon);
+		Endian::toByte(Altitude, alt);
+		Endian::toByte(Speed, (u16)s);
+		Endian::toByte(DirectionAngel, (u16)a);
+	}
 }DECL_GNU_PACKED;
 
 struct RemoteControl

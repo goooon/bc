@@ -132,10 +132,10 @@ void Task::ntfTimeOut()
 	msg.appendFunctionStatus(0);
 
 	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, 5000)) {
-		LOG_E("ntfTimeOut() post failed");
+		LOG_E("ntfTimeOut() post failed by %d",appID);
 	}
 	else {
-		LOG_I("ntfTimeOut() ---> TSP");
+		LOG_I("ntfTimeOut() ---> TSP by %d",appID);
 	}
 }
 

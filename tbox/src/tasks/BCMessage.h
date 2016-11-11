@@ -60,6 +60,20 @@ public:
 		}
 		return 0;
 	}
+	Index getNextElement(ConfigElement* ce, Index idx) {
+		if (idx == 0)return 0;
+		bcp_element_t *e = bcp_next_element(msg, (bcp_element_t*)idx);
+		if (e) {
+			if (ce) {
+				ce->count = e->data[0];
+				ce->node.index = e->data[1];
+				ce->node.arglen = e->data[2];
+				ce->node.arg[0] = e->data[3];
+			}
+			return e;
+		}
+		return 0;
+	}
 	u32 getApplicationId() {
 		if (msg == 0)return -1;
 		return msg->hdr.id;
@@ -104,7 +118,7 @@ public:
 		IDS ids;
 		//AuthToken = CRC32(Vehicle Descriptor(¼û4.4.1)(VIN + TBox Serial + IMEI + ICCID) +
 			//	Authentication(¼û4.4.5)(PID))
-		DWord dw; 
+		UByte4 dw; 
 		dw.dw = calc_crc32((u8*)&ids,sizeof(ids));
 		
 		identity.token.b0 = dw.b3;

@@ -61,6 +61,7 @@
     <ClInclude Include="..\src\inc\TaskList.h" />
     <ClInclude Include="..\src\inc\TaskQueue.h" />
     <ClInclude Include="..\src\inc\Vehicle.h" />
+    <ClInclude Include="..\src\tasks\AcquireConfigTask.h" />
     <ClInclude Include="..\src\tasks\BCMessage.h" />
     <ClInclude Include="..\src\tasks\Element.h" />
     <ClInclude Include="..\src\tasks\ErrorCode.h" />
@@ -93,6 +94,7 @@
     <ClCompile Include="..\src\cpp\Sensor.cpp" />
     <ClCompile Include="..\src\cpp\Task.cpp" />
     <ClCompile Include="..\src\cpp\Vehicle.cpp" />
+    <ClCompile Include="..\src\tasks\AcquireConfigTask.cpp" />
     <ClCompile Include="..\src\tasks\BCMessage.cpp" />
     <ClCompile Include="..\src\tasks\Element.cpp" />
     <ClCompile Include="..\src\tasks\GPSDataQueue.cpp" />

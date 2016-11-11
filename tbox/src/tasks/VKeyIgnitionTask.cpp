@@ -21,6 +21,7 @@ void VKeyIgnitionTask::doTask()
 			Timestamp now;
 			if (now > expireTime) {
 				LOG_I("VKeyIgnitionTask waiting Time Out %lld", expireTime.getValue());
+				Vehicle::getInstance().prepareVKeyIgnition(false);
 				ntfTimeOut();
 				return;
 			}
@@ -38,6 +39,7 @@ void VKeyIgnitionTask::doTask()
 					else if (args.param1 == Vehicle::Ignite) {
 						LOG_I("VKeyIgnitionTask %d %d", args.param1, args.param2);
 						ntfIgnited();
+						return;
 					}
 					else {
 						LOG_W("Unhandled Vehicle Event %d", args.param1);
@@ -56,7 +58,7 @@ void VKeyIgnitionTask::doTask()
 							rspAck();
 							expireTime.update(Config::getInstance().getIgntActivationTimeOut());
 
-							ret = Vehicle::getInstance().prepareVKeyIgnition();
+							ret = Vehicle::getInstance().prepareVKeyIgnition(true);
 							if (ret != Operation::Succ) {
 								LOG_I("prepareVKeyIgnition() wrong %d", ret);
 								return rspError(ret);

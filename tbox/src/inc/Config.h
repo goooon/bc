@@ -29,6 +29,13 @@ public:
 	void setGpsIntervalInDriving(u32 it) {
 		gpsIntervalDriving = it;
 	}
+	void setGpsIntervalInStation(u32 it) {
+		gpsIntervalStation = it;
+	}
+	void setAbnormalMovingDuration(u32 it) {
+		abnormalMovingDuring = it;
+	}
+
 	u32 getDoorActivationTimeOut() {
 		return doorActivationTimeOut;
 	}
@@ -61,7 +68,7 @@ public:
 		//memset(clientid, 0, sizeof(clientid));
 		memset(vin, 0, sizeof(vin));
 
-		gpsTaskAtStartup = true;
+		gpsTaskAtStartup = 0;
 		gpsQueueSize = 4096;
 		doorActivationTimeOut = 5000;
 		igntActivationTimeOut = 5000;
@@ -178,6 +185,7 @@ public:
 	u32 authRetryInterval;
 	u32 gpsIntervalDriving;
 	u32 gpsIntervalStation;
+	u32 abnormalMovingDuring;
 	u32 doorActivationTimeOut;
 	u32 igntActivationTimeOut;
 	u32 stateUploadExpireTime;

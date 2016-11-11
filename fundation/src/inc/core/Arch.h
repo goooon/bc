@@ -39,23 +39,38 @@ static_assert(sizeof(void *) == 4, "void*_should_be_4");
 #endif
 #endif
 
+#define BC_ENDIAN_UNKNOWN   0
 #define BC_ENDIAN_LITTLE    1
 #define BC_ENDIAN_BIG       2
 
+//https://sourceforge.net/p/predef/wiki/Architectures/
+//https://msdn.microsoft.com/en-us/library/b0084kay.aspx
 #if defined(__sgi)      ||  defined (__sparc)        || \
     defined (__sparc__) ||  defined (__PPC__)        || \
     defined (__ppc__)   ||  defined (__BIG_ENDIAN__)
 #define BC_ENDIAN BC_ENDIAN_BIG
-#else
+#elif defined(__arm__) || defined(__i386) || defined(__i386__) || defined(__ia64__)  || \
+	defined(_M_IX86 )
 #define BC_ENDIAN BC_ENDIAN_LITTLE
+#else
+#define BC_ENDIAN BC_ENDIAN_UNKNOWN
 #endif
 
 #if BC_ENDIAN == BC_ENDIAN_BIG
-# define BC_PACK_BYTE4(a,b,c,d) ( (int)(a)<<24 | (int)(b)<<16 | (c)<<8 | (d) )
-# define BC_PACK_BYTE2(c, d)   ( (c)<<8 | (d) )
+#define  BC_PACK_ARRAY4(b) ( (int)(b[0])<<24 | (int)(b[1])<<16 | (b[2])<<8 | (b[3]) )
+# define BC_PACK_ARRAY2(b)   ( (b[0])<<8 | (b[1]) )
+# define BC_PACK_BYTE4(b0,b1,b2,b3) ( (int)(b0)<<24 | (int)(b1)<<16 | (b2)<<8 | (b3) )
+# define BC_PACK_BYTE2(b0,b1)   ( (b0)<<8 | (b1) )
+#elif BC_ENDIAN == BC_ENDIAN_LITTLE
+#define  BC_PACK_ARRAY4(b) ( (int)(b[3])<<24 | (int)(b[2])<<16 | (b[1])<<8 | (b[0]) )
+# define BC_PACK_ARRAY2(b)    ( (b[1])<<8 | (b[0]) )
+# define BC_PACK_BYTE4(b0,b1,b2,b3) ( (int)(b3)<<24 | (int)(b2)<<16 | (b1)<<8 | (b0) )
+# define BC_PACK_BYTE2(b0, b1)    ( (b1)<<8 | (b0) )
 #else
-# define BC_PACK_BYTE4(a,b,c,d) ( (int)(d)<<24 | (int)(c)<<16 | (b)<<8 | (a) )
-# define BC_PACK_BYTE2(c, d)    ( (d)<<8 | (c) )
+#define  BC_PACK_ARRAY4(b)  ((bool)(*(unsigned short *)"\0\xff" < 0x100) ? ((int)(b[0])<<24 | (int)(b[1])<<16 | (b[2])<<8 |(b[3] ) : ( (int)(b[3])<<24 | (int)(b[2])<<16 | (b[]1)<<8 | (b[0]) ))
+# define BC_PACK_ARRAY2(b)  ((bool)(*(unsigned short *)"\0\xff" < 0x100) ? ((b[0])<<8 | (b[1]) ) : ( (b[1])<<8 | (b[0]) ))
+# define BC_PACK_BYTE4(b0,b1,b2,b3) ((bool)(*(unsigned short *)"\0\xff" < 0x100) ? ( (int)(b0)<<24 | (int)(b1)<<16 | (b2)<<8 | (b3) ) : ( (int)(b3)<<24 | (int)(b2)<<16 | (b1)<<8 | (b0) ))
+# define BC_PACK_BYTE2(b0, b1)    ((bool)(*(unsigned short *)"\0\xff" < 0x100) ? ( (b0)<<8 | (b1) ) : ( (b1)<<8 | (b0) ))
 #endif
 
 //compiler def

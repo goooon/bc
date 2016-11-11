@@ -39,7 +39,7 @@ public:
 public:
 	static Vehicle& getInstance();
 	Vehicle();
-	Operation::Result prepareVKeyIgnition();
+	Operation::Result prepareVKeyIgnition(bool b);
 	Operation::Result prepareActiveDoorByVKey();
 	Operation::Result reqActiveDoorByVKey();
 	Operation::Result reqDeactiveDoor();
@@ -47,6 +47,7 @@ public:
 	void setGpsInfo(AutoLocation& info);
 	bool getGpsInfo(AutoLocation& info);
 	bool isParkState();
+	bool isReadyToIgnit();
 	bool isAuthed();
 	bool isDriving();
 private:

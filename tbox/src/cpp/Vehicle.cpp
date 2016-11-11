@@ -12,20 +12,26 @@ Vehicle::Vehicle() :authed(Unauthed),state(Enabled)
 
 }
 
-Operation::Result Vehicle::prepareVKeyIgnition()
+Operation::Result Vehicle::prepareVKeyIgnition(bool ready)
 {
-	if (!authed) {
-		return Operation::E_Auth;
+	if (ready) {
+		if (!authed) {
+			return Operation::E_Auth;
+		}
+		if (driving) {
+			return Operation::E_Driving;
+		}
+		if (state == Ignited) {
+			return Operation::E_Ignited;
+		}
+		//if (apparatus.vehiState.door.lh_front) {
+		//	return Operation::E_DoorOpened;
+		//}
+		changeState(ReadyToIgnit);
 	}
-	if (driving) {
-		return Operation::E_Driving;
+	else {
+		changeState(NotReady);
 	}
-	if (state == Ignited) {
-		return Operation::E_Ignited;
-	}
-	//if (apparatus.vehiState.door.lh_front) {
-	//	return Operation::E_DoorOpened;
-	//}
 	return Operation::Succ;
 }
 
@@ -90,6 +96,11 @@ bool Vehicle::isParkState()
 	return false;
 }
 
+bool Vehicle::isReadyToIgnit()
+{
+	return state == ReadyToIgnit;
+}
+
 bool Vehicle::isAuthed()
 {
 	return authed == Authed;
@@ -137,20 +148,24 @@ void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 		apparatus.vehiState.window.winds &= ~(1 << (param2 * 2));
 		break;
 	case Ignite:
-		if (Vehicle::getInstance().getApparatus().vehiState.pedal.ingnition == 3) {
+		if (state != ReadyToIgnit) {
+			LOG_W("Auto state is %d,Not Ready to Ignit",state);
+			return;
+		}
+		if (getApparatus().vehiState.pedal.ingnition == 3) {
 			LOG_W("Auto already ignited;");
 		}
 		else {
-			Vehicle::getInstance().getApparatus().vehiState.pedal.ingnition = 3;
+			getApparatus().vehiState.pedal.ingnition = 3;
 			changeState(Ignited);
 		}
 		break;
 	case UnIgnt:
-		if (Vehicle::getInstance().getApparatus().vehiState.pedal.ingnition == 2) {
+		if (getApparatus().vehiState.pedal.ingnition == 2) {
 			LOG_W("Auto already unignited;");
 		}
 		else {
-			Vehicle::getInstance().getApparatus().vehiState.pedal.ingnition = 2;
+			getApparatus().vehiState.pedal.ingnition = 2;
 			changeState(ReadyToIgnit);
 		}
 		break;
