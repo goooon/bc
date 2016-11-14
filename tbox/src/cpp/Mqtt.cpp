@@ -89,12 +89,14 @@ MqttClient::~MqttClient()
 		client = 0;
 	}
 }
+
 static void Client_connectionLost(void* context, char* cause)
 {
 	MqttClient* mh = (MqttClient*)context;
 	LOG_I("MQTT Client_connectionLost: %s",cause ? cause : "unknown");
 	mh->onDisconnected();
 }
+
 static int Client_messageArrived(void* context, char* topicName, int topicLen, MQTTAsync_message* message)
 {
 	MqttClient* mh = (MqttClient*)context;
@@ -104,12 +106,14 @@ static int Client_messageArrived(void* context, char* topicName, int topicLen, M
 	MQTTAsync_free(topicName);
 	return ret;
 }
+
 static void Client_deliveryComplete(void* context, MQTTAsync_token token)
 {
 	MqttClient* mh = (MqttClient*)context;
 	LOG_I("MQTT Client_deliveryComplete:token %d", token);
 	mh->onDeliveryComplete();
 }
+
 void Mqtt_onSubscribFailed(void* context, MQTTAsync_failureData* response)
 {
 	MqttClient* c = (MqttClient*)context;
@@ -123,6 +127,7 @@ void Mqtt_onSubscribFailed(void* context, MQTTAsync_failureData* response)
 		c->onError(MqttClient::SubscribFailed, "Mqtt_onConnectFailed");
 	}
 }
+
 void Mqtt_onSubscribed(void* context, MQTTAsync_successData* response)
 {
 	MqttClient* c = (MqttClient*)context;
@@ -131,6 +136,7 @@ void Mqtt_onSubscribed(void* context, MQTTAsync_successData* response)
 
 	c->onSubscribed();
 }
+
 void Mqtt_onConnectFailed(void* context, MQTTAsync_failureData* response)
 {
 	MqttClient* c = (MqttClient*)context;

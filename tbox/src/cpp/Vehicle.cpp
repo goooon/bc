@@ -7,7 +7,7 @@ Vehicle& Vehicle::getInstance()
 	return Application::getInstance().getVehicle();
 }
 
-Vehicle::Vehicle() :authed(Unauthed),state(Enabled)
+Vehicle::Vehicle() :authed(Unauthed),state(Enabled),movingInAbnormal(false)
 {
 
 }
@@ -111,6 +111,11 @@ bool Vehicle::isDriving()
 	return driving;
 }
 
+bool Vehicle::isMovingInAbnormal()
+{
+	return movingInAbnormal;
+}
+
 //Operation::Result Vehicle::reqLockDoor()
 //{
 //	LOG_I("do reqLockDoor()");
@@ -176,6 +181,12 @@ void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 		else{
 			Vehicle::getInstance().getApparatus().vehiState.pedal.shift_level = param2;
 		}
+		break;
+	case AbormalMove:
+		movingInAbnormal = true;
+		break;
+	case NormalMove:
+		movingInAbnormal = false;
 		break;
 	default:
 		LOG_W("unhandled State %d", param1);

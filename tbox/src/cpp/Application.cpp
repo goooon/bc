@@ -124,6 +124,14 @@ bool Application::onDebugCommand(const char* cmd)
 		PostEvent(AppEvent::InsertTask, 0, 0, p);
 		return true;
 	}
+	if (!strcmp(cmd, "AbnMove")) {
+		PostEvent(AppEvent::AutoEvent, Vehicle::AbormalMove, 0, 0);
+		return true;
+	}
+	if (!strcmp(cmd, "NorMove")) {
+		PostEvent(AppEvent::AutoEvent, Vehicle::NormalMove, 0, 0);
+		return true;
+	}
 	if (!strcmp(cmd, "connMqtt")) {
 		mqtt.reqConnect(config.mqttServerIp, config.sub_topic, 0,config.keepAliveInterval,config.vin);
 		return true;

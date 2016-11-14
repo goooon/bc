@@ -25,7 +25,9 @@ public:
 		DoorOpened,				//param2 door id
 		DoorClosed,				//param2
 		WindOpened,				//param2 window id
-		WindClosed
+		WindClosed,
+		AbormalMove,
+		NormalMove
 	};
 	enum State {				//Æû³µµ±Ç°×´Ì¬
 		Disabled,
@@ -50,11 +52,13 @@ public:
 	bool isReadyToIgnit();
 	bool isAuthed();
 	bool isDriving();
+	bool isMovingInAbnormal();
 private:
 	void onEvent(u32 param1, u32 param2, void* data);
 	bool changeState(State next);
 private:
 	bool driving;
+	bool movingInAbnormal;
 	AuthState authed;
 	State     state;
 	AutoLocation  gpsInfo;

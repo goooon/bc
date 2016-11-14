@@ -208,16 +208,17 @@ bool GpsUploadTask_NTF::getGps(void* p, void* s, AutoLocation& data)
 bool GpsUploadTask_NTF::ntfGps(AutoLocation& data)
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
+	u32 appId = Vehicle::getInstance().isMovingInAbnormal() ? APPID_GPS_ABORMAL_MOVE : appID;
+	BCMessage msg = pkg.appendMessage(appId, 5, seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendGPSData(data);
 	msg.appendFunctionStatus(0);
 	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
-		LOG_E("ntfGps failed");
+		LOG_E("ntfGps(%d) failed",appId);
 	}
 	else{
-		LOG_I("ntfGps() ---> TSP");
+		LOG_I("ntfGps(%d) ---> TSP",appId);
 	}
 	return true;
 }

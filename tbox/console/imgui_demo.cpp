@@ -2438,7 +2438,7 @@ struct VehicleConsole : public me::Tracer
 
 #define SLIDE_SEC(n,v)	\
 		second = Config::getInstance().v / 1000;	\
-		if (ImGui::SliderInt(n, &second, 0, 10 * 18)) {	\
+		if (ImGui::SliderInt(n, &second, 0, 60 * 5)) {	\
 			Config::getInstance().v = second * 1000;	\
 		}
 		SLIDE_SEC("doorTimeOut", doorActivationTimeOut);
@@ -2449,6 +2449,7 @@ struct VehicleConsole : public me::Tracer
 
 		SLIDE_SEC("GPSDriving", gpsIntervalDriving);
 		SLIDE_SEC("GPSStation", gpsIntervalStation);
+		SLIDE_SEC("GPSAbormal", gpsIntervalAbormal);
 
 		bool s;
 		Apparatus::VehicleState& vs = Vehicle::getInstance().getApparatus().vehiState;
@@ -2539,6 +2540,13 @@ struct VehicleConsole : public me::Tracer
 		if (ImGui::Checkbox("igned", &s)) {
 			vs.pedal.ingnition = s;
 		}
+
+		ImGui::SameLine();
+		s = Vehicle::getInstance().isMovingInAbnormal();
+		if (ImGui::Checkbox("abnormal", &s)) {
+			
+		}
+		
 
 		int idx = 0;
 		char* cmd;
