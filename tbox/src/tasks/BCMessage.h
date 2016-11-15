@@ -152,21 +152,17 @@ public:
 		bcp_element_append(msg, ele);
 		return true;
 	}
-	bool appendTimeStamp() {
-		TimeStamp ts;
-		time_t timer;//time_t就是long int 类型
-		struct tm *tblock;
-		timer = time(NULL);
-		tblock = localtime(&timer);
-		ts.day = tblock->tm_mday;
-		ts.hour = tblock->tm_hour;
-		ts.min = tblock->tm_min;
-		ts.month = tblock->tm_mon;
-		ts.sec = tblock->tm_sec;
-		ts.year = tblock->tm_year;
-
-		bcp_element_t *e = bcp_element_create((u8*)&ts, sizeof(TimeStamp));
-		bcp_element_append(msg, e);
+	bool appendTimeStamp(TimeStamp* pts = NULL) {
+		if (pts == NULL) {
+			TimeStamp ts;
+			ts.update();
+			bcp_element_t *e = bcp_element_create((u8*)&ts, sizeof(TimeStamp));
+			bcp_element_append(msg, e);
+		}
+		else {
+			bcp_element_t *e = bcp_element_create((u8*)pts, sizeof(TimeStamp));
+			bcp_element_append(msg, e);
+		}
 		return true;
 	}
 	bool appendGPSData(AutoLocation& gps) {
@@ -223,7 +219,12 @@ public:
 		{
 			ret = ThreadEvent::EventOk == MqttClient::getInstance().reqSendPackage(publish, buf, len, qos, millSec) ? true : false;
 			if (!ret) {
-				if (!storeForResend(buf, len)) {
+				if (isImportant) {
+					if (!storeForResend(buf, len)) {
+						free(buf);
+					}
+				}
+				else {
 					free(buf);
 				}
 			}

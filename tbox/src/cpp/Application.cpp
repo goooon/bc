@@ -7,6 +7,7 @@
 #include "../tasks/MqttConnTask.h"
 #include "../test/ActiveTest.h"
 #include "../tasks/TaskTable.h"
+#include "../tasks/GpsUploadTask.h"
 static Application* g_inst;
 Application& Application::getInstance()
 {
@@ -26,7 +27,7 @@ bool Application::init(int argc, char** argv)
 	Thread::startThread(this);
 	mqtt.onDebugCommand("PROTOCOL");
 	if (config.isGpsTaskAtStartup()) {
-		PostEvent(AppEvent::InsertTask, APPID_GPS_UPLOADING_NTF, 0, 0);
+		PostEvent(AppEvent::InsertTask, 0, 0, bc_new GpsUploadTask_NTF());
 	}
 	return true;
 }
@@ -222,9 +223,13 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 		tasksWorking.abortTask(param1);
 		break;
 	case AppEvent::RemoveTask:
-		LOG_A(data,"should not be null");
-		tasksWorking.out((Task*)data);
-		bc_del((Task*)data);
+		if (data == NULL) {
+			LOG_E("should not be null");
+		}
+		else {
+			tasksWorking.out((Task*)data);
+			bc_del((Task*)data);
+		}
 		break;
 	case AppEvent::NetStateChanged:
 		onNetStateChanged(param1);
@@ -243,6 +248,9 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 	case AppEvent::AutoEvent:
 		Vehicle::getInstance().onEvent(param1, param2, 0);
 		broadcastEvent(e, param1, param2, data);
+		if (param1 == Vehicle::AuthIdentity && param2 == Vehicle::Authed) {
+			PostEvent(AppEvent::InsertTask, APPID_PACKAGE_QUEUE, 0, 0);
+		}
 		break;
 	case AppEvent::InsertSchedule:
 		schedule.insert(Timestamp(param1, param2), (Task*)data);

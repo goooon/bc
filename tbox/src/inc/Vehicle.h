@@ -9,6 +9,24 @@ class Vehicle
 {
 	friend class Application;
 public:
+	struct RawGps
+	{
+		double longitude;
+		double latitude;
+		double altitude;
+		double dirAngle;
+		double speed;
+		u32    satelliteNumber;
+		RawGps() {
+			longitude = 104.06f;
+			latitude = 30.67f;
+			altitude = 124.56f;
+			dirAngle = 89.0f;
+			speed = 100.0f;
+			satelliteNumber = 121;
+		}
+	};
+public:
 	enum AuthState
 	{
 		Unauthed,
@@ -46,13 +64,14 @@ public:
 	Operation::Result reqActiveDoorByVKey();
 	Operation::Result reqDeactiveDoor();
 	Apparatus& getApparatus() { return apparatus; }
-	void setGpsInfo(AutoLocation& info);
-	bool getGpsInfo(AutoLocation& info);
+	void setGpsInfo(Vehicle::RawGps& info);
+	bool getGpsInfo(Vehicle::RawGps& info);
 	bool isParkState();
 	bool isReadyToIgnit();
 	bool isAuthed();
 	bool isDriving();
 	bool isMovingInAbnormal();
+	void setMovingInAbnormal(bool b);
 private:
 	void onEvent(u32 param1, u32 param2, void* data);
 	bool changeState(State next);
@@ -61,8 +80,9 @@ private:
 	bool movingInAbnormal;
 	AuthState authed;
 	State     state;
-	AutoLocation  gpsInfo;
 	Apparatus apparatus;
+public:
+	RawGps    gpsData;
 };
 
 #endif // GUARD_Vehicle_h__

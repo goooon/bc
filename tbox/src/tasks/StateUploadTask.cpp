@@ -17,7 +17,7 @@ void UnIgnitStateUploadTask_NTF::doTask()
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendVehicleState(Vehicle::getInstance().getApparatus().vehiState);
-	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
+	if (!pkg.post(Config::getInstance().pub_topic, 2, Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("StateUploadTask notify failed");
 	}
 }
@@ -29,7 +29,7 @@ bool UnIgnitStateUploadTask::ntfState()
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendVehicleState(Application::getInstance().getVehicle().getApparatus().vehiState);
-	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
+	if (!pkg.post(Config::getInstance().pub_topic, 2, Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("sendResponseUnlocked failed");
 		return false;
 	}
@@ -55,7 +55,7 @@ void UnIgnitStateUploadTask::rspAck()
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(0);
-	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
+	if (!pkg.post(Config::getInstance().pub_topic, 2, Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("rspAck failed");
 	}
 	else {
@@ -92,7 +92,7 @@ void IgnitStateUploadTask_NTF::doTask()
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendVehicleState(Vehicle::getInstance().getApparatus().vehiState);
-	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
+	if (!pkg.post(Config::getInstance().pub_topic, 2, Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("IgnitStateUploadTask_NTF notify failed");
 	}
 }

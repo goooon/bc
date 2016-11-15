@@ -22,7 +22,7 @@ void VKeyActiveTask::ntfDoorActived()
 	msg.appendTimeStamp();
 	msg.appendErrorElement(ERR_SUCC);
 	msg.appendFunctionStatus(0);
-	if (!pkg.post(Config::getInstance().getPublishTopic(),2, 5000)) {
+	if (!pkg.post(Config::getInstance().getPublishTopic(),2, Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("sendResponseUnlocked failed");
 	}
 }
@@ -35,7 +35,7 @@ void VKeyActiveTask::ntfDoorOpened()
 	msg.appendTimeStamp();
 	msg.appendErrorElement(ERR_SUCC);
 	msg.appendFunctionStatus(0);
-	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, 5000)) {
+	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("sendResponseUnlocked failed");
 	}
 	else {

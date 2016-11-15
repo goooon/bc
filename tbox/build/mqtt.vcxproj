@@ -69,6 +69,7 @@
     <ClInclude Include="..\src\tasks\GpsUploadTask.h" />
     <ClInclude Include="..\src\tasks\MqttConnTask.h" />
     <ClInclude Include="..\src\tasks\PackageQueue.h" />
+    <ClInclude Include="..\src\tasks\PackageQueueTask.h" />
     <ClInclude Include="..\src\tasks\StateUploadTask.h" />
     <ClInclude Include="..\src\tasks\TaskTable.h" />
     <ClInclude Include="..\src\tasks\VehicleAuthTask.h" />
@@ -101,6 +102,7 @@
     <ClCompile Include="..\src\tasks\GpsUploadTask.cpp" />
     <ClCompile Include="..\src\tasks\MqttConnTask.cpp" />
     <ClCompile Include="..\src\tasks\PackageQueue.cpp" />
+    <ClCompile Include="..\src\tasks\PackageQueueTask.cpp" />
     <ClCompile Include="..\src\tasks\StateUploadTask.cpp" />
     <ClCompile Include="..\src\tasks\TaskTable.cpp" />
     <ClCompile Include="..\src\tasks\VehicleAuthTask.cpp" />

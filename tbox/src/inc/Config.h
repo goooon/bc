@@ -35,7 +35,9 @@ public:
 	void setAbnormalMovingDuration(u32 it) {
 		gpsIntervalAbormal = it;
 	}
-
+	u32 getAbnormalMovingDuration() {
+		return gpsIntervalAbormal;
+	}
 	u32 getDoorActivationTimeOut() {
 		return doorActivationTimeOut;
 	}
@@ -57,7 +59,18 @@ public:
 	bool isGpsTaskAtStartup() {
 		return gpsTaskAtStartup;
 	}
-	
+	u32 getAbnormalMovingDist() {
+		return abnormalMovingDist;
+	}
+	u32 getDurationEnterNormal() {
+		return durationEnterNormal;
+	}
+	u32 getMqttSendTimeOut() {
+		return mqttSendTimeOut;
+	}
+	//u32 getAbnormalMovingInterval() {
+	//	return abnormalMovingInterval;
+	//}
 	u32 getGpsInterval();
 	u32  getAuthToken() { return authToken; }
 	void setAuthToken(u32 t) { authToken = t; }
@@ -69,13 +82,18 @@ public:
 		//memset(clientid, 0, sizeof(clientid));
 		memset(vin, 0, sizeof(vin));
 
-		gpsTaskAtStartup = 0;
+		gpsTaskAtStartup = true;
+		mqttSendTimeOut = 5000;
 		gpsQueueSize = 4096;
+		abnormalMovingDist = 50;
+		gpsIntervalAbormal = 10000;
+		durationEnterNormal = 30000;
+		//abnormalMovingInterval = 10;
 		doorActivationTimeOut = 5000;
 		igntActivationTimeOut = 5000;
 		mqttReConnInterval = 5000;
 		authRetryInterval = 5000;
-		gpsIntervalAbormal = 30000;
+		
 		gpsIntervalStation = 1000 * 60 * 5;
 		gpsIntervalDriving = 1000 * 30;
 		stateUploadExpireTime = 2 * 1000; //2 min
@@ -171,6 +189,7 @@ private:
 public:
 	u32  ip;
 	u16  port;
+	u32  mqttSendTimeOut;
 	int  keepAliveInterval;
 	bool isServer;
 	char pub_topic[64];
@@ -181,12 +200,14 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 public:
 	bool gpsTaskAtStartup;
+	u32 abnormalMovingDist;   //meter
 	u32 gpsQueueSize;
 	u32 mqttReConnInterval;
 	u32 authRetryInterval;
 	u32 gpsIntervalDriving;
 	u32 gpsIntervalStation;
 	u32 gpsIntervalAbormal;
+	u32 durationEnterNormal;
 	u32 doorActivationTimeOut;
 	u32 igntActivationTimeOut;
 	u32 stateUploadExpireTime;

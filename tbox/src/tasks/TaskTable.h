@@ -14,9 +14,10 @@
 #define APPID_STATE_IGNITION        8
 #define APPID_GPS_UPLOADING_NTF	    9
 #define APPID_GPS_UPLOADING  	    10
-#define APPID_GPS_ABORMAL_MOVE      12
+#define APPID_GPS_ABNORMAL_MOVE      11
 #define APPID_STATE_UPLOADING_HK    16
 
 #define APPID_MQTT_CONNECT			0xFFFF0001
-Task* TaskCreate(u16 appId, bcp_packet_t* pkg);
+#define APPID_PACKAGE_QUEUE         0xFFFF0002
+Task* TaskCreate(u32 appId, bcp_packet_t* pkg);
 #endif // GUARD_TaskTable_h__

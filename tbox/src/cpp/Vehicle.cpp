@@ -64,14 +64,14 @@ Operation::Result Vehicle::reqDeactiveDoor()
 	return Operation::Succ;
 }
 
-void Vehicle::setGpsInfo(AutoLocation& loc)
+void Vehicle::setGpsInfo(Vehicle::RawGps& loc)
 {
-	gpsInfo = loc;
+	gpsData = loc;
 }
 
-bool Vehicle::getGpsInfo(AutoLocation& info)
+bool Vehicle::getGpsInfo(Vehicle::RawGps& info)
 {
-	info = gpsInfo;
+	info = gpsData;
 	return true;
 }
 
@@ -114,6 +114,11 @@ bool Vehicle::isDriving()
 bool Vehicle::isMovingInAbnormal()
 {
 	return movingInAbnormal;
+}
+
+void Vehicle::setMovingInAbnormal(bool b)
+{
+	movingInAbnormal = b;
 }
 
 //Operation::Result Vehicle::reqLockDoor()

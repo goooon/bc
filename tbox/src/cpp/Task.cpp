@@ -114,7 +114,7 @@ void Task::rspAck()
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(0);
-	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, 5000)) {
+	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("rspAck failed");
 	}
 	else {
@@ -131,7 +131,7 @@ void Task::ntfTimeOut()
 	msg.appendErrorElement(11);
 	msg.appendFunctionStatus(0);
 
-	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, 5000)) {
+	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("ntfTimeOut() post failed by %d",appID);
 	}
 	else {
@@ -184,7 +184,7 @@ void Task::rspError(Operation::Result ret)
 	msg.appendTimeStamp();
 	msg.appendErrorElement(ecode);
 	msg.appendFunctionStatus(0);
-	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
+	if (!pkg.post(Config::getInstance().pub_topic, 2, Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("sendResponseError failed %d", ret);
 	}
 	else

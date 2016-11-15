@@ -47,6 +47,23 @@ public:
 			return NULL;
 		}
 	}
+	u8* getNext(u32& len) {
+		if (mutex.lock() == ThreadMutex::Succed)
+		{
+			Node n;
+			bool r = pkgs.pop(n);
+			u8* buf = n.buf;
+			len = n.len;
+			mutex.unlock();
+			return buf;
+		}
+		else
+		{
+			unsigned int e = last_error();
+			LOG_E("mutex.lock() failed %d", e);
+			return NULL;
+		}
+	}
 	bool isEmpty() {
 		if (mutex.lock() == ThreadMutex::Succed)
 		{

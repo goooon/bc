@@ -6,9 +6,15 @@
 class GPSDataQueue
 {
 public:
+	struct GPSInfo
+	{
+		u32 appId;
+		TimeStamp ts;
+		AutoLocation location;
+	};
 	GPSDataQueue();
 	static GPSDataQueue& getInstance();
-	bool in(AutoLocation& data)
+	bool in(GPSInfo& data)
 	{
 		if (mutex.lock() == ThreadMutex::Succed)
 		{
@@ -23,7 +29,7 @@ public:
 			return false;
 		}
 	}
-	bool out(AutoLocation& data)
+	bool out(GPSInfo& data)
 	{
 		if (mutex.lock() == ThreadMutex::Succed)
 		{
@@ -38,10 +44,10 @@ public:
 			return false;
 		}
 	}
-	AutoLocation* getNext() {
+	GPSInfo* getNext() {
 		if (mutex.lock() == ThreadMutex::Succed)
 		{
-			AutoLocation* r = pkgs.atPop();
+			GPSInfo* r = pkgs.atPop();
 			mutex.unlock();
 			return r;
 		}
@@ -81,7 +87,7 @@ public:
 		}
 	}
 private:
-	CycleQueue<AutoLocation> pkgs;
+	CycleQueue<GPSInfo> pkgs;
 	ThreadMutex       mutex;
 };
 

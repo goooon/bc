@@ -113,7 +113,7 @@ void VehicleAuthTask::reqAuth()
 	msg.appendTimeStamp();
 
 	LOG_I("req Auth ...");
-	if (!pkg.post(Config::getInstance().pub_topic, 2, 5000)) {
+	if (!pkg.post(Config::getInstance().pub_topic, 2, Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("req Auth failed");
 	}
 	else {

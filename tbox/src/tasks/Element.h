@@ -60,6 +60,7 @@ struct TimeStamp
 	u8 hour;	//0-23
 	u8 min;		//0-59
 	u8 sec;     //0-59
+	void update();
 }DECL_GNU_PACKED;
 
 struct Authentication

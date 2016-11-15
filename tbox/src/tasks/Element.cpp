@@ -16,3 +16,17 @@ VehicleDesc::VehicleDesc()
 		vin[i] = v;
 	}
 }
+
+void TimeStamp::update()
+{
+	time_t timer;//time_t就是long int 类型
+	struct tm *tblock;
+	timer = time(NULL);
+	tblock = localtime(&timer);
+	day = tblock->tm_mday;
+	hour = tblock->tm_hour;
+	min = tblock->tm_min;
+	month = tblock->tm_mon;
+	sec = tblock->tm_sec;
+	year = tblock->tm_year;
+}

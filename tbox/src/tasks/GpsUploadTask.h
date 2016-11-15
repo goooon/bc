@@ -6,6 +6,7 @@
 #include "./BCMessage.h"
 #include "./TaskTable.h"
 #include "./GPSDataQueue.h"
+#include "../inc/Vehicle.h"
 class GpsUploadTask_NTF : public Task
 {
 public:
@@ -13,11 +14,19 @@ public:
 	static Task* Create();
 protected:
 	virtual void doTask();
+
+	void sendGpsData(GPSDataQueue::GPSInfo info);
+
 private:
-	bool getGps(void* p,void* s, AutoLocation& data);
-	bool ntfGps(AutoLocation& data);
+	bool getGps(void* p,void* s, GPSDataQueue::GPSInfo& data,Vehicle::RawGps& rawGps);
+	bool ntfGps(GPSDataQueue::GPSInfo& info);
+	bool needSendAbnormalGps(Vehicle::RawGps& rawGps);
+	double calcDistance(double long1, double lat1, Vehicle::RawGps& rawGps);
 private:
-	Timestamp fire;
+	Timestamp normalToFire;
+	double longPrev;
+	double latiPrev;
+	Timestamp abnormalPrev;
 };
 
 class GpsUploadTask : public Task
@@ -28,6 +37,6 @@ public:
 protected:
 	virtual void doTask();
 private:
-	bool ntfGps(AutoLocation& data);
+	bool ntfGps(Vehicle::RawGps& rawGps);
 };
 #endif // GUARD_GpsUploadTask_h__

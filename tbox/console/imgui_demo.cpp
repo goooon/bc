@@ -2148,6 +2148,20 @@ struct ExampleAppConsole : public me::Tracer
 			idx++;
 		}
 
+
+#define VEHICLE_SEC(n,v,ni,m)	\
+		degree = Vehicle::getInstance().v;	\
+		if (ImGui::SliderFloat(n, &degree, ni,m)) {	\
+			Vehicle::getInstance().v = degree;	\
+		}
+		float degree;
+		VEHICLE_SEC("longitude", gpsData.longitude,0.0f,180.0f);
+		VEHICLE_SEC("latitude", gpsData.latitude, 0.0f, 180.0f);
+		VEHICLE_SEC("altitude", gpsData.altitude, 0.0f, 180.0f);
+		VEHICLE_SEC("angle", gpsData.dirAngle, 0.0f, 180.0f);
+		VEHICLE_SEC("speed", gpsData.speed, 0.0f, 180.0f);
+
+
         //static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddLog("Spam %f", t); }
 
         ImGui::Separator();
@@ -2450,6 +2464,9 @@ struct VehicleConsole : public me::Tracer
 		SLIDE_SEC("GPSDriving", gpsIntervalDriving);
 		SLIDE_SEC("GPSStation", gpsIntervalStation);
 		SLIDE_SEC("GPSAbormal", gpsIntervalAbormal);
+
+		SLIDE_SEC("AbnormalDist", abnormalMovingDist);
+		SLIDE_SEC("NormalCheckDuration", durationEnterNormal);
 
 		bool s;
 		Apparatus::VehicleState& vs = Vehicle::getInstance().getApparatus().vehiState;

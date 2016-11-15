@@ -6,6 +6,7 @@
 #include "./VKeyIgnitionTask.h"
 #include "./GpsUploadTask.h"
 #include "./VKeyUnIgnitTask.h"
+#include "./PackageQueueTask.h"
 #include "../inc/dep.h"
 struct TaskTable
 {
@@ -19,12 +20,13 @@ static TaskTable tt[] = {
 	{ APPID_AUTHENTICATION,VehicleAuthTask::Create},
 	{ APPID_VKEY_IGNITION ,VKeyIgnitionTask::Create},
 	{ APPID_STATE_UNIGNITION_VK,UnIgnitStateUploadTask::Create},
-	{ APPID_GPS_UPLOADING_NTF,GpsUploadTask_NTF::Create},
+	{ APPID_GPS_UPLOADING,GpsUploadTask::Create},
 	{ APPID_VKEY_UNIGNITION ,VKeyUnIgnitTask::Create},
 	{ APPID_STATE_IGNITION ,IgnitStateUploadTask_NTF::Create },
+	{ APPID_PACKAGE_QUEUE ,PackageQueueTask::Create},
 	{-1,0}
 };
-Task* TaskCreate(u16 appId, bcp_packet_t* pkg)
+Task* TaskCreate(u32 appId, bcp_packet_t* pkg)
 {
 	TaskTable* t = &tt[0];
 	while (t->creator) {

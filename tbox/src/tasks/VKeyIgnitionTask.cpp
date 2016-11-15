@@ -94,7 +94,7 @@ void VKeyIgnitionTask::ntfIgnited()
 	msg.appendTimeStamp();
 	msg.appendErrorElement(ERR_SUCC);
 	msg.appendFunctionStatus(0);
-	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, 5000)) {
+	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, Config::getInstance().getMqttSendTimeOut(),true)) {
 		LOG_E("ntfIgnited() failed");
 	}
 }
