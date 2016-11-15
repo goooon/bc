@@ -52,7 +52,7 @@ public:
 		{
 			Node n;
 			bool r = pkgs.pop(n);
-			u8* buf = n.buf;
+			u8* buf = r ? n.buf : 0;
 			len = n.len;
 			mutex.unlock();
 			return buf;

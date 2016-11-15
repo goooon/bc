@@ -2,6 +2,8 @@
 #include "../inc/Vehicle.h"
 GpsUploadTask_NTF::GpsUploadTask_NTF() : Task(APPID_GPS_UPLOADING_NTF, true)
 {
+	longPrev = 0;
+	latiPrev = 0;
 }
 
 Task* GpsUploadTask_NTF::Create()
@@ -69,9 +71,19 @@ void GpsUploadTask_NTF::doTask()
 		return;
 	}
 #endif
-	normalToFire.update(Config::getInstance().getGpsInterval());
 	GPSDataQueue::GPSInfo info;
 	Vehicle::RawGps rawGps;
+	if (getGps(p, s, info, rawGps)) {
+		Vehicle::getInstance().setGpsInfo(rawGps);
+		longPrev = rawGps.longitude;
+		latiPrev = rawGps.latitude;
+	}
+	else {
+		longPrev = rawGps.longitude;
+		latiPrev = rawGps.latitude;
+	}
+	normalToFire.update(Config::getInstance().getGpsInterval());
+	
 	for (;;) {
 		ThreadEvent::WaitResult wr = waitForEvent(500);
 		if (wr == ThreadEvent::TimeOut) {
@@ -97,14 +109,14 @@ void GpsUploadTask_NTF::doTask()
 			if (Vehicle::getInstance().isMovingInAbnormal()) {
 				info.appId = APPID_GPS_ABNORMAL_MOVE;
 				if (needSendAbnormalGps(rawGps)) {
-					LOG_I("send abnormal gps data");
+					//LOG_I("send abnormal gps data");
 					sendGpsData(info);
 				}
 			}
 			else if (normalToFire < now) {
 				normalToFire.update(Config::getInstance().getGpsInterval());
 				info.appId = appID;
-				LOG_I("send normal gps data");
+				//
 				sendGpsData(info);
 			}
 		}
@@ -210,7 +222,9 @@ bool GpsUploadTask_NTF::ntfGps(GPSDataQueue::GPSInfo& info)
 		return false;
 	}
 	else{
-		LOG_I("ntfGps(%d) ---> TSP",info.appId);
+		Vehicle::RawGps rawGps;
+		Vehicle::getInstance().getGpsInfo(rawGps);
+		LOG_I("ntfGps(%d) lon:%.7f,lat:%.7f ---> TSP",info.appId, rawGps.longitude, rawGps.latitude);
 	}
 	return true;
 }

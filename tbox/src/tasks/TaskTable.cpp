@@ -31,7 +31,7 @@ Task* TaskCreate(u32 appId, bcp_packet_t* pkg)
 	TaskTable* t = &tt[0];
 	while (t->creator) {
 		if (t->idx == appId) {
-			LOG_I("TaskCreate(%d,0x%x)", appId,  pkg);
+			LOG_I("TaskCreate(0x%x,0x%x)", appId,  pkg);
 			Task* task = (*t->creator)();
 			if (pkg) { task->handlePackage(pkg); }
 			return task;

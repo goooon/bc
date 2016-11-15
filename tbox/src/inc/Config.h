@@ -94,8 +94,8 @@ public:
 		mqttReConnInterval = 5000;
 		authRetryInterval = 5000;
 		
-		gpsIntervalStation = 1000 * 60 * 5;
-		gpsIntervalDriving = 1000 * 30;
+		gpsIntervalStation = 1000 * 5;
+		gpsIntervalDriving = 1000 * 3;
 		stateUploadExpireTime = 2 * 1000; //2 min
 		strncpy(mqttServerIp, "10.28.4.40:1884", sizeof(mqttServerIp));//main server
 		 //strncpy(mqttServer, "139.219.238.66:1883", sizeof(mqttServer));//test server

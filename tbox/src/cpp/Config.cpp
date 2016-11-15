@@ -8,6 +8,6 @@ Config& Config::getInstance()
 
 u32 Config::getGpsInterval()
 {
-	return Vehicle::getInstance().isDriving() ? gpsIntervalDriving : Vehicle::getInstance().isMovingInAbnormal() ? gpsIntervalAbormal : gpsIntervalStation;
+	return Vehicle::getInstance().isDriving() ? gpsIntervalDriving : gpsIntervalStation;
 }
 
