@@ -37,9 +37,9 @@ Operation::Result Vehicle::prepareVKeyIgnition(bool ready)
 
 Operation::Result Vehicle::prepareActiveDoorByVKey()
 {
-	/*if (!authed) {
+	if (!authed) {
 		return Operation::E_Auth;
-	}*/
+	}
 	/*if (driving) {
 		return Operation::E_Driving;
 	}
@@ -52,16 +52,24 @@ Operation::Result Vehicle::prepareActiveDoorByVKey()
 Operation::Result Vehicle::reqActiveDoorByVKey()
 {
 	LOG_I("do reqActiveDoorByVKey()");
-	PostEvent(AppEvent::AutoEvent, Vehicle::ActiveDoorResult,true,0);
-	return Operation::Succ;
+	if (apparatus.misc.door_actived)return Operation::Succ;
+	//todo can bus command and will block this operation
+	return Operation::S_Blocking;
 }
 
 Operation::Result Vehicle::reqDeactiveDoor()
 {
 	LOG_I("do reqDeactiveDoor()");
 	if (!apparatus.misc.door_actived)return Operation::Succ;
-	PostEvent(AppEvent::AutoEvent, Vehicle::DeactiveDoorResult, true, 0);
-	return Operation::Succ;
+	if (apparatus.vehiState.door.lh_front == 3 ||
+		apparatus.vehiState.door.rh_front == 3 ||
+		apparatus.vehiState.door.lh_rear == 3 ||
+		apparatus.vehiState.door.rh_rear == 3){
+		//todo...
+		return Operation::E_DoorOpened;
+	}
+	//todo can bus command and will block this operation
+	return Operation::S_Blocking;
 }
 
 void Vehicle::setGpsInfo(Vehicle::RawGps& loc)

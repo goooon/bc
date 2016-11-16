@@ -2526,7 +2526,8 @@ struct VehicleConsole : public me::Tracer
 		if (ImGui::SliderInt(n, &second, 0, 60 * 5)) {	\
 			Config::getInstance().v = second * 1000;	\
 		}
-		SLIDE_SEC("doorTimeOut", doorActivationTimeOut);
+		SLIDE_SEC("doorActiveTimeOut", doorActivationTimeOut);
+		SLIDE_SEC("doorDeactiveTimeOut", doorDeactiveTimeOut);
 		SLIDE_SEC("IgnitTimeOut", igntActivationTimeOut);
 		SLIDE_SEC("UploadTimeOut", stateUploadExpireTime);
 		SLIDE_SEC("MqttReConnInterval", mqttReConnInterval);

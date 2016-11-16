@@ -63,8 +63,11 @@ void VKeyActiveTask::doTask()
 				if (args.e == AppEvent::AutoEvent) {
 					if (args.param1 == Vehicle::ActiveDoorResult) {
 						if (!args.param2) {
-							rspError(Operation::E_Door);
+							rspError(Operation::E_State);
 							break;
+						}
+						else {
+							LOG_I("Vehicle actived ...");
 						}
 					}
 					else if (args.param1 == Vehicle::DoorOpened) {
@@ -96,8 +99,15 @@ void VKeyActiveTask::doTask()
 							}
 
 							ret = Vehicle::getInstance().reqActiveDoorByVKey();
-							if (ret != Operation::Succ) {
-								LOG_I("reqActiveDoorByVKey() wrong %d", ret);
+							if (ret == Operation::Succ) {
+								LOG_I("reqActiveDoorByVKey() Done %d", ret);
+								return rspError(ret);
+							}
+							else if (ret == Operation::S_Blocking) {
+								LOG_I("reqActiveDoorByVKey() blocking...");
+							}
+							else {
+								LOG_I("reqActiveDoorByVKey() Error(%d) ---> TSP", ret);
 								return rspError(ret);
 							}
 						}

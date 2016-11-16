@@ -3,6 +3,10 @@
 #include "../inc/Event.h"
 #include "../tasks/BCMessage.h"
 #include "../tasks/ErrorCode.h"
+
+#undef TAG
+#define TAG "Task"
+
 Task::Task(u16 appId, bool async) :
 	prev(NULLPTR),
 	next(NULLPTR),
@@ -172,6 +176,9 @@ void Task::rspError(Operation::Result ret)
 		ecode = ERR_CONDITION;
 		break;
 	case Operation::E_Ignited:
+		ecode = ERR_CONDITION;
+		break;
+	case Operation::E_State:
 		ecode = ERR_CONDITION;
 		break;
 	default:

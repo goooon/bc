@@ -29,9 +29,9 @@ void VKeyDeavtiveTask::doTask()
 			MessageQueue::Args args;
 			if (msgQueue.out(args)) {
 				if (args.e == AppEvent::AutoEvent) {
-					if (args.param1 == Vehicle::ActiveDoorResult) {
+					if (args.param1 == Vehicle::DeactiveDoorResult) {
 						if (!args.param2) {
-							rspError(Operation::E_Door);
+							rspError(Operation::E_State);
 							break;
 						}
 						else {
@@ -55,16 +55,19 @@ void VKeyDeavtiveTask::doTask()
 						if (args.param2 == 2) {
 							LOG_I("rspAck to TSP");
 							rspAck();
-							expireTime.update(Config::getInstance().getDoorActivationTimeOut());
+							expireTime.update(Config::getInstance().getDoorDeactiveTimeOut());
 
 							ret = Vehicle::getInstance().reqDeactiveDoor();
-							if (ret != Operation::Succ) {
-								LOG_I("reqDeactiveDoor() wrong %d", ret);
+							if (ret == Operation::Succ) {
+								LOG_I("reqDeactiveDoor() Done %d", ret);
 								return rspError(ret);
 							}
+							else if (ret == Operation::S_Blocking) {
+								LOG_I("reqDeactiveDoor() blocking...");
+							}
 							else {
-								LOG_I("Deavtive door OK ---> TSP");
-								rspError(Operation::Succ);
+								LOG_I("reqDeactiveDoor() Error(%d) ---> TSP",ret);
+								rspError(ret);
 								return;
 							}
 						}

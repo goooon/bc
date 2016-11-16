@@ -101,6 +101,14 @@ void Application::loop()
 
 bool Application::onDebugCommand(const char* cmd)
 {
+	if (!strcmp(cmd, "Active")) {
+		PostEvent(AppEvent::AutoEvent, Vehicle::ActiveDoorResult, 1, 0);
+		return true;
+	}
+	if (!strcmp(cmd, "DeActived")) {
+		PostEvent(AppEvent::AutoEvent,Vehicle::DeactiveDoorResult, 1, 0);
+		return true;
+	}
 	if (!strcmp(cmd, "reqDeact")) {
 		Task* p = bc_new VKeyDeavtiveTask();
 		p->handleDebug();

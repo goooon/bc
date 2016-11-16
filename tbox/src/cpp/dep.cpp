@@ -183,8 +183,9 @@ char* getCommand(int i)
 		"shutDoor0", "shutDoor1", "shutDoor2", "shutDoor3", "shutHood", "shutLugDoor", "shutPowerPlug","\0",
 		"openWind0","openWind1","openWind2","openWind3","\0",
 		"shutWind0","shutWind1","shutWind2","shutWind3","\0",
+		"Active","DeActived","Ignite","UnIgnt","\0",
 		"P","R","N","D","\0",
-		"reqActive","reqDeact","reqReady","Ignite","UnIgnt","AbnMove","NorMove","\0",
+		"reqActive","reqDeact","reqReady","AbnMove","NorMove","\0",
 		0
 	};
 	return (char*)cmd[i];

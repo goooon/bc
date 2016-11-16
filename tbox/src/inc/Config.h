@@ -21,6 +21,9 @@ public:
 	void setDoorActivationTimeOut(u32 to) {
 		doorActivationTimeOut = to;
 	}
+	void setDoorDeactiveTimeOut(u32 to) {
+		doorDeactiveTimeOut = to;
+	}
 	void setIgntActivationTimeOut(u32 to){
 		igntActivationTimeOut = to;
 	}
@@ -41,6 +44,9 @@ public:
 	}
 	u32 getDoorActivationTimeOut() {
 		return doorActivationTimeOut;
+	}
+	u32 getDoorDeactiveTimeOut() {
+		return doorDeactiveTimeOut;
 	}
 	u32 getIgntActivationTimeOut() {
 		return igntActivationTimeOut;
@@ -101,6 +107,7 @@ public:
 		gpsIntervalAbormal = 10000;
 		durationEnterNormal = 30000;
 		//abnormalMovingInterval = 10;
+		doorDeactiveTimeOut = 5000;
 		doorActivationTimeOut = 5000;
 		igntActivationTimeOut = 5000;
 		mqttReConnInterval = 5000;
@@ -231,6 +238,7 @@ public:
 	u32 gpsIntervalStation;
 	u32 gpsIntervalAbormal;
 	u32 durationEnterNormal;
+	u32 doorDeactiveTimeOut;
 	u32 doorActivationTimeOut;
 	u32 igntActivationTimeOut;
 	u32 stateUploadExpireTime;
