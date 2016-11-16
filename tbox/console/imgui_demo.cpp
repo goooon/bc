@@ -2147,19 +2147,90 @@ struct ExampleAppConsole : public me::Tracer
 			}
 			idx++;
 		}
+		///////////State///////////////////////////////////////////////////////////////
+		bool s;
+		Apparatus::VehicleState& vs = Vehicle::getInstance().getApparatus().vehiState;
+		ImGui::Text("Door Valid:"); ImGui::SameLine();
+		s = vs.door.lh_front & 2 ? true : false;
+		if (ImGui::Checkbox("lfd", &s)) {
+			s ? vs.door.lh_front |= 2 : vs.door.lh_front &= ~2;
+		}
+		ImGui::SameLine();
+		s = vs.door.rh_front & 2 ? true : false;
+		if (ImGui::Checkbox("rfd", &s)) {
+			s ? vs.door.rh_front |= 2 : vs.door.rh_front &= ~2;
+		}
+		ImGui::SameLine();
+		s = vs.door.lh_rear & 2 ? true : false;
+		if (ImGui::Checkbox("lrd", &s)) {
+			s ? vs.door.lh_rear |= 2 : vs.door.lh_rear &= ~2;
+		}
+		ImGui::SameLine();
+		s = vs.door.rh_rear & 2 ? true : false;
+		if (ImGui::Checkbox("rrd", &s)) {
+			s ? vs.door.rh_rear |= 2 : vs.door.rh_rear &= ~2;
+		}
+		ImGui::SameLine();
+		s = vs.door.hood & 2 ? true : false;
+		if (ImGui::Checkbox("hood", &s)) {
+			s ? vs.door.hood |= 2 : vs.door.hood &= ~2;
+		}
+		ImGui::SameLine();
+		s = vs.door.luggage_door & 2 ? true : false;
+		if (ImGui::Checkbox("lugd", &s)) {
+			s ? vs.door.luggage_door |= 2 : vs.door.luggage_door &= ~2;
+		}
+		ImGui::SameLine();
+		s = vs.door.fuellid & 2 ? true : false;
+		if (ImGui::Checkbox("pd", &s)) {
+			s ? vs.door.fuellid |= 2 : vs.door.fuellid &= ~2;
+		}
+		ImGui::Text("Wind Valid:"); ImGui::SameLine();
+		s = vs.window.lh_front & 2 ? true : false;
+		if (ImGui::Checkbox("lfw", &s)) {
+			s ? vs.window.lh_front |= 2 : vs.window.lh_front &= ~2;
+		}
+		ImGui::SameLine();
+		s = vs.window.rh_front & 2 ? true : false;
+		if (ImGui::Checkbox("rfw", &s)) {
+			s ? vs.window.rh_front |= 2 : vs.window.rh_front &= ~2;
+		}
+		ImGui::SameLine();
+		s = vs.window.lh_rear & 2 ? true : false;
+		if (ImGui::Checkbox("lrw", &s)) {
+			s ? vs.window.lh_rear |= 2 : vs.window.lh_rear &= ~2;
+		}
+		ImGui::SameLine();
+		s = vs.window.rh_rear & 2 ? true : false;
+		if (ImGui::Checkbox("rrw", &s)) {
+			s ? vs.window.rh_rear |= 2 : vs.window.rh_rear &= ~2;
+		}
 
+		ImGui::Text("Shift Valid:"); ImGui::SameLine();
+		s = vs.pedal.shift_level != 0;
+		if (ImGui::Checkbox("#", &s)) {
+			vs.pedal.shift_level = s ? 1 : 0;
+		}
 
+		//////////GPS////////////////////////////////////////////////////////////////
+		s = Config::getInstance().getIsGpsDataValid();
+		if (ImGui::Checkbox("GpsData:", &s)) {
+			Config::getInstance().setIsGpsDataValid(s);
+		}
+		
 #define VEHICLE_SEC(n,v,ni,m)	\
 		degree = Vehicle::getInstance().v;	\
 		if (ImGui::SliderFloat(n, &degree, ni,m)) {	\
 			Vehicle::getInstance().v = degree;	\
 		}
-		float degree;
-		VEHICLE_SEC("longitude", gpsData.longitude,0.0f,180.0f);
-		VEHICLE_SEC("latitude", gpsData.latitude, 0.0f, 180.0f);
-		VEHICLE_SEC("altitude", gpsData.altitude, 0.0f, 180.0f);
-		VEHICLE_SEC("angle", gpsData.dirAngle, 0.0f, 180.0f);
-		VEHICLE_SEC("speed", gpsData.speed, 0.0f, 180.0f);
+		if (s) {
+			float degree;
+			VEHICLE_SEC("longitude", gpsData.longitude, 0.0f, 180.0f);
+			VEHICLE_SEC("latitude", gpsData.latitude, 0.0f, 180.0f);
+			VEHICLE_SEC("altitude", gpsData.altitude, 0.0f, 180.0f);
+			VEHICLE_SEC("angle", gpsData.dirAngle, 0.0f, 180.0f);
+			VEHICLE_SEC("speed", gpsData.speed, 0.0f, 180.0f);
+		}
 
 
         //static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddLog("Spam %f", t); }
@@ -2467,6 +2538,9 @@ struct VehicleConsole : public me::Tracer
 
 		SLIDE_SEC("AbnormalDist", abnormalMovingDist);
 		SLIDE_SEC("NormalCheckDuration", durationEnterNormal);
+		SLIDE_SEC("unIgnitionNotifyDelay", unIgnitionNotifyDelay);
+
+		ImGui::Text("Vehicle State :"); ImGui::SameLine(); ImGui::Text(Vehicle::getInstance().getStateString());
 
 		bool s;
 		Apparatus::VehicleState& vs = Vehicle::getInstance().getApparatus().vehiState;
@@ -2526,12 +2600,13 @@ struct VehicleConsole : public me::Tracer
 			vs.window.rh_rear = s;
 		}
 
-		int g = vs.pedal.shift_level - 1;
+		int g = vs.pedal.shift_level;
 		ImGui::Text("Shift:"); ImGui::SameLine();
-		if(ImGui::RadioButton("P", &g, 0))vs.pedal.shift_level = 1; ImGui::SameLine();
-		if(ImGui::RadioButton("R", &g, 1))vs.pedal.shift_level = 2;; ImGui::SameLine();
-		if(ImGui::RadioButton("N", &g, 2))vs.pedal.shift_level = 3;; ImGui::SameLine();
-		if(ImGui::RadioButton("D", &g, 3))vs.pedal.shift_level = 4;;
+		//if(ImGui::RadioButton("#", &g, 0))vs.pedal.shift_level = 0; ImGui::SameLine();
+		if(ImGui::RadioButton("P", &g, 1))vs.pedal.shift_level = 1; ImGui::SameLine();
+		if(ImGui::RadioButton("R", &g, 2))vs.pedal.shift_level = 2;; ImGui::SameLine();
+		if(ImGui::RadioButton("N", &g, 3))vs.pedal.shift_level = 3;; ImGui::SameLine();
+		if(ImGui::RadioButton("D", &g, 4))vs.pedal.shift_level = 4;;
 
 		ImGui::Text("Driv :"); ImGui::SameLine();
 		s = Application::getInstance().isNetConnected();

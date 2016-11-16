@@ -186,8 +186,10 @@ bool GpsUploadTask_NTF::getGps(void* p, void* s, GPSDataQueue::GPSInfo& gpsinfo,
 					//print_nmea_info(info);
 					if (info->sig == 0) {
 						//LOG_I("invalid gps data");
+						Vehicle::getInstance().setIsGpsValid(false);
 					}
 					else {
+						Vehicle::getInstance().setIsGpsValid(true);
 						rawGps.longitude = info->longitude;
 						rawGps.latitude = info->latitude;
 						rawGps.satelliteNumber = (info->satellites.use_count);

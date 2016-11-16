@@ -251,6 +251,13 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 		if (param1 == Vehicle::AuthIdentity && param2 == Vehicle::Authed) {
 			PostEvent(AppEvent::InsertTask, APPID_PACKAGE_QUEUE, 0, 0);
 		}
+		else if (param1 == Vehicle::DeactiveDoorResult && param2) {
+			if (!Vehicle::getInstance().isIgnited()) {
+				Timestamp ts;
+				ts.update(Config::getInstance().getStateUploadExpireTime());
+				schedule.update(ts, APPID_STATE_UNIGNITION_NTF);
+			}
+		}
 		break;
 	case AppEvent::InsertSchedule:
 		schedule.insert(Timestamp(param1, param2), (Task*)data);
@@ -357,9 +364,7 @@ void Application::onAutoStateChanged(u32 param1, u32 param2, void* data)
 	else if (prev == Vehicle::Ignited && next == Vehicle::ReadyToIgnit){
 		Timestamp ts;
 		ts.update(Config::getInstance().getStateUploadExpireTime());
-		schedule.remove(APPID_STATE_UNIGNITION_NTF);
-		schedule.insert(ts, bc_new UnIgnitStateUploadTask_NTF());
-
+		schedule.replace(ts, bc_new UnIgnitStateUploadTask_NTF());
 		startTask(TaskCreate(APPID_VKEY_UNIGNITION, 0), true);
 	}
 	else if (prev == Vehicle::ReadyToIgnit && next == Vehicle::Ignited) {

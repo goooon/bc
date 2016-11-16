@@ -14,7 +14,16 @@ VKeyUnIgnitTask::VKeyUnIgnitTask() :Task(APPID_VKEY_UNIGNITION, true)
 
 void VKeyUnIgnitTask::doTask()
 {
-	ntfUnIgnited();
+	Timestamp ts;
+	ts.update(Config::getInstance().getUnIgnitionNotifyDelay());
+	for (;;) {
+		ThreadEvent::WaitResult wr = waitForEvent(500);
+		Timestamp now;
+		if (now > ts) {
+			ntfUnIgnited();
+			break;
+		}
+	}
 	return;
 }
 

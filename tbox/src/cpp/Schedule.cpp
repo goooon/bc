@@ -58,6 +58,12 @@ void Schedule::insert(Timestamp fireTime, Task* task)
 	node->prev = n;
 }
 
+void Schedule::replace(Timestamp fireTime, Task* task)
+{
+	remove(task->getApplicationId());
+	insert(fireTime, task);
+}
+
 void Schedule::remove(u32 appId)
 {
 	Node* node = nodes.next;

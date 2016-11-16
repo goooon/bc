@@ -16,6 +16,7 @@ public:
 		printf("-sub subscription\r\n");
 		printf("-cid clientid\r\n");
 		printf("-vin vehicle vin\r\n");
+		printf("-gps on/off notify gps inf\r\n");
 	}
 	void setDoorActivationTimeOut(u32 to) {
 		doorActivationTimeOut = to;
@@ -68,6 +69,15 @@ public:
 	u32 getMqttSendTimeOut() {
 		return mqttSendTimeOut;
 	}
+	u32 getUnIgnitionNotifyDelay() {
+		return unIgnitionNotifyDelay;
+	}
+	bool getIsGpsDataValid() {
+		return isGpsDataValid;
+	}
+	void setIsGpsDataValid(bool b) {
+		isGpsDataValid = b;
+	}
 	//u32 getAbnormalMovingInterval() {
 	//	return abnormalMovingInterval;
 	//}
@@ -82,10 +92,12 @@ public:
 		//memset(clientid, 0, sizeof(clientid));
 		memset(vin, 0, sizeof(vin));
 
+		isGpsDataValid = true;
 		gpsTaskAtStartup = true;
 		mqttSendTimeOut = 5000;
 		gpsQueueSize = 4096;
 		abnormalMovingDist = 50;
+		unIgnitionNotifyDelay = 1000;
 		gpsIntervalAbormal = 10000;
 		durationEnterNormal = 30000;
 		//abnormalMovingInterval = 10;
@@ -138,14 +150,23 @@ public:
 				strncpy(vin, argv[i + 1], sizeof(vin));
 				i++;
 			}
-			/*else if (!strcmp(argv[i], "-cid")) {
+			else if (!strcmp(argv[i], "-gps")) {
 				if (i + 1 == argc) {
 					showCmdLine();
 					return false;
 				}
-				strncpy(clientid, argv[i + 1], sizeof(clientid));
+				if (!strcmp(argv[i + 1], "on")) {
+					gpsTaskAtStartup = true;
+				}
+				else if (!strcmp(argv[i + 1], "off")) {
+					gpsTaskAtStartup = false;
+				}
+				else {
+					showCmdLine();
+					return false;
+				}
 				i++;
-			}*/
+			}
 			else if (!strcmp(argv[i], "-dto")){
 				if (i + 1 == argc) {
 					showCmdLine();
@@ -199,7 +220,9 @@ public:
 	u32  authToken;
 	//////////////////////////////////////////////////////////////////////////
 public:
+	bool isGpsDataValid;
 	bool gpsTaskAtStartup;
+	u32 unIgnitionNotifyDelay;
 	u32 abnormalMovingDist;   //meter
 	u32 gpsQueueSize;
 	u32 mqttReConnInterval;

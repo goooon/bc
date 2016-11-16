@@ -18,6 +18,7 @@ public:
 	Schedule();
 	void triger(Timestamp current);
 	void insert(Timestamp fireTime, Task* task);
+	void replace(Timestamp fireTime, Task* task);
 	void remove(u32 appId);
 	bool remove(Task* task);
 	void update(Timestamp fireTime, u32 appid);

@@ -66,7 +66,10 @@ bool onClientTest(char* cmd) {
 
 	OPER_DOOR(Ignite, "Ignite", pedal.ingnition, 0, true);
 	OPER_DOOR(UnIgnt, "UnIgnt", pedal.ingnition, 0, false);
-
+	if (!strcmp(cmd, "#")) {
+		PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 0, 0);
+		return true;
+	}
 	if (!strcmp(cmd, "P")) {
 		PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 1, 0);
 		return true;

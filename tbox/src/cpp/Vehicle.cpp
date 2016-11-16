@@ -9,7 +9,7 @@ Vehicle& Vehicle::getInstance()
 
 Vehicle::Vehicle() :authed(Unauthed),state(Enabled),movingInAbnormal(false)
 {
-
+	gpsValid = false;
 }
 
 Operation::Result Vehicle::prepareVKeyIgnition(bool ready)
@@ -106,9 +106,24 @@ bool Vehicle::isAuthed()
 	return authed == Authed;
 }
 
+bool Vehicle::isIgnited()
+{
+	return state == Ignited;
+}
+
 bool Vehicle::isDriving()
 {
 	return driving;
+}
+
+void Vehicle::setIsGpsValid(bool b)
+{
+	gpsValid = b;
+}
+
+bool Vehicle::isGpsValid()
+{
+	return gpsValid;
 }
 
 bool Vehicle::isMovingInAbnormal()

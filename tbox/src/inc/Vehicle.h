@@ -35,7 +35,7 @@ public:
 	};
 	enum Event {
 		ActiveDoorResult,		//param2 true:succ false:falied
-		DeactiveDoorResult,		//param2
+		DeactiveDoorResult,		//param2 true:succ false:failed
 		AuthIdentity,			//param2 AuthState
 		Ignite,				    //µã»ð
 		UnIgnt,				    //Ï¨»ð
@@ -69,15 +69,32 @@ public:
 	bool isParkState();
 	bool isReadyToIgnit();
 	bool isAuthed();
+	bool isIgnited();
 	bool isDriving();
+	void setIsGpsValid(bool b);
+	bool isGpsValid();
 	bool isMovingInAbnormal();
 	void setMovingInAbnormal(bool b);
+	State getState() { return state; }
+	const char* getStateString() {
+		const char* desc[] = {
+			"Disabled",
+			"Enabled",
+			"NotReady",
+			"ReadyToIgnit",
+			"Ignited",
+			"Forwarding",
+			"Backwarding"
+		};
+		return desc[state];
+	}
 private:
 	void onEvent(u32 param1, u32 param2, void* data);
 	bool changeState(State next);
 private:
 	bool driving;
 	bool movingInAbnormal;
+	bool gpsValid;
 	AuthState authed;
 	State     state;
 	Apparatus apparatus;
