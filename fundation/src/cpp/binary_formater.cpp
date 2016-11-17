@@ -386,7 +386,7 @@ s32 bf_read_bytes(bf_t *f, u8 **v, u32 *len)
 	return bf_read_bytes_only(f, v, *len);
 }
 
-s32 bf_read_string_only(bf_t *f, char **v, int len)
+s32 bf_read_string_only(bf_t *f, char **v, u32 len)
 {
 	u8 *data = NULL;
 

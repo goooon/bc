@@ -35,9 +35,9 @@ void bf_uninit(bf_t *f, int free_stream);
 /*
  * create heap bf
  */
-void *bf_create(u8 *stream, u32 size);
-void *bf_create_encoder(void);
-void *bf_create_decoder(u8 *stream, u32 size);
+bf_t *bf_create(u8 *stream, u32 size);
+bf_t *bf_create_encoder(void);
+bf_t *bf_create_decoder(u8 *stream, u32 size);
 void bf_destroy_p(bf_t *f, int free_stream);
 void bf_destroy(bf_t *f); /* force free new buf */
 

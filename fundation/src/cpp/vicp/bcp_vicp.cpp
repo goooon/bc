@@ -26,8 +26,8 @@ static mutex_type mutex = NULL;
 void bcp_vicp_init(void)
 {
 	ListZero(&listeners);
-	listeners = Thread_create_mutex();
-	if (!listeners) {
+	mutex = Thread_create_mutex();
+	if (!mutex) {
 		LOG_W("bcp_vicp_init create mutex failed");
 	}
 	bcp_vicp_packet_init();
@@ -53,7 +53,7 @@ void bcp_vicp_uninit(void)
 static vicp_listener_t *find_listener(vicp_listener_t *c)
 {
 	ListElement *e;
-	vicp_listener_t *c = NULL;
+	vicp_listener_t *listener = NULL;
 
 	e = ListFind(&listeners, (void*)c);
 	if (e) {
@@ -80,8 +80,8 @@ static vicp_listener_t *find_listener_bychannel(bcp_channel_t *c)
 
 static int insert_listener(vicp_listener_t *c)
 {
-	if (!find_channel(c) 
-		&& ListAppend(&listeners, (void*)c, sizeof(*c))) {
+	if (!find_listener(c)) {
+		ListAppend(&listeners, (void*)c, sizeof(*c));
 		return 0;
 	} else {
 		return -1;
@@ -152,7 +152,8 @@ int bcp_vicp_regist_channel(bcp_channel_t *c)
 
 	insert_listener(listener);
 
-	ret = 0;
+	mutex_unlock(mutex);
+	return 0;
 
 __failed:
 	if (listener) {
@@ -178,7 +179,7 @@ int bcp_vicp_unregist_channel(bcp_channel_t *c)
 	if (!c || !c->listener) {
 		return -1;
 	} else {
-		listener = c->listener;
+		listener = (vicp_listener_t*)c->listener;
 	}
 
 	mutex_lock(mutex);

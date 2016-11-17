@@ -10,6 +10,9 @@
 
 #include "../../inc/vicp/bcp_vicp_packet.h"
 
+#define mutex_lock(m) Thread_lock_mutex(m)
+#define mutex_unlock(m) Thread_unlock_mutex(m)
+
 static u32 seq_id = 1;
 static mutex_type mutex = NULL;
 
@@ -134,7 +137,7 @@ static int packet_size(bcp_vicp_packet_t *p)
 		data_len = p->len;
 	}
 
-	return bcp_vicp_packet_header_size() + data_len; 
+	return bcp_vicp_packet_header_size() + data_len 
 		+ bcp_vicp_packet_footer_size();
 }
 
@@ -191,7 +194,7 @@ int bcp_vicp_packet_serialize(bcp_vicp_packet_t *p,
 	ret = 0;
 
 __failed:
-	bf_uninit(f, (ret < 0));
+	bf_uninit(&f, (ret < 0));
 	return ret;
 }
 
@@ -201,7 +204,6 @@ static bcp_vicp_packet_t *unserialize_header(bf_t *f)
 	u32 tag;
 	u8 r, type, ver;
 	u32 msg_id;
-	u8 *data;
 	u16 len;
 
 	if (bf_read_u32(f, &tag) < 0
@@ -259,7 +261,6 @@ bcp_vicp_packet_t *bcp_vicp_packet_unserialize(u8 *buf, u32 len)
 {
 	bcp_vicp_packet_t *p = NULL;
 	bf_t f;
-	int ret;
 
 	if (!buf) {
 		return NULL;

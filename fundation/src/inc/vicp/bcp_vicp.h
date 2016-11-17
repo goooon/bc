@@ -9,6 +9,7 @@
 #include "./bcp_vicp_packet.h"
 #include "./bcp_vicp_receiver.h"
 #include "./bcp_vicp_sender.h"
+#include "./bcp_vicp_slice.h"
 
 #define mutex_lock(m) Thread_lock_mutex(m)
 #define mutex_unlock(m) Thread_unlock_mutex(m)
@@ -32,7 +33,7 @@ typedef struct vicp_listener_s {
 	bcp_vicp_slicer_t *slicer;
 	int ref;
 	mutex_type mutex;
-	vicp_data_arrived_callback *vdac;
+	vicp_data_arrived_callback vdac;
 	void *context;
 } vicp_listener_t;
 

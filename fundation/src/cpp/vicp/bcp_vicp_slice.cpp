@@ -100,141 +100,12 @@ static u32 next_group_id(void)
 	return id;
 }
 
-bcp_vicp_slicer_t *bcp_vicp_slice_create(void *listener)
-{
-	bcp_vicp_slicer_t *s;
-
-	s = (bcp_vicp_slicer_t*)malloc(sizeof(*s));
-	if (!s) {
-		return NULL;
-	}
-
-	memset(s, 0, sizeof(*s));
-	
-	s->stop = 1;
-	s->listener = listener;
-
-	s->send_mutex = Thread_create_mutex();
-	if (!s->send_mutex) {
-		goto __failed;
-	}
-	s->send_mutex = Thread_create_mutex();
-	if (!s->send_mutex) {
-		goto __failed;
-	}
-	s->recv_mutex = Thread_create_mutex();
-	if (!s->recv_mutex) {
-		goto __failed;
-	}
-
-	s->sem = Thread_create_sem();
-	if (!s->sem) {
-		goto __failed;
-	}
-
-	ListZero(&s->sending);
-	ListZero(&s->received);
-
-	return s;
-	
-__failed:
-	if (s->mutex) {
-		Thread_destroy_mutex(s->mutex);
-	}
-	if (s->send_mutex) {
-		Thread_destroy_mutex(s->send_mutex);
-	}
-	if (s->recv_mutex) {
-		Thread_destroy_mutex(s->recv_mutex);
-	}
-	if (s->sem) {
-		Thread_destroy_sem(s->sem);
-	}
-	if (s) {
-		free(s);
-	}
-	return NULL;
-}
-
-int bcp_vicp_slice_start(bcp_vicp_slicer_t *s)
-{
-	vicp_listener_t *l;
-
-	if (!s) {
-		return -1;
-	}
-
-	mutex_lock(s->mutex);
-
-	if (!s->stop) {
-		mutex_unlock(s->mutex);
-		return -1;
-	}
-
-	Thread_start(slice_thread, s);
-
-	/* waiting already started */
-	while (s->stop != 0) {
-		mutex_unlock(s->mutex);
-		my_sleep(100);
-		mutex_lock(s->mutex);
-	}
-
-	/* all data trans by slice */
-	l = (vicp_listener_t*)s->listener;
-	bcp_vicp_slice_regist_data_arrived_callback(l->receiver);
-
-	mutex_unlock(s->mutex);
-
-	return 0;
-}
-
-int bcp_vicp_slice_stop(bcp_vicp_slicer_t *s)
-{
-	if (!s) {
-		return -1;
-	}
-
-	mutex_lock(s->mutex);
-
-	if (s->stop) {
-		mutex_unlock(s->mutex);
-		return -1;
-	}
-
-	s->stop = 1;
-
-	/* waiting already stoped */
-	while (s->stop != 2) {
-		mutex_unlock(s->mutex);
-		my_sleep(100);
-		mutex_lock(s->mutex);
-	}
-
-	mutex_unlock(s->mutex);
-}
-
-void bcp_vicp_slice_destroy(bcp_vicp_slicer_t *s)
-{
-	bcp_vicp_slice_stop(s);
-
-	destroy_slice_list(&s->sending, s->send_mutex);
-	destroy_slice_list(&s->received, s->recv_mutex);
-
-	Thread_destroy_mutex(s->mutex);
-	Thread_destroy_mutex(s->recv_mutex);
-	Thread_destroy_mutex(s->send_mutex);
-	Thread_destroy_sem(s->sem);
-
-	free(s);
-}
-
 /* sender find context by context id */
 static int find_cb(void *context, void *context_id)
 {
 	slice_context_t *c = (slice_context_t*)context;
 
-	return (c && (c->context_id == *context_id));
+	return (c && (c->context_id == *(u32*)context_id));
 }
 
 static slice_context_t *find_slice_context(List *list, u32 context_id)
@@ -242,7 +113,7 @@ static slice_context_t *find_slice_context(List *list, u32 context_id)
 	ListElement *e;
 
 	e = ListFindItem(list, &context_id, find_cb);
-	if (e)) {
+	if (e) {
 		return (slice_context_t*)e->content;
 	} else {
 		return NULL;
@@ -254,7 +125,7 @@ static int find_cb_by_groupid(void *context, void *context_id)
 {
 	slice_context_t *c = (slice_context_t*)context;
 
-	return (c && (c->context_id == *context_id));
+	return (c && (c->context_id == *(u32*)context_id));
 }
 
 static slice_context_t *find_slice_context_by_groupid(List *list, 
@@ -263,7 +134,7 @@ static slice_context_t *find_slice_context_by_groupid(List *list,
 	ListElement *e;
 
 	e = ListFindItem(list, &group_id, find_cb_by_groupid);
-	if (e)) {
+	if (e) {
 		return (slice_context_t*)e->content;
 	} else {
 		return NULL;
@@ -365,7 +236,6 @@ static void slice_send_callback(void *context,
 	int result)
 {
 	slice_context_t *sc = (slice_context_t*)context;
-	bcp_vicp_slicer_t *s;
 
 	if (!sc) {
 		return;
@@ -418,8 +288,8 @@ static int send_stream(bcp_vicp_slicer_t *slicer,
 	u64 *id = NULL;
 	int timeout = DEF_WAIT_ACK_TIMEOUT;
 
-	stream = bf_stream(&f);
-	size = bf_size(&f);
+	stream = bf_stream(f);
+	size = bf_size(f);
 	if (sc) {
 		id = &sc->seq_id;
 		timeout = sc->timeout;
@@ -453,7 +323,7 @@ static u16 channel_packet_size(bcp_vicp_sender_t *sender)
 	u16 size;
 	bcp_channel_t *c;
 
-	if (!(c = bcp_vicp_get_channel(sender->listener)) {
+	if (!(c = bcp_vicp_get_channel(sender->listener))) {
 		LOG_E("channel_packet_size failed.\n");
 		return 0;
 	}
@@ -502,7 +372,6 @@ static int send_slice_desc(bcp_vicp_slicer_t *s, bf_t *bf)
 {
 	int ret = -1;
 	bf_t f;
-	bcp_vicp_packet_t *vp;
 	slice_context_t *sc;
 	slice_group_ack_t g;
 	u8 result = 0;
@@ -597,12 +466,10 @@ static slice_context_t *create_recv_context(
 	return sc;
 }
 
-static int response_slice_desc_ack(bcp_vicp_slicer_t *s, 
-	bcp_vicp_packet_t *p, bf_t *bf)
+static int response_slice_desc_ack(bcp_vicp_slicer_t *s, bf_t *bf)
 {
 	int ret;
 	bf_t f;
-	bcp_vicp_packet_t *vp;
 	slice_context_t *sc;
 	slice_desc_t desc;
 	u8 result = 0;
@@ -686,7 +553,7 @@ static int notify_data_arrived(slice_context_t *sc)
 		memcpy(buf, sc->data, sc->len);
 	}
 
-	bcp_vicp_data_arrived(sc->sender->listener, buf, sc->len);
+	bcp_vicp_data_arrived(sc->slicer->listener, buf, sc->len);
 
 	return 0;
 }
@@ -694,7 +561,6 @@ static int notify_data_arrived(slice_context_t *sc)
 static int recv_slice(bcp_vicp_slicer_t *s, bf_t *bf)
 {
 	bf_t f;
-	bcp_vicp_packet_t *vp;
 	slice_context_t *sc;
 	slice_data_t data;
 
@@ -741,7 +607,7 @@ static int recv_slice(bcp_vicp_slicer_t *s, bf_t *bf)
 	}
 
 	if (create_data_ack(&f, data.context_id, 
-		data.group_id, data.slice_id, data->len, result, code) < 0) {
+		data.group_id, data.slice_id, data.len, result, code) < 0) {
 		goto __failed;
 	}
 
@@ -774,7 +640,6 @@ int send_next_slice(bcp_vicp_slicer_t *s, u8 type,
 {
 	int ret = -1;
 	bf_t f;
-	bcp_vicp_packet_t *vp;
 	slice_context_t *sc;
 	slice_desc_ack_t dack;
 	slice_data_ack_t ack;
@@ -820,7 +685,7 @@ int send_next_slice(bcp_vicp_slicer_t *s, u8 type,
 		free_send_context(sc, VICP_SLICE_SEND_FAILED);
 		return -1;
 	} else if (sc->slice_id >= sc->slice_count) {
-		LOG_E("sending trans failed (slice_id = %d) >= (slice_count = %d).\n"
+		LOG_E("sending trans failed (slice_id = %d) >= (slice_count = %d).\n",
 			sc->slice_id, sc->slice_count);
 		mutex_unlock(s->send_mutex);
 		free_send_context(sc, VICP_SLICE_SEND_FAILED);
@@ -831,7 +696,7 @@ int send_next_slice(bcp_vicp_slicer_t *s, u8 type,
 	mutex_unlock(s->send_mutex);
 
 	mutex_lock(sc->mutex);
-	sc->trans_len += len;
+	sc->trans_len += ack_len;
 
 	if (trans_complete(sc)) {
 		mutex_unlock(sc->mutex);
@@ -877,7 +742,6 @@ int bcp_vicp_slice_send(bcp_vicp_slicer_t *s,
 	vicp_sender_callback complete, void *context, u32 *id)
 {
 	slice_context_t *sc;
-	vicp_listener_t *l;
 
 	if (!s || !buf) {
 		return -1;
@@ -935,10 +799,10 @@ int bcp_vicp_slice_send(bcp_vicp_slicer_t *s,
 
 static int slice_escaped(slice_context_t *sc)
 {
-	return (sc && sc->timestamp < current_timestamp())
+	return (sc && sc->timestamp < current_timestamp());
 }
 
-static int recvd_slice_escaped(bcp_vicp_slicer_t *s)
+static void recvd_slice_escaped(bcp_vicp_slicer_t *s)
 {
 	ListElement *current = NULL;
 	slice_context_t *sc;
@@ -952,7 +816,7 @@ static int recvd_slice_escaped(bcp_vicp_slicer_t *s)
 			LOG_E("slice received timeout, group_id=%d\n", 
 				sc->group_id);
 			mutex_unlock(s->recv_mutex);
-			free_recv_context(&s->received, sc);
+			free_recv_context(sc);
 			mutex_lock(s->recv_mutex);
 		}
 	}
@@ -960,7 +824,7 @@ static int recvd_slice_escaped(bcp_vicp_slicer_t *s)
 	mutex_unlock(s->recv_mutex);
 }
 
-static int send_slice_escaped(bcp_vicp_slicer_t *s)
+static void send_slice_escaped(bcp_vicp_slicer_t *s)
 {
 	ListElement *current = NULL;
 	slice_context_t *sc;
@@ -974,7 +838,7 @@ static int send_slice_escaped(bcp_vicp_slicer_t *s)
 			LOG_E("slice send timeout, context_id=%d\n", 
 				sc->context_id);
 			mutex_unlock(s->send_mutex);
-			free_send_context(&s->sending, sc);
+			free_send_context(sc, VICP_SLICE_SEND_TIMEOUT);
 			mutex_lock(s->send_mutex);
 		}
 	}
@@ -986,26 +850,32 @@ static thread_return_type WINAPI slice_thread(void *arg)
 {
 	bcp_vicp_slicer_t *s = (bcp_vicp_slicer_t*)arg;
 
+	if (!s) {
+		return NULL;
+	}
+
 	mutex_lock(s->mutex);
 	s->stop = 0;
 
 	while (!s->stop) {
 		mutex_unlock(s->mutex);
 		Thread_wait_sem(s->sem, 500);
-		recvd_slice_escaped();
-		send_slice_escaped();
+		recvd_slice_escaped(s);
+		send_slice_escaped(s);
 		mutex_lock(s->mutex);
 	}
 
 	s->stop = 2;
 	mutex_unlock(s->mutex);
+
+	return NULL;
 }
 
 static int proto_valid(bf_t *f, u8 *t)
 {
 	u8 r, type, ver;
 
-	if (bf_read_u8(&f, &r) < 0) {
+	if (bf_read_u8(f, &r) < 0) {
 		return 0;
 	}
 
@@ -1035,24 +905,24 @@ static int bcp_vicp_slice_arrived(bcp_vicp_slicer_t *slicer,
 
 	bf_init_d(&f, data, len);
 
-	if (!proto_valid(f, &type)) {
+	if (!proto_valid(&f, &type)) {
 		free(data);
 		return -1;
 	}
 
-	bf_reset(f, 0);
+	bf_reset(&f, 0);
 
 	if (type == VICP_SLICE_GROUP_ID) {
-		ret = respone_group_id(slicer, f);
+		ret = respone_group_id(slicer, &f);
 	} else if (type == VICP_SLICE_GROUP_ID_ACK) {
-		ret = send_slice_desc(slicer, f);
+		ret = send_slice_desc(slicer, &f);
 	} else if (type == VICP_SLICE_DESC) {
-		ret = response_slice_desc_ack(slicer, f);
+		ret = response_slice_desc_ack(slicer, &f);
 	} else if (type == VICP_SLICE_DATA) {
-		ret = recv_slice(slicer, f);
+		ret = recv_slice(slicer, &f);
 	} else if (type == VICP_SLICE_DESC_ACK 
 		|| type == VICP_SLICE_DATA_ACK) {
-		ret = send_next_slice(slicer, type, f);
+		ret = send_next_slice(slicer, type, &f);
 	} else if (type == VICP_SLICE_ONLY_ONE) {
 		/* TODO: */
 		ret = -1;
@@ -1073,10 +943,139 @@ static void data_arrived_callback(void *context, u8 *buf, u16 len)
 	}
 }
 
-int bcp_vicp_slice_regist_data_arrived_callback(
-	bcp_vicp_receiver_t *r)
+int bcp_vicp_slice_regist_data_arrived_callback(bcp_vicp_receiver_t *r)
 {
-	bcp_vicp_receiver_packet_arrived_callback(r
+	return bcp_vicp_receiver_data_arrived_callback(r, 
 		data_arrived_callback, r->listener);
 }
 
+
+bcp_vicp_slicer_t *bcp_vicp_slice_create(void *listener)
+{
+	bcp_vicp_slicer_t *s;
+
+	s = (bcp_vicp_slicer_t*)malloc(sizeof(*s));
+	if (!s) {
+		return NULL;
+	}
+
+	memset(s, 0, sizeof(*s));
+
+	s->stop = 1;
+	s->listener = listener;
+
+	s->mutex = Thread_create_mutex();
+	if (!s->mutex) {
+		goto __failed;
+	}
+	s->send_mutex = Thread_create_mutex();
+	if (!s->send_mutex) {
+		goto __failed;
+	}
+	s->recv_mutex = Thread_create_mutex();
+	if (!s->recv_mutex) {
+		goto __failed;
+	}
+
+	s->sem = Thread_create_sem();
+	if (!s->sem) {
+		goto __failed;
+	}
+
+	ListZero(&s->sending);
+	ListZero(&s->received);
+
+	return s;
+
+__failed:
+	if (s->mutex) {
+		Thread_destroy_mutex(s->mutex);
+	}
+	if (s->send_mutex) {
+		Thread_destroy_mutex(s->send_mutex);
+	}
+	if (s->recv_mutex) {
+		Thread_destroy_mutex(s->recv_mutex);
+	}
+	if (s->sem) {
+		Thread_destroy_sem(s->sem);
+	}
+	if (s) {
+		free(s);
+	}
+	return NULL;
+}
+
+int bcp_vicp_slice_start(bcp_vicp_slicer_t *s)
+{
+	vicp_listener_t *l;
+
+	if (!s) {
+		return -1;
+	}
+
+	mutex_lock(s->mutex);
+
+	if (!s->stop) {
+		mutex_unlock(s->mutex);
+		return -1;
+	}
+
+	Thread_start(slice_thread, s);
+
+	/* waiting already started */
+	while (s->stop != 0) {
+		mutex_unlock(s->mutex);
+		msleep(100);
+		mutex_lock(s->mutex);
+	}
+
+	/* all data trans by slice */
+	l = (vicp_listener_t*)s->listener;
+	bcp_vicp_slice_regist_data_arrived_callback(l->receiver);
+
+	mutex_unlock(s->mutex);
+
+	return 0;
+}
+
+int bcp_vicp_slice_stop(bcp_vicp_slicer_t *s)
+{
+	if (!s) {
+		return -1;
+	}
+
+	mutex_lock(s->mutex);
+
+	if (s->stop) {
+		mutex_unlock(s->mutex);
+		return -1;
+	}
+
+	s->stop = 1;
+
+	/* waiting already stoped */
+	while (s->stop != 2) {
+		mutex_unlock(s->mutex);
+		msleep(100);
+		mutex_lock(s->mutex);
+	}
+
+	mutex_unlock(s->mutex);
+	return 0;
+}
+
+void bcp_vicp_slice_destroy(bcp_vicp_slicer_t *s)
+{
+	bcp_vicp_slice_stop(s);
+
+	destroy_slice_list(&s->sending, s->send_mutex);
+	destroy_slice_list(&s->received, s->recv_mutex);
+
+	Thread_destroy_mutex(s->mutex);
+	Thread_destroy_mutex(s->recv_mutex);
+	Thread_destroy_mutex(s->send_mutex);
+	Thread_destroy_sem(s->sem);
+
+	free(s);
+}

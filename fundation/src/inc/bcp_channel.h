@@ -19,7 +19,7 @@ typedef struct bcp_channel_s {
 	void *hdl;
 	int hdl_ref;
 	int channel_ref;
-	mutex_type *mutex;
+	mutex_type mutex;
 	int packet_size; /* max size of per packet for once trans on channel */
 	int (*open)(void *channel);
 	int (*read)(void *channel, char *buf, int len, int timeout/*ms*/);

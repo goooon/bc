@@ -97,7 +97,7 @@ static int channel_write(bcp_channel_t *c, sender_pack_t *e,
 		ret = c->write(c, buf, len);
 		if (ret < 0) {
 			if (++retry < MAX_RETRY_TIMES) {
-				my_sleep(10);
+				msleep(10);
 			} else {
 				LOG_E("write dev failed. wrote=%d\n", bytes);
 				return -1;
@@ -134,7 +134,7 @@ static void move_to_ack_list(bcp_vicp_sender_t *s, sender_pack_t *p)
 	mutex_lock(s->ack_mutex);
 	ListAppend(&s->waiting_ack, p, sizeof(*p));	
 	mutex_unlock(s->ack_mutex);
-	Thread_post_sem(s->ack_sem):
+	Thread_post_sem(s->ack_sem);
 }
 
 static void notify_complete(sender_pack_t *e, int result)
@@ -193,13 +193,13 @@ void bcp_vicp_sender_notify_ack(bcp_vicp_sender_t *s,
 	mutex_unlock(s->ack_mutex);
 }
 
-static void post_packet(bcp_channel_t *c, sender_pack_t *e)
+static void post_packet(bcp_channel_t *c, bcp_vicp_sender_t *s, sender_pack_t *e)
 {
 	int ret;
 
 	if ((ret = send_one_packet(c, e)) >= 0) {
 		if (e->p->type != VICP_PACKET_ACK) {
-			move_to_ack_list(e);
+			move_to_ack_list(s, e);
 		}
 	} else {
 		notify_complete(e, VICP_SEND_FAILED);
@@ -221,13 +221,13 @@ static void send_packet(bcp_vicp_sender_t *s)
 
 	while ((e = (sender_pack_t*)ListDetachHead(&s->waiting_send)) != NULL) {
 		mutex_unlock(s->send_mutex);
-		post_packet(c, e);
+		post_packet(c, s, e);
 		mutex_lock(s->send_mutex);
 	}
 
 	mutex_unlock(s->send_mutex);
 
-	bcp_vicp_put_channel(c);
+	bcp_vicp_put_channel(s->listener);
 }
 
 static thread_return_type WINAPI sender_thread(void *arg)
@@ -235,7 +235,7 @@ static thread_return_type WINAPI sender_thread(void *arg)
 	bcp_vicp_sender_t *s = (bcp_vicp_sender_t*)arg;
 
 	if (!s) {
-		return;
+		return NULL;
 	}
 
 	mutex_lock(s->mutex);
@@ -251,8 +251,9 @@ static thread_return_type WINAPI sender_thread(void *arg)
 	destroy_sending_list(s);
 
 	s->stop = 2; /* notify waiting thread */
-
 	mutex_unlock(s->mutex);
+
+	return NULL;
 }
 
 static thread_return_type WINAPI ack_thread(void *arg)
@@ -260,7 +261,7 @@ static thread_return_type WINAPI ack_thread(void *arg)
 	bcp_vicp_sender_t *s = (bcp_vicp_sender_t*)arg;
 
 	if (!s) {
-		return;
+		return NULL;
 	}
 
 	mutex_lock(s->mutex);
@@ -276,8 +277,9 @@ static thread_return_type WINAPI ack_thread(void *arg)
 	destroy_ack_list(s);
 
 	s->ack_stop = 2; /* notify waiting thread */
-
 	mutex_unlock(s->mutex);
+
+	return NULL;
 }
 
 bcp_vicp_sender_t *bcp_vicp_sender_create(void *listener)
@@ -296,22 +298,18 @@ bcp_vicp_sender_t *bcp_vicp_sender_create(void *listener)
 	if (!s->mutex) {
 		goto __failed;
 	}
-
 	s->ack_mutex = Thread_create_mutex();
 	if (!s->ack_mutex) {
 		goto __failed;
 	}
-
 	s->send_mutex = Thread_create_mutex();
 	if (!s->send_mutex) {
 		goto __failed;
 	}
-
 	s->sem = Thread_create_sem();
 	if (!s->sem) {
 		goto __failed;
 	}
-
 	s->ack_sem = Thread_create_sem();
 	if (!s->ack_sem) {
 		goto __failed;
@@ -341,14 +339,14 @@ __failed:
 }
 
 
-static void start_thread(bcp_vicp_sender_t *s, 
+static int start_thread(bcp_vicp_sender_t *s, 
 	int *stop, thread_fn fn)
 {
 	mutex_lock(s->mutex);
 
 	if (!*stop) {
 		LOG_W("vicp sending thread has been started\n");
-		mutex_unlock(r->mutex);
+		mutex_unlock(s->mutex);
 		return -1;
 	}
 
@@ -362,6 +360,7 @@ static void start_thread(bcp_vicp_sender_t *s,
 	}
 
 	mutex_unlock(s->mutex);
+	return 0;
 }
 
 int bcp_vicp_sender_start(bcp_vicp_sender_t *s)
@@ -430,6 +429,7 @@ int bcp_vicp_send_data(bcp_vicp_sender_t *s,
 		bcp_vicp_packet_destroy(vp);
 		return -1;
 	}
+	return 0;
 }
 
 int bcp_vicp_send_ack(bcp_vicp_sender_t *s,
@@ -449,10 +449,11 @@ int bcp_vicp_send_ack(bcp_vicp_sender_t *s,
 		bcp_vicp_packet_destroy(vp);
 		return -1;
 	}
+	return 0;
 }
 
 
-static void stop_thread(bcp_vicp_sender_t *s,
+static int stop_thread(bcp_vicp_sender_t *s,
 	int *stop)
 {
 
@@ -474,6 +475,7 @@ static void stop_thread(bcp_vicp_sender_t *s,
 	}
 
 	mutex_unlock(s->mutex);
+	return 0;
 }
 
 int bcp_vicp_sender_stop(bcp_vicp_sender_t *s)
@@ -500,4 +502,3 @@ void bcp_vicp_sender_destroy(bcp_vicp_sender_t *s)
 	Thread_destroy_mutex(s->send_mutex);
 	free(s);
 }
-

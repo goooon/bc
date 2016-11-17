@@ -59,7 +59,6 @@ static void mutex_unlock(mutex_type mutex)
 static bcp_channel_t *find_channel(bcp_channel_t *c)
 {
 	ListElement *e;
-	bcp_channel_t *c = NULL;
 
 	e = ListFind(&channels, (void*)c);
 	if (e) {
@@ -269,7 +268,7 @@ bcp_channel_t *bcp_channel_create(int type, const char *dev_name)
 		return NULL;
 	}
 
-	c->mutex = (void*)Thread_create_mutex();
+	c->mutex = Thread_create_mutex();
 	if (!c->mutex) {
 		free(c->dev_name);
 		free(c);
@@ -330,7 +329,10 @@ bcp_channel_t* bcp_channel_get(bcp_channel_t *c)
 	if (!c) {
 		return NULL;
 	} else {
-		return bcp_channel_get_byname(c->type, c->dev_name);
+		mutex_lock(mutex);
+		c->channel_ref++;
+		mutex_unlock(mutex);
+		return c;
 	}
 }
 

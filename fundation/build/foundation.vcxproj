@@ -308,6 +308,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\inc\bcp.h" />
+    <ClInclude Include="..\src\inc\bcp_channel.h" />
     <ClInclude Include="..\src\inc\bcp_comm.h" />
     <ClInclude Include="..\src\inc\bcp_nmea.h" />
     <ClInclude Include="..\src\inc\bcp_packet.h" />
@@ -334,9 +335,16 @@
     <ClInclude Include="..\src\inc\util\Timer.h" />
     <ClInclude Include="..\src\inc\util\TimeStamp.h" />
     <ClInclude Include="..\src\inc\util\Tree.h" />
+    <ClInclude Include="..\src\inc\vicp\bcp_vicp.h" />
+    <ClInclude Include="..\src\inc\vicp\bcp_vicp_packet.h" />
+    <ClInclude Include="..\src\inc\vicp\bcp_vicp_receiver.h" />
+    <ClInclude Include="..\src\inc\vicp\bcp_vicp_sender.h" />
+    <ClInclude Include="..\src\inc\vicp\bcp_vicp_slice.h" />
+    <ClInclude Include="..\src\inc\vicp\slice_proto.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cpp\bcp.cpp" />
+    <ClCompile Include="..\src\cpp\bcp_channel.cpp" />
     <ClCompile Include="..\src\cpp\bcp_comm.cpp" />
     <ClCompile Include="..\src\cpp\bcp_nmea.cpp" />
     <ClCompile Include="..\src\cpp\bcp_packet.cpp" />
@@ -354,6 +362,12 @@
     <ClCompile Include="..\src\cpp\util\Thread.cpp" />
     <ClCompile Include="..\src\cpp\util\TimeStamp.cpp" />
     <ClCompile Include="..\src\cpp\util\Tree.cpp" />
+    <ClCompile Include="..\src\cpp\vicp\bcp_vicp.cpp" />
+    <ClCompile Include="..\src\cpp\vicp\bcp_vicp_packet.cpp" />
+    <ClCompile Include="..\src\cpp\vicp\bcp_vicp_receiver.cpp" />
+    <ClCompile Include="..\src\cpp\vicp\bcp_vicp_sender.cpp" />
+    <ClCompile Include="..\src\cpp\vicp\bcp_vicp_slice.cpp" />
+    <ClCompile Include="..\src\cpp\vicp\slice_proto.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

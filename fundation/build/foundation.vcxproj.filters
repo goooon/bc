@@ -31,6 +31,12 @@
     <Filter Include="src\cpp\util">
       <UniqueIdentifier>{1e157bf8-491d-4846-bd31-988b6b06f9b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\cpp\vicp">
+      <UniqueIdentifier>{70f1606b-763c-42c2-ac46-83d5b3f4312b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\inc\vicp">
+      <UniqueIdentifier>{03955101-1475-451b-bd6a-f9660737f845}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -117,6 +123,27 @@
     <ClInclude Include="..\src\inc\bcp_nmea.h">
       <Filter>src\inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\vicp\bcp_vicp.h">
+      <Filter>src\inc\vicp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\vicp\bcp_vicp_packet.h">
+      <Filter>src\inc\vicp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\vicp\bcp_vicp_receiver.h">
+      <Filter>src\inc\vicp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\vicp\bcp_vicp_sender.h">
+      <Filter>src\inc\vicp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\vicp\bcp_vicp_slice.h">
+      <Filter>src\inc\vicp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\vicp\slice_proto.h">
+      <Filter>src\inc\vicp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\inc\bcp_channel.h">
+      <Filter>src\inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cpp\util\Heap.cpp">
@@ -171,6 +198,27 @@
       <Filter>src\cpp</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cpp\bcp_nmea.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\vicp\slice_proto.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\vicp\bcp_vicp_slice.cpp">
+      <Filter>src\cpp\vicp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\vicp\bcp_vicp_sender.cpp">
+      <Filter>src\cpp\vicp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\vicp\bcp_vicp_receiver.cpp">
+      <Filter>src\cpp\vicp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\vicp\bcp_vicp_packet.cpp">
+      <Filter>src\cpp\vicp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\vicp\bcp_vicp.cpp">
+      <Filter>src\cpp\vicp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\bcp_channel.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
   </ItemGroup>

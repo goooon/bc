@@ -434,7 +434,7 @@ static void test_binary_formater(void)
 	u32 recv_bytes_len;
 	u8 *rs, *s = (u8*)"hello, world!";
 	
-	void *h = bf_create_encoder();
+	bf_t *h = bf_create_encoder();
 	if (!h) {
 		LOG_W("create bf encoder failed");
 		return;
@@ -524,7 +524,7 @@ static void test_binary_formater(void)
 		free(rs);
 	}
 
-	bf_destroy(h, 1);
+	bf_destroy(h);
 }
 
 #if defined (_WIN32) || defined(_WIN64)
@@ -609,7 +609,7 @@ static void nmea_test(void)
 	void *p;
 	bcp_nmea_info_t *info;
 
-	p = bcp_nmea_create();
+	p = bcp_nmea_create(NULL, NULL);
 	if (!p) {
 		LOG_I("bcp nmea create failed\n");
 		return;
@@ -641,20 +641,47 @@ static void nmea_test(void)
 
 }
 
+#include "../fundation/src/inc/vicp/bcp_vicp.h"
+#if defined (_WIN32) || defined(_WIN64)
+#define CHANNEL_SERIAL "COM6"
+#else
+#define CHANNEL_SERIAL "/dev/ttySAC2"
+#endif
+static void vicp_test(void)
+{
+	bcp_channel_t *c;
+
+	c = bcp_channel_create(BCP_CHANNEL_SERIAL, CHANNEL_SERIAL);
+	if (!c) {
+		LOG_E("create channel for %s failed.\n", CHANNEL_SERIAL);
+		return;
+	}
+
+	if (bcp_vicp_regist_channel(c) < 0) {
+		LOG_E("regist channel for %s failed.\n", CHANNEL_SERIAL);
+		return;
+	}
+	
+	while (1) {
+		my_sleep(1000);
+	}
+}
+
 int main(int argc, char **argv)
 {
 	int ispub;
 
+	bcp_init();
+
 	//execl();
 	//serial_test(argc, argv);
 	//nmea_test();
+	vicp_test();
 
 	if (argc < 2) {
 		printf("usage %s {0|1}", argv[0]);
 		return -1;
 	}
-
-	bcp_init();
 
 	ispub = atoi(argv[1]);
 	if (ispub) {

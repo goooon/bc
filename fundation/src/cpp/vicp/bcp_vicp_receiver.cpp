@@ -60,7 +60,7 @@ static void remove_first_bytes(bcp_vicp_receiver_t *r)
 static u32 read_tag(bcp_vicp_receiver_t *r, 
 	bcp_channel_t *c, u8 *header)
 {
-	int ret, reads;
+	int reads;
 	u32 tag = 0;
 
 	remove_first_bytes(r);
@@ -101,7 +101,7 @@ static u8 *read_whole_block(bcp_channel_t *c,
 	/* read tag */
 	tag = read_tag(r, c, &header[0]);
 	if (tag != VICP_PACKET_TAG) {
-		LOG_E("read tag invalid, tag = 0x%.\n", tag);
+		LOG_E("read tag invalid, tag = 0x%x.\n", tag);
 		free(header);
 		return NULL;
 	}
@@ -110,7 +110,7 @@ static u8 *read_whole_block(bcp_channel_t *c,
 
 	/* read left header */
 	left = header_size - 4/* tag size */;
-	ret = read_left(c, (char*)&header[4], left);
+	ret = read_left(c, &header[4], left);
 	if (ret != left) {
 		free(header);
 		LOG_E("read left header failed, ret = %d.\n", ret);
@@ -132,7 +132,7 @@ static u8 *read_whole_block(bcp_channel_t *c,
 	free(header);
 
 	left = total_size - header_size;
-	ret = read_left(c, (char*)&data[header_size], left);
+	ret = read_left(c, &data[header_size], left);
 	if (ret != left) {
 		free(data);
 		LOG_E("read left data failed, ret = %d.\n", ret);
@@ -208,8 +208,10 @@ static int notify_ack(bcp_vicp_receiver_t *r,
 		return -1;
 	}
 
-	return bcp_vicp_sender_notify_ack(l->sender,
+	bcp_vicp_sender_notify_ack(l->sender,
 		p->msg_id, ack.result);
+
+	return 0;
 }
 
 static int notify_data(bcp_vicp_receiver_t *r, 
@@ -283,7 +285,7 @@ static thread_return_type WINAPI receiver_thread(void *arg)
 	bcp_vicp_receiver_t *r = (bcp_vicp_receiver_t*)arg;
 
 	if (!r) {
-		return;
+		return NULL;
 	}
 
 	mutex_lock(r->mutex);
@@ -303,6 +305,8 @@ static thread_return_type WINAPI receiver_thread(void *arg)
 
 	r->stop = 2; /* notify waiting thread */
 	mutex_unlock(r->mutex);
+
+	return NULL;
 }
 
 static thread_return_type WINAPI post_thread(void *arg)
@@ -310,7 +314,7 @@ static thread_return_type WINAPI post_thread(void *arg)
 	bcp_vicp_receiver_t *r = (bcp_vicp_receiver_t*)arg;
 
 	if (!r) {
-		return;
+		return NULL;
 	}
 
 	mutex_lock(r->mutex);
@@ -327,6 +331,8 @@ static thread_return_type WINAPI post_thread(void *arg)
 
 	r->post_stop = 2; /* notify waiting thread */
 	mutex_unlock(r->mutex);
+
+	return NULL;
 }
 
 bcp_vicp_receiver_t *bcp_vcip_receiver_create(void *listener)
@@ -345,32 +351,37 @@ bcp_vicp_receiver_t *bcp_vcip_receiver_create(void *listener)
 	r->listener = listener;
 	r->mutex = Thread_create_mutex();
 	if (!r->mutex) {
-		free(r);
-		return NULL;
+		goto __failed;
 	}
 	r->list_mutex = Thread_create_mutex();
 	if (!r->list_mutex) {
-		Thread_destroy_mutex(r->mutex);
-		free(r);
-		return NULL;
+		goto __failed;
 	}
 	r->sem = Thread_create_sem();
 	if (!r->sem) {
-		Thread_destroy_mutex(r->mutex);
-		Thread_destroy_mutex(r->list_mutex);
-		free(r);
-		return NULL;
+		goto __failed;
 	}
 	ListZero(&r->received_list);
 	bcp_vicp_get_listener(listener);
 
 	r->has_bytes = 0;
 	memset(&r->last_bytes, 0, sizeof(r->last_bytes));
-
 	return r;
+
+__failed:
+	if (r) {
+		if (r->mutex)
+			Thread_destroy_mutex(r->mutex);
+		if (r->list_mutex)
+			Thread_destroy_mutex(r->list_mutex);
+		if (r->sem)
+			Thread_destroy_sem(r->sem);
+		free(r);
+	}
+	return NULL;
 }
 
-static void start_thread(bcp_vicp_receiver_t *r, 
+static int start_thread(bcp_vicp_receiver_t *r, 
 	int *stop, thread_fn fn)
 {
 	mutex_lock(r->mutex);
@@ -391,6 +402,7 @@ static void start_thread(bcp_vicp_receiver_t *r,
 	}
 
 	mutex_unlock(r->mutex);
+	return 0;
 }
 
 int bcp_vicp_receiver_start(bcp_vicp_receiver_t *r)
@@ -405,7 +417,7 @@ int bcp_vicp_receiver_start(bcp_vicp_receiver_t *r)
 	return 0;
 }
 
-int bcp_vicp_receiver_packet_arrived_callback(bcp_vicp_receiver_t *r, 
+int bcp_vicp_receiver_data_arrived_callback(bcp_vicp_receiver_t *r, 
 	fdata_arrived_callback dac, void *context)
 {
 	if (!r) {
@@ -420,7 +432,7 @@ int bcp_vicp_receiver_packet_arrived_callback(bcp_vicp_receiver_t *r,
 	return 0;
 }
 
-static void stop_thread(bcp_vicp_receiver_t *r,
+static int stop_thread(bcp_vicp_receiver_t *r,
 	int *stop)
 {
 
@@ -442,6 +454,7 @@ static void stop_thread(bcp_vicp_receiver_t *r,
 	}
 
 	mutex_unlock(r->mutex);
+	return 0;
 }
 
 int bcp_vicp_receiver_stop(bcp_vicp_receiver_t *r)
@@ -467,4 +480,3 @@ void bcp_vicp_receiver_destroy(bcp_vicp_receiver_t *r)
 		free(r);
 	}
 }
-
