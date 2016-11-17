@@ -7,31 +7,68 @@
 extern "C" {
 #endif
 
+#define BF_STACK_BUFF_SIZE 128
+
+typedef struct bf_s
+{
+	u8 _s[BF_STACK_BUFF_SIZE]; /* stack buffer for small encode stream */
+	u8 new_buf; /* create stream buffer */
+	u32 index; /* next index of stream */
+	u8 *stream; /* un/serialize data */
+	u32 size; /* stream size */
+} bf_t;
+
+void bf_init(bf_t *f, u8 *stream, u32 size);
+
+/*
+ * init stack bf_t for encoder 
+ */
+int bf_init_e(bf_t *f, u32 size);
+
+/* 
+ * init stack bf_t for decoder
+ */
+void bf_init_d(bf_t *f, u8 *stream, u32 size);
+
+void bf_uninit(bf_t *f, int free_stream);
+
+/*
+ * create heap bf
+ */
 void *bf_create(u8 *stream, u32 size);
 void *bf_create_encoder(void);
 void *bf_create_decoder(u8 *stream, u32 size);
-void bf_destroy(void *h);
+void bf_destroy_p(bf_t *f, int free_stream);
+void bf_destroy(bf_t *f); /* force free new buf */
 
 /*
  * reset encode or decode current location
  */
-void bf_reset(void *h, u32 index);
+void bf_reset(bf_t *f, u32 index);
 
-s32 bf_put_u8(void *h, u8 v);
-s32 bf_put_u16(void *h, u16 v);
-s32 bf_put_u24(void *h, u32 v);
-s32 bf_put_u32(void *h, u32 v);
-s32 bf_put_u64(void *h, u64 v);
-s32 bf_put_bytes(void *h, u8 *data, u32 len);
-s32 bf_put_string(void *h, const char *s);
+s32 bf_put_u8(bf_t *f, u8 v);
+s32 bf_put_u16(bf_t *f, u16 v);
+s32 bf_put_u24(bf_t *f, u32 v);
+s32 bf_put_u32(bf_t *f, u32 v);
+s32 bf_put_u64(bf_t *f, u64 v);
+s32 bf_put_bytes_only(bf_t *f, u8 *data, u32 len);
+s32 bf_put_bytes(bf_t *f, u8 *data, u32 len);
+s32 bf_put_string_only(bf_t *f, const char *s);
+s32 bf_put_string(bf_t *f, const char *s);
 
-s32 bf_read_u8(void *h, u8 *v);
-s32 bf_read_u16(void *h, u16 *v);
-s32 bf_read_u24(void *h, u32 *v);
-s32 bf_read_u32(void *h, u32 *v);
-s32 bf_read_u64(void *h, u64 *v);
-s32 bf_read_bytes(void *h, u8 **v, u32 *len);
-s32 bf_read_string(void *h, char **v);
+s32 bf_read_u8(bf_t *f, u8 *v);
+s32 bf_read_u16(bf_t *f, u16 *v);
+s32 bf_read_u24(bf_t *f, u32 *v);
+s32 bf_read_u32(bf_t *f, u32 *v);
+s32 bf_read_u64(bf_t *f, u64 *v);
+s32 bf_read_bytes_only(bf_t *f, u8 **v, u32 len);
+s32 bf_read_bytes(bf_t *f, u8 **v, u32 *len);
+
+s32 bf_read_string_only(bf_t *f, char **v, u32 len);
+s32 bf_read_string(bf_t *f, char **v);
+
+u8 *bf_stream(bf_t *f); /* stream ptr */
+u32 bf_size(bf_t *f); /* stream used buf size */
 
 #ifdef __cplusplus
 }

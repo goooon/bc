@@ -524,7 +524,7 @@ static void test_binary_formater(void)
 		free(rs);
 	}
 
-	bf_destroy(h);
+	bf_destroy(h, 1);
 }
 
 #if defined (_WIN32) || defined(_WIN64)
@@ -532,21 +532,36 @@ static void test_binary_formater(void)
 #else
 #define SERIAL_DEVNAME "/dev/ttySAC2"
 #endif
-static void serial_test(void)
+static void serial_test(int argc, char **argv)
 {
 	int r;
-	char buff[2048] = {0,};
+	int i = 0;
+	char buff[128] = {0,};
 	void *s;
 
-	if (!(s = bcp_serial_open(SERIAL_DEVNAME, 9600, 8, P_NONE, 1))) {
+	if (argc < 2) {
+		printf("usage: %s </dev/ttySAC0>\n", argv[0]);
+		return;
+	}
+
+	if (!(s = bcp_serial_open(argv[1], 9600, 8, P_NONE, 1))) {
 		printf("open %s failed.\n", SERIAL_DEVNAME);
 		return;
 	}
 
-	while ((r = bcp_serial_read(s, buff, 1, 1000)) >= 0) {
+	my_sleep(1000 * 4);
+
+	sprintf(buff, "%d", i++);
+	printf("write %d bytes\n", 
+		bcp_serial_write(s, buff, strlen(buff)));
+
+	while ((r = bcp_serial_read(s, buff, 10, 1000)) >= 0) {
 		if (r > 0) {
-			printf("%s", buff);
-			memset(buff, 0, sizeof(buff));
+			buff[r] = 0;
+			printf("c=%d, r=%s\n", i, buff);
+			sprintf(buff, "%d", ++i);
+			bcp_serial_write(s, buff, strlen(buff));
+			my_sleep(500);
 		} else {
 			printf("-\n");
 		}
@@ -631,8 +646,8 @@ int main(int argc, char **argv)
 	int ispub;
 
 	//execl();
-	//serial_test();
-	nmea_test();
+	//serial_test(argc, argv);
+	//nmea_test();
 
 	if (argc < 2) {
 		printf("usage %s {0|1}", argv[0]);

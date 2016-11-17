@@ -4,6 +4,8 @@
 #include "../core/Types.h"
 #include <time.h>
 
+s64 current_timestamp(void);
+
 /// A Timestamp stores a monotonic* time value
 /// with (theoretical) microseconds resolution.
 /// Timestamps can be compared with each other

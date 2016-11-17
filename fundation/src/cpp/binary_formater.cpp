@@ -29,36 +29,75 @@
  *------------------------------
 */
 
-#define MAX_DEF_BUF_SIZE (8 * 1024)
+#define MAX_DEF_BUF_SIZE (2 * 1024 + 64)
 
-#define PUT_BYTES(h, v, bytes) \
+#define PUT_BYTES(f, v, bytes) \
 	do { \
 		int i; \
-		bf_t *f = (bf_t*)h; \
 		for (i = bytes - 1; i >= 0; i--) { \
 			f->stream[f->index++] = (v >> (i *  8)) & 0xff; \
 		} \
 	} while(0)
 
-#define READ_BYTES(h, pv, vtype, bytes) \
+#define READ_BYTES(f, pv, vtype, bytes) \
 	do { \
 		int i; \
-		bf_t *f = (bf_t*)h; \
 		*pv = 0; \
 		for (i = bytes - 1; i >= 0; i--) { \
 			*pv |= ((vtype)f->stream[f->index++]) << (i * 8); \
 		} \
 	} while (0)
 
-typedef struct bf_s
+void bf_init(bf_t *f, u8 *stream, u32 size)
 {
-	u8 new_buf; /* create stream buffer */
-	int index; /* next index of stream */
-	u8 *stream; /* serialize data */
-	u32 size; /* stream size */
-} bf_t;
+	f->new_buf = 0;
+	f->index = 0;
+	f->stream = stream;
+	f->size = size;
+}
 
-void *bf_create(u8 *stream, u32 size)
+void bf_init_d(bf_t *f, u8 *stream, u32 size)
+{
+	bf_init(f, stream, size);
+}
+
+int bf_init_e(bf_t *f, u32 size)
+{
+	u8 *stream;
+	u8 new_buf;
+
+	if (size < BF_STACK_BUFF_SIZE) {
+		stream = &f->_s[0];
+		size = BF_STACK_BUFF_SIZE;
+		new_buf = 0;
+	} else {
+		stream = (u8*)malloc(size);
+		if (!stream) {
+			return -1;
+		} else {
+			memset(stream, 0, size);
+		}
+		new_buf = 1;
+	}
+
+	bf_init(f, stream, size);
+	f->new_buf = new_buf;
+
+	return 0;
+}
+
+void bf_uninit(bf_t *f, int free_stream)
+{
+	f->index = 0;
+	f->size = 0;
+	if (f->new_buf && free_stream) {
+		free(f->stream);
+		f->stream = NULL;
+		f->new_buf = 0;
+	}
+}
+
+bf_t *bf_create(u8 *stream, u32 size)
 {
 	bf_t *f;
 
@@ -67,53 +106,49 @@ void *bf_create(u8 *stream, u32 size)
 		return NULL;
 	}
 
-	f->new_buf = 0;
-	f->index = 0;
-	f->stream = stream;
-	f->size = size;
-
+	bf_init(f, stream, size);
 	return f;
 }
 
-void *bf_create_encoder(void)
+bf_t *bf_create_encoder(void)
 {
 	return bf_create(NULL, 0);
 }
 
-void *bf_create_decoder(u8 *stream, u32 size)
+bf_t *bf_create_decoder(u8 *stream, u32 size)
 {
 	return bf_create(stream, size);
 }
 
-void bf_destroy(void *h)
+void bf_destroy_p(bf_t *f, int free_stream)
 {
-	bf_t *bf = (bf_t*)h;
-
-	if (!bf) {
+	if (!f) {
 		return;
 	}
 
-	if (bf->new_buf) {
-		free(bf->stream);
+	if (f->new_buf && free_stream) {
+		free(f->stream);
 	}
 
-	free(bf);
+	free(f);
 }
 
-void bf_reset(void *h, u32 index)
+void bf_destroy(bf_t *f)
 {
-	bf_t *bf = (bf_t*)h;
+	bf_destroy_p(f, 1);
+}
 
-	if (!bf) {
+void bf_reset(bf_t *f, u32 index)
+{
+	if (!f) {
 		return;
 	}
 
-	bf->index = index;
+	f->index = index;
 }
 
-static s32 check_encode_buf(void *h, u32 req_size)
+static s32 check_encode_buf(bf_t *f, u32 req_size)
 {
-	bf_t *f = (bf_t*)h;
 	u8 *s;
 	u32 new_size;
 
@@ -148,11 +183,9 @@ static s32 check_encode_buf(void *h, u32 req_size)
 	return 0;
 }
 
-static s32 check_decode_buf(void *h, u32 req_size)
+static s32 check_decode_buf(bf_t *f, u32 req_size)
 {
-	bf_t *f = (bf_t*)h;
-
-	if (!f) {
+	if (!f || !f->stream) {
 		return -1;
 	}
 
@@ -163,81 +196,84 @@ static s32 check_decode_buf(void *h, u32 req_size)
 	}
 }
 
-s32 bf_put_u8(void *h, u8 v)
+s32 bf_put_u8(bf_t *f, u8 v)
 {
-	if (check_encode_buf(h, 1) < 0) {
+	if (check_encode_buf(f, 1) < 0) {
 		return -1;
 	} else {
-		PUT_BYTES(h, v, 1);
+		PUT_BYTES(f, v, 1);
 		return 0;
 	}
 }
 
-s32 bf_put_u16(void *h, u16 v)
+s32 bf_put_u16(bf_t *f, u16 v)
 {
-	if (check_encode_buf(h, 2) < 0) {
+	if (check_encode_buf(f, 2) < 0) {
 		return -1;
 	} else {
-		PUT_BYTES(h, v, 2);
+		PUT_BYTES(f, v, 2);
 		return 0;
 	}
 
 }
 
-s32 bf_put_u24(void *h, u32 v)
+s32 bf_put_u24(bf_t *f, u32 v)
 {
-	if (check_encode_buf(h, 3) < 0) {
+	if (check_encode_buf(f, 3) < 0) {
 		return -1;
 	} else {
-		PUT_BYTES(h, v, 3);
+		PUT_BYTES(f, v, 3);
 		return 0;
 	}
 }
 
-s32 bf_put_u32(void *h, u32 v)
+s32 bf_put_u32(bf_t *f, u32 v)
 {
-	if (check_encode_buf(h, 4) < 0) {
+	if (check_encode_buf(f, 4) < 0) {
 		return -1;
 	} else {
-		PUT_BYTES(h, v, 4);
+		PUT_BYTES(f, v, 4);
 		return 0;
 	}
 }
 
-s32 bf_put_u64(void *h, u64 v)
+s32 bf_put_u64(bf_t *f, u64 v)
 {
-	if (check_encode_buf(h, 8) < 0) {
+	if (check_encode_buf(f, 8) < 0) {
 		return -1;
 	} else {
-		PUT_BYTES(h, v, 8);
+		PUT_BYTES(f, v, 8);
 		return 0;
 	}
 }
 
-s32 bf_put_bytes(void *h, u8 *data, u32 len)
+s32 bf_put_bytes_only(bf_t *f, u8 *data, u32 len)
 {
-	bf_t *f = (bf_t*)h;
-	
 	if (!f) {
 		return -1;
 	}
 
-	if (check_encode_buf(h, len + 4) < 0) {
+	if (check_encode_buf(f, len) < 0) {
 		return -1;
 	} else {
-		PUT_BYTES(h, len, 4);
-		if (data && len > 0) {
-			memcpy(&f->stream[f->index], data, len);
-			f->index += len;
-		}
+		memcpy(&f->stream[f->index], data, len);
+		f->index += len;
 		return 0;
 	}
 }
 
-s32 bf_put_string(void *h, const char *s)
+s32 bf_put_bytes(bf_t *f, u8 *data, u32 len)
 {
-	bf_t *f = (bf_t*)h;
-	u32 len;
+	if (bf_put_u32(f, len) < 0) {
+		return -1;
+	}
+
+	return bf_put_bytes_only(f, data, len);
+}
+
+s32 bf_put_string_only(bf_t *f, const char *s)
+{
+	u32 len = 0;
 	
 	if (!f) {
 		return -1;
@@ -245,131 +281,160 @@ s32 bf_put_string(void *h, const char *s)
 
 	if (s) {
 		len = (u32)strlen(s);
-	} else {
-		len = 0;
 	}
 
-	if (check_encode_buf(h, len + 4) < 0) {
+	if (check_encode_buf(f, len) < 0) {
 		return -1;
 	} else {
-		PUT_BYTES(h, len, 4);
-		if (s) {
-			memcpy(&f->stream[f->index], s, len);
-			f->index += len;
-		}
+		memcpy(&f->stream[f->index], s, len);
+		f->index += len;
 		return 0;
 	}
 }
 
-s32 bf_read_u8(void *h, u8 *v)
+s32 bf_put_string(bf_t *f, const char *s)
 {
-	if (!v || check_decode_buf(h, 1) < 0) {
+	if (bf_put_u32(f, strlen(s)) < 0) {
+		return -1;
+	}
+
+	return bf_put_string_only(f, s);
+}
+
+s32 bf_read_u8(bf_t *f, u8 *v)
+{
+	if (!v || check_decode_buf(f, 1) < 0) {
 		return -1;
 	} else {
-		READ_BYTES(h, v, u8, 1);
+		READ_BYTES(f, v, u8, 1);
 		return 0;
 	}
 }
 
-s32 bf_read_u16(void *h, u16 *v)
+s32 bf_read_u16(bf_t *f, u16 *v)
 {
-	if (!v || check_decode_buf(h, 2) < 0) {
+	if (!v || check_decode_buf(f, 2) < 0) {
 		return -1;
 	} else {
-		READ_BYTES(h, v, u16, 2);
+		READ_BYTES(f, v, u16, 2);
 		return 0;
 	}
 }
 
-s32 bf_read_u24(void *h, u32 *v)
+s32 bf_read_u24(bf_t *f, u32 *v)
 {
-	if (!v || check_decode_buf(h, 3) < 0) {
+	if (!v || check_decode_buf(f, 3) < 0) {
 		return -1;
 	} else {
-		READ_BYTES(h, v, u32, 3);
+		READ_BYTES(f, v, u32, 3);
 		return 0;
 	}
 }
 
-s32 bf_read_u32(void *h, u32 *v)
+s32 bf_read_u32(bf_t *f, u32 *v)
 {
-	if (!v || check_decode_buf(h, 4) < 0) {
+	if (!v || check_decode_buf(f, 4) < 0) {
 		return -1;
 	} else {
-		READ_BYTES(h, v, u32, 4);
+		READ_BYTES(f, v, u32, 4);
 		return 0;
 	}
 }
 
-s32 bf_read_u64(void *h, u64 *v)
+s32 bf_read_u64(bf_t *f, u64 *v)
 {
-	if (!v || check_decode_buf(h, 8) < 0) {
+	if (!v || check_decode_buf(f, 8) < 0) {
 		return -1;
 	} else {
-		READ_BYTES(h, v, u64, 8);
+		READ_BYTES(f, v, u64, 8);
 		return 0;
 	}
 }
 
-s32 bf_read_bytes(void *h, u8 **v, u32 *len)
+s32 bf_read_bytes_only(bf_t *f, u8 **v, u32 len)
 {
-	bf_t *f = (bf_t*)h;
 	u8 *data = NULL;
-	u32 bytes = 0;
 
-	if (!v || !len || check_decode_buf(h, 4) < 0) {
-		return -1;
-	}
-	
-	/* read bytes length */
-	READ_BYTES(h, (&bytes), u32, 4);
-	if (check_decode_buf(h, bytes) < 0) {
+	if (!v) {
 		return -1;
 	}
 
-	if (bytes > 0) {
-		data = (u8*)malloc(bytes);
+	if (check_decode_buf(f, len) < 0) {
+		return -1;
+	}
+
+	if (len > 0) {
+		data = (u8*)malloc(len);
 		if (!data) {
 			return -1;
 		}
-		memcpy(data, &f->stream[f->index], bytes);
-		f->index += bytes;
+		memcpy(data, &f->stream[f->index], len);
+		f->index += len;
 	}
 
 	*v = data;
-	*len = bytes;
 
 	return 0;
 }
 
-s32 bf_read_string(void *h, char **v)
+s32 bf_read_bytes(bf_t *f, u8 **v, u32 *len)
 {
-	bf_t *f = (bf_t*)h;
+	if (bf_read_u32(f, len) < 0) {
+		return -1;
+	}
+
+	return bf_read_bytes_only(f, v, *len);
+}
+
+s32 bf_read_string_only(bf_t *f, char **v, int len)
+{
 	u8 *data = NULL;
-	u32 bytes = 0;
 
-	if (!v || check_decode_buf(h, 4) < 0) {
-		return -1;
-	}
-	
-	/* read bytes length */
-	READ_BYTES(h, (&bytes), u32, 4);
-	if (check_decode_buf(h, bytes) < 0) {
+	if (!v || !len) {
 		return -1;
 	}
 
-	if (bytes > 0) {
-		data = (u8*)malloc(bytes + 1);
+	if (len > 0) {
+		data = (u8*)malloc(len + 1);
 		if (!data) {
 			return -1;
 		}
-		memcpy(data, &f->stream[f->index], bytes);
-		f->index += bytes;
-		data[bytes] = '\0';
+		memcpy(data, &f->stream[f->index], len);
+		f->index += len;
+		data[len] = '\0';
 	}
 
 	*v = (char*)data;
 
 	return 0;
+}
+
+s32 bf_read_string(bf_t *f, char **v)
+{
+	u32 len;
+
+	if (bf_read_u32(f, &len) < 0) {
+		return -1;
+	}
+
+	return bf_read_string_only(f, v, len);
+}
+
+u8 *bf_stream(bf_t *f)
+{
+	if (f) {
+		return f->stream;
+	} else {
+		return NULL;
+	}
+}
+
+u32 bf_size(bf_t *f)
+{
+	if (f) {
+		return f->index;
+	} else {
+		return 0;
+	}
 }
 

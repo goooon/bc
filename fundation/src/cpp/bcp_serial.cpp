@@ -433,10 +433,16 @@ int bcp_serial_read(void *hdl, char *buffer, int len, int timeout)
 		if (r > 0) {
 			leftlen -= r;
 			p += r;
+		} else if (r < 0 && r != EAGAIN) {
+			break;
 		}
 	}
 
-	return p - buffer;
+	if (r < 0 && (p - buffer) == 0) {
+		return r;
+	} else {
+		return p - buffer;
+	}
 }
 #endif
 

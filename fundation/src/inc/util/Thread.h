@@ -153,4 +153,6 @@ private:
 	sem_type event;
 };
 
+void msleep(long milliseconds);
+
 #endif

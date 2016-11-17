@@ -16,7 +16,7 @@ Timestamp::Timestamp(int year, int day, int hour, int min, int mon, int sec)
 	ts = mktime(&tss);
 }
 
-void Timestamp::update()
+s64 current_timestamp(void)
 {
 #if BC_TARGET == BC_TARGET_LINUX
 	//gettimeofday(&tm, NULL);
@@ -24,11 +24,15 @@ void Timestamp::update()
 
 	struct timespec tss;
 	clock_gettime(CLOCK_MONOTONIC, &tss);
-	ts = (tss.tv_sec * 1000 + tss.tv_nsec / 1000000);
-
+	return (tss.tv_sec * 1000 + tss.tv_nsec / 1000000);
 #elif BC_TARGET == BC_TARGET_WIN
-	ts = GetTickCount();
+	return GetTickCount();
 #endif
+}
+
+void Timestamp::update()
+{
+	ts = (TimeVal)current_timestamp();
 }
 
 void Timestamp::update(TimeVal milliseconds)

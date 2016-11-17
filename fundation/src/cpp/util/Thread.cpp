@@ -491,6 +491,17 @@ int Thread_destroy_cond(cond_type condvar)
 }
 #endif
 
+void msleep(long milliseconds)
+{
+	FUNC_ENTRY;
+#if defined(WIN32) || defined(WIN64)
+	Sleep(milliseconds);
+#else
+	usleep(milliseconds*1000);
+#endif
+	FUNC_EXIT;
+}
+
 
 #if defined(THREAD_UNIT_TESTS)
 
