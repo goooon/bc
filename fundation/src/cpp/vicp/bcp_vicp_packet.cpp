@@ -13,7 +13,7 @@
 #define mutex_lock(m) Thread_lock_mutex(m)
 #define mutex_unlock(m) Thread_unlock_mutex(m)
 
-static u32 seq_id = 1;
+static volatile u32 seq_id = 1;
 static mutex_type mutex = NULL;
 
 void bcp_vicp_packet_init(void)
@@ -33,9 +33,9 @@ u32 bcp_vicp_next_seq_id(void)
 {
 	u32 id = 0;
 
-	mutex_lock(mutex);
+	//mutex_lock(mutex);
 	id = seq_id++;
-	mutex_lock(mutex);
+	//mutex_lock(mutex);
 
 	return id;
 }
@@ -64,6 +64,7 @@ bcp_vicp_packet_t *bcp_vicp_packet_create(u8 type,
 			return NULL;
 		}
 		memcpy(p->data, data, len);
+		p->len = len;
 	} else {
 		p->data = NULL;
 		p->len = 0;
@@ -172,29 +173,30 @@ static int serialize_footer(bcp_vicp_packet_t *p, bf_t *f)
 int bcp_vicp_packet_serialize(bcp_vicp_packet_t *p, 
 	u8 **buf, u32 *len)
 {
-	bf_t f;
+	bf_t *f;
 	int ret = -1;
 
 	if (!p) {
 		return -1;
 	}
 
-	if (bf_init_e(&f, packet_size(p)) < 0) {
+	f = bf_create_encoder();
+	if (!f) {
 		return -1;
 	}
 
-	if (serialize_header(p, &f) < 0
-		|| serialize_data(p, &f) < 0
-		|| serialize_footer(p, &f) < 0) {
+	if (serialize_header(p, f) < 0
+		|| serialize_data(p, f) < 0
+		|| serialize_footer(p, f) < 0) {
 		goto __failed;
 	}
 
-	*buf = bf_stream(&f);
-	*len = bf_size(&f);
+	*buf = bf_stream(f);
+	*len = bf_size(f);
 	ret = 0;
 
 __failed:
-	bf_uninit(&f, (ret < 0));
+	bf_destroy_p(f, (ret < 0));
 	return ret;
 }
 

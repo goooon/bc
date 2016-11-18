@@ -6,6 +6,7 @@
 #include "../util/Thread.h"
 #include "../util/LinkedList.h"
 
+#define VICP_SEND_OK      (0)
 #define VICP_SEND_FAILED  (-1)
 #define VICP_SEND_TIMEOUT (-2)
 

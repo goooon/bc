@@ -71,6 +71,7 @@ static u32 read_tag(bcp_vicp_receiver_t *r,
 	}
 	reads += read_left(c, header + reads, 4 - reads);
 	memcpy(&r->last_bytes[0], header, reads);
+	r->has_bytes = reads;
 
 	if (reads == 4) {
 		tag = header[0] << 24;
@@ -101,7 +102,7 @@ static u8 *read_whole_block(bcp_channel_t *c,
 	/* read tag */
 	tag = read_tag(r, c, &header[0]);
 	if (tag != VICP_PACKET_TAG) {
-		LOG_E("read tag invalid, tag = 0x%x.\n", tag);
+		//LOG_E("read tag invalid, tag = 0x%x.\n", tag);
 		free(header);
 		return NULL;
 	}
@@ -143,6 +144,10 @@ static u8 *read_whole_block(bcp_channel_t *c,
 	return data;
 }
 
+#ifdef VICP_MOCK_TEST
+bcp_vicp_packet_t *read_packet_from_list(void);
+#endif
+
 static bcp_vicp_packet_t *read_one_packet(bcp_vicp_receiver_t *r)
 {
 	bcp_channel_t *c;
@@ -156,6 +161,9 @@ static bcp_vicp_packet_t *read_one_packet(bcp_vicp_receiver_t *r)
 		return NULL;
 	}
 
+#ifdef VICP_MOCK_TEST
+	p = read_packet_from_list();
+#else
 	data = read_whole_block(c, r, &total_size);
 	if (!data) {
 		return NULL;
@@ -167,29 +175,33 @@ static bcp_vicp_packet_t *read_one_packet(bcp_vicp_receiver_t *r)
 		LOG_E("vicp packet unserialize failed.\n");
 		return NULL;
 	}
-
 	free(data);
-	bcp_vicp_put_channel(r->listener);
+#endif
 
 	return p;
 }
 
 static void receiver_ack_callback(void *context, int result)
 {
-	LOG_E("receiver_ack_callback send ack failed. result=%d\n", result);
+	//LOG_E("receiver_ack_callback. result=%d\n", result);
 }
 
-static int send_ack(bcp_vicp_receiver_t *r, 
-	bcp_vicp_packet_t *p, u8 result, u16 code)
+static bcp_vicp_sender_t *get_sender(bcp_vicp_receiver_t *r)
 {
 	vicp_listener_t *l;
 
 	l = (vicp_listener_t*)r->listener;
 	if (!l) {
-		return -1;
+		return NULL;
+	} else {
+		return l->sender;
 	}
+}
 
-	return bcp_vicp_send_ack(l->sender, result, code, 
+static int send_ack(bcp_vicp_receiver_t *r, 
+	u8 result, u16 code)
+{
+	return bcp_vicp_send_ack(get_sender(r), result, code, 
 		10 * 1000, receiver_ack_callback, NULL, NULL);
 }
 
@@ -197,18 +209,12 @@ static int notify_ack(bcp_vicp_receiver_t *r,
 	bcp_vicp_packet_t *p)
 {
 	vicp_ack_t ack;
-	vicp_listener_t *l;
 
 	if (bcp_vicp_packet_unserialize_ack(p, &ack) < 0) {
 		return -1;
 	}
 
-	l = (vicp_listener_t*)r->listener;
-	if (!l) {
-		return -1;
-	}
-
-	bcp_vicp_sender_notify_ack(l->sender,
+	bcp_vicp_sender_notify_ack(get_sender(r),
 		p->msg_id, ack.result);
 
 	return 0;
@@ -246,7 +252,7 @@ static int dispatch_packets(bcp_vicp_receiver_t *r)
 		if (p->type == VICP_PACKET_ACK) {
 			notify_ack(r, p);
 		} else {
-			send_ack(r, p, 0, 0);
+			send_ack(r, 0, 0);
 			notify_data(r, p);
 		}
 		bcp_vicp_packet_destroy(p);
@@ -309,7 +315,7 @@ static thread_return_type WINAPI receiver_thread(void *arg)
 	return NULL;
 }
 
-static thread_return_type WINAPI post_thread(void *arg)
+static thread_return_type WINAPI dispatch_thread(void *arg)
 {
 	bcp_vicp_receiver_t *r = (bcp_vicp_receiver_t*)arg;
 
@@ -362,7 +368,6 @@ bcp_vicp_receiver_t *bcp_vcip_receiver_create(void *listener)
 		goto __failed;
 	}
 	ListZero(&r->received_list);
-	bcp_vicp_get_listener(listener);
 
 	r->has_bytes = 0;
 	memset(&r->last_bytes, 0, sizeof(r->last_bytes));
@@ -412,7 +417,7 @@ int bcp_vicp_receiver_start(bcp_vicp_receiver_t *r)
 	}
 
 	start_thread(r, &r->stop, receiver_thread);
-	start_thread(r, &r->post_stop, post_thread);
+	start_thread(r, &r->post_stop, dispatch_thread);
 
 	return 0;
 }
@@ -475,7 +480,6 @@ void bcp_vicp_receiver_destroy(bcp_vicp_receiver_t *r)
 		if (!r->stop || !r->post_stop) {
 			bcp_vicp_receiver_stop(r);
 		}
-		bcp_vicp_put_listener(r->listener);
 		Thread_destroy_mutex(r->mutex);
 		free(r);
 	}

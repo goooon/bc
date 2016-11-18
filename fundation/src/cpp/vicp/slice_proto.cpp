@@ -15,7 +15,7 @@ int create_group_id_req(bf_t *f,
 {
 	bf_init_e(f, 5);
 	bf_put_u8(f, ((VICP_SLICE_GROUP_ID << 4) & 0xf0) 
-		|| (VICP_SLICE_VERSION & 0xf));
+		| (VICP_SLICE_VERSION & 0xf));
 	bf_put_u32(f, context_id);
 	return 0;
 }
@@ -25,7 +25,7 @@ int create_desc_req(bf_t *f,
 {
 	bf_init_e(f, 13);
 	bf_put_u8(f, ((VICP_SLICE_DESC << 4) & 0xf0) 
-		|| (VICP_SLICE_VERSION & 0xf));
+		| (VICP_SLICE_VERSION & 0xf));
 	bf_put_u32(f, context_id);
 	bf_put_u16(f, len);
 	bf_put_u32(f, group_id);
@@ -38,7 +38,7 @@ int create_data_req(bf_t *f,
 {
 	bf_init_e(f, 13 + len);
 	bf_put_u8(f, ((VICP_SLICE_DATA << 4) & 0xf0) 
-		|| (VICP_SLICE_VERSION & 0xf));
+		| (VICP_SLICE_VERSION & 0xf));
 	bf_put_u32(f, context_id);
 	bf_put_u32(f, group_id);
 	bf_put_u16(f, slice_id);
@@ -58,7 +58,7 @@ int create_group_id_ack(bf_t *f,
 {
 	bf_init_e(f, 11);
 	bf_put_u8(f, ((VICP_SLICE_GROUP_ID_ACK << 4) & 0xf0) 
-		|| (VICP_SLICE_VERSION & 0xf));
+		| (VICP_SLICE_VERSION & 0xf));
 	bf_put_u32(f, context_id);
 	bf_put_u32(f, group_id);
 	bf_put_u16(f, slice_size);
@@ -70,7 +70,7 @@ int create_desc_ack(bf_t *f,
 {
 	bf_init_e(f, 10);
 	bf_put_u8(f, ((VICP_SLICE_DESC_ACK << 4) & 0xf0) 
-		|| (VICP_SLICE_VERSION & 0xf));
+		| (VICP_SLICE_VERSION & 0xf));
 	bf_put_u32(f, context_id);
 	bf_put_u32(f, group_id);
 	bf_put_u8(f, result);
@@ -83,7 +83,7 @@ int create_data_ack(bf_t *f,
 {
 	bf_init_e(f, 15);
 	bf_put_u8(f, ((VICP_SLICE_DATA_ACK << 4) & 0xf0) 
-		|| (VICP_SLICE_VERSION & 0xf));
+		| (VICP_SLICE_VERSION & 0xf));
 	bf_put_u32(f, context_id);
 	bf_put_u32(f, group_id);
 	bf_put_u16(f, slice_id);

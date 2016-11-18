@@ -91,11 +91,18 @@ static void bcp_message_foreach_callback(bcp_message_t *m, void *context)
 	bcp_elements_foreach(m, bcp_element_foreach_callback, NULL);
 }
 
+static void print_packet(bcp_packet_t *p)
+{
+	LOG_I("APP:package arrived, v=%d, plen=%d, crc=0x%x",
+		p->hdr.version, p->hdr.packet_len, p->end.crc32);
+}
+
 static void parse_packet(bcp_packet_t *p)
 {
 	bcp_message_t *m = NULL;
 	bcp_element_t *e = NULL;
-
+	
+	print_packet(p);
 	//bcp_messages_foreach(p, bcp_message_foreach_callback, NULL);
 
 	while ((m = bcp_next_message(p, m)) != NULL) {
@@ -105,12 +112,6 @@ static void parse_packet(bcp_packet_t *p)
 			print_element(e);
 		}
 	}
-}
-
-static void print_packet(bcp_packet_t *p)
-{
-	LOG_I("APP:package arrived, v=%d, plen=%d, crc=0x%x", 
-		p->hdr.version, p->hdr.packet_len, p->end.crc32);
 }
 
 static void on_packet_arrived(void *context, bcp_packet_t *p)
@@ -643,13 +644,68 @@ static void nmea_test(void)
 
 #include "../fundation/src/inc/vicp/bcp_vicp.h"
 #if defined (_WIN32) || defined(_WIN64)
-#define CHANNEL_SERIAL "COM6"
+#define CHANNEL_SERIAL "COM7"
 #else
 #define CHANNEL_SERIAL "/dev/ttySAC2"
 #endif
+
+static void vicp_data_arrived(void *context, u8 *buf, u16 len)
+{
+	bcp_packet_t *p;
+
+	LOG_I("data arrived, len=%d\n", len);
+	if (bcp_packet_unserialize(buf, len, &p) < 0) {
+		LOG_E("data unserialize failed.\n");
+	} else {
+		parse_packet(p);
+		bcp_packet_destroy(p);
+	}
+
+	free(buf);
+}
+
+static void vicp_send_cb(void *context, int result)
+{
+	static int index = 1;
+	bcp_packet_t *p = (bcp_packet_t*)context;
+	if (p) {
+		LOG_I("data send complete, ver = %d, result=%d, index=%d\n", p->hdr.version, result, index++);
+		bcp_packet_destroy(p);
+	} else {
+		LOG_I("data send complete, result=%d, index=%d\n", result, index++);
+	}
+}
+
+#define ELE_LEN (1024 - 32 + 1024 + 1)
+static void send_one_packet(bcp_channel_t *c)
+{
+	bcp_packet_t *p, *pu;
+	u8 *data;
+	u32 len;
+
+	data = (u8*)malloc(ELE_LEN);
+	if (!data) {
+		LOG_E("malloc failed.\n");
+		return;
+	}
+	memcpy(data, "k", ELE_LEN - 1);
+	data[ELE_LEN - 1] = '0';
+
+	p = bcp_create_one_message((u16)2, (u8)5, bcp_next_seq_id(), 
+		data, ELE_LEN);
+	free(data);
+
+	if (bcp_packet_serialize(p, &data, &len) >= 0) {
+		bcp_vicp_send(c, (const char*)data, (int)len, 20 * 1000, vicp_send_cb, p, NULL);
+		free(data);
+	}
+}
+
 static void vicp_test(void)
 {
-	bcp_channel_t *c;
+	int count = 1;
+	int ret;
+	bcp_channel_t *c = NULL;
 
 	c = bcp_channel_create(BCP_CHANNEL_SERIAL, CHANNEL_SERIAL);
 	if (!c) {
@@ -657,13 +713,32 @@ static void vicp_test(void)
 		return;
 	}
 
+	if ((ret = c->open(c)) < 0) {
+		LOG_E("open channel %s failed, ret = %d.\n", CHANNEL_SERIAL, ret);
+		goto __end;
+	}
+
 	if (bcp_vicp_regist_channel(c) < 0) {
 		LOG_E("regist channel for %s failed.\n", CHANNEL_SERIAL);
-		return;
+		goto __end;
 	}
-	
+
+	bcp_vicp_regist_data_arrived_callback(c, vicp_data_arrived, NULL);
+
+	while (count-- > 0) {
+		send_one_packet(c);
+		//my_sleep(1000);
+	}
+
 	while (1) {
 		my_sleep(1000);
+	}
+
+__end:
+	if (c) {
+		c->close(c);
+		bcp_vicp_unregist_channel(c);
+		bcp_channel_destroy(c);
 	}
 }
 

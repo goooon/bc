@@ -33,18 +33,30 @@ typedef struct sender_pack_s {
 static u64 seq_id = 0;
 static mutex_type mutex = NULL;
 
+#ifdef VICP_MOCK_TEST
+static List sent_list;
+#endif
+
 void bcp_vicp_sender_init(void)
 {
 	mutex = Thread_create_mutex();
 	if (!mutex) {
 		LOG_W("bcp_vicp_sender_init create mutex failed.\n");
 	}
+#ifdef VICP_MOCK_TEST
+	ListZero(&sent_list);
+#endif
 }
+
+static void destroy_list(List *list);
 
 void bcp_vicp_sender_uninit(void)
 {
 	Thread_destroy_mutex(mutex);
 	mutex = NULL;
+#ifdef VICP_MOCK_TEST
+	destroy_list(&sent_list);
+#endif
 }
 
 static u64 next_seq_id(void)
@@ -58,13 +70,21 @@ static u64 next_seq_id(void)
 	return id;
 }
 
+static void destroy_sender_pack(sender_pack_t *sp)
+{
+	if (sp->p) {
+		bcp_vicp_packet_destroy(sp->p);
+	}
+	free(sp);
+}
+
 static void destroy_list(List *list)
 {
 	sender_pack_t *e;
 
 	while ((e = (sender_pack_t*)ListDetachHead(list)) != NULL) {
 		bcp_vicp_packet_destroy(e->p);
-		free(e);
+		destroy_sender_pack(e);
 	}
 }
 
@@ -87,7 +107,7 @@ static int packet_escaped(sender_pack_t *e)
 	return (e && (current_timestamp() > e->escaped));
 }
 
-static int channel_write(bcp_channel_t *c, sender_pack_t *e, 
+static int channel_write(bcp_channel_t *c, 
 	const char *buf, int len)
 {
 	int ret, bytes = 0;
@@ -110,19 +130,14 @@ static int channel_write(bcp_channel_t *c, sender_pack_t *e,
 	return 0;
 }
 
-static int send_one_packet(bcp_channel_t *c, sender_pack_t *e)
+static int send_one_packet(bcp_channel_t *c, bcp_vicp_packet_t *p)
 {
 	int ret = 0;
 	u8 *buf;
 	u32 len;
 
-	++e->retry;
-	if (packet_escaped(e)) {
-		return -1;
-	}
-
-	if (bcp_vicp_packet_serialize(e->p, &buf, &len) >= 0) {
-		ret = channel_write(c, e, (const char*)buf, (int)len);
+	if (bcp_vicp_packet_serialize(p, &buf, &len) >= 0) {
+		ret = channel_write(c, (const char*)buf, (int)len);
 		free(buf);
 	}
 
@@ -137,13 +152,12 @@ static void move_to_ack_list(bcp_vicp_sender_t *s, sender_pack_t *p)
 	Thread_post_sem(s->ack_sem);
 }
 
-static void notify_complete(sender_pack_t *e, int result)
+static void free_notify_complete(sender_pack_t *e, int result)
 {
 	if (e->complete) {
 		(*e->complete)(e->context, result);
 	}
-	bcp_vicp_packet_destroy(e->p);
-	free(e);
+	destroy_sender_pack(e);
 }
 
 static void check_ack_list(bcp_vicp_sender_t *s)
@@ -158,8 +172,9 @@ static void check_ack_list(bcp_vicp_sender_t *s)
 		if (packet_escaped(e)) {
 			ListDetach(&s->waiting_ack, e);
 			mutex_unlock(s->ack_mutex);
-			notify_complete(e, VICP_SEND_TIMEOUT);
+			free_notify_complete(e, VICP_SEND_TIMEOUT);
 			mutex_lock(s->ack_mutex);
+			current = NULL; /* TODO: */
 		}
 	}
 
@@ -184,7 +199,7 @@ void bcp_vicp_sender_notify_ack(bcp_vicp_sender_t *s,
 		if (e && e->p && (e->p->msg_id == msg_id)) {
 			ListDetach(&s->waiting_ack, e);
 			mutex_unlock(s->ack_mutex);
-			notify_complete(e, result);
+			free_notify_complete(e, result);
 			mutex_lock(s->ack_mutex);
 			break;
 		}
@@ -193,17 +208,53 @@ void bcp_vicp_sender_notify_ack(bcp_vicp_sender_t *s,
 	mutex_unlock(s->ack_mutex);
 }
 
-static void post_packet(bcp_channel_t *c, bcp_vicp_sender_t *s, sender_pack_t *e)
+#ifdef VICP_MOCK_TEST
+bcp_vicp_packet_t *read_packet_from_list(void)
 {
-	int ret;
+	sender_pack_t *e;
+	bcp_vicp_packet_t *p = NULL;
 
-	if ((ret = send_one_packet(c, e)) >= 0) {
-		if (e->p->type != VICP_PACKET_ACK) {
-			move_to_ack_list(s, e);
-		}
-	} else {
-		notify_complete(e, VICP_SEND_FAILED);
+	mutex_lock(mutex);
+	e = (sender_pack_t*)ListDetachHead(&sent_list);
+	mutex_unlock(mutex);
+	if (e) {
+		p = e->p;
+		e->p = NULL;
+		destroy_sender_pack(e);
 	}
+
+	return p;
+}
+#endif
+
+static void post_packet(bcp_channel_t *c, 
+	bcp_vicp_sender_t *s, sender_pack_t *e)
+{
+	int ret = -1;
+
+#ifdef VICP_MOCK_TEST
+	if (e->complete) {
+		(*e->complete)(e->context, VICP_SEND_OK);
+	}
+	mutex_lock(mutex);
+	ListAppend(&sent_list, e, sizeof(*e));
+	mutex_unlock(mutex);
+#else
+	++e->retry;
+	if (packet_escaped(e)) {
+		free_notify_complete(e, VICP_SEND_TIMEOUT);
+	} else {
+		if ((ret = send_one_packet(c, e->p)) >= 0) {
+			if (e->p->type != VICP_PACKET_ACK) {
+				move_to_ack_list(s, e); /* waiting ack */
+			} else {
+				destroy_sender_pack(e);
+			}
+		} else {
+			free_notify_complete(e, VICP_SEND_FAILED);
+		}
+	}
+#endif
 }
 
 static void send_packet(bcp_vicp_sender_t *s)
@@ -226,8 +277,6 @@ static void send_packet(bcp_vicp_sender_t *s)
 	}
 
 	mutex_unlock(s->send_mutex);
-
-	bcp_vicp_put_channel(s->listener);
 }
 
 static thread_return_type WINAPI sender_thread(void *arg)
@@ -317,7 +366,6 @@ bcp_vicp_sender_t *bcp_vicp_sender_create(void *listener)
 
 	s->stop = 1;
 	s->listener = listener;
-	bcp_vicp_get_listener(listener);
 
 	return s;
 
@@ -398,9 +446,9 @@ int bcp_vicp_sender_packet(bcp_vicp_sender_t *s,
 	sp->complete = complete;
 	sp->context = context;
 
-	mutex_lock(s->mutex);
+	mutex_lock(s->send_mutex);
 	ListAppend(&s->waiting_send, sp, sizeof(*sp));
-	mutex_unlock(s->mutex);
+	mutex_unlock(s->send_mutex);
 
 	/* wakeup sender thread */
 	Thread_post_sem(s->sem);
@@ -493,7 +541,6 @@ int bcp_vicp_sender_stop(bcp_vicp_sender_t *s)
 void bcp_vicp_sender_destroy(bcp_vicp_sender_t *s)
 {
 	bcp_vicp_sender_stop(s);
-	bcp_vicp_put_listener(s->listener);
 
 	Thread_destroy_sem(s->sem);
 	Thread_destroy_sem(s->ack_sem);

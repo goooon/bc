@@ -62,10 +62,9 @@ static bcp_channel_t *find_channel(bcp_channel_t *c)
 
 	e = ListFind(&channels, (void*)c);
 	if (e) {
-		c = (bcp_channel_t*)e->content;
+		return (bcp_channel_t*)e->content;
 	}
-
-	return c;
+	return NULL;
 }
 
 static bcp_channel_t *find_channel_byname(const char *dev_name)
@@ -256,34 +255,41 @@ bcp_channel_t *bcp_channel_create(int type, const char *dev_name)
 
 	c = (bcp_channel_t*)malloc(sizeof(*c));
 	if (!c) {
-		mutex_unlock(mutex);
-		return NULL;
+		goto __failed;
 	}
 
 	memset(c, 0, sizeof(*c));
 	c->dev_name = my_strdup(dev_name);
 	if (!c->dev_name) {
-		free(c);
-		mutex_unlock(mutex);
-		return NULL;
+		goto __failed;
 	}
-
 	c->mutex = Thread_create_mutex();
 	if (!c->mutex) {
-		free(c->dev_name);
-		free(c);
-		mutex_unlock(mutex);
-		return NULL;
+		goto __failed;
 	}
 
 	c->type = type;
-	c->channel_ref++;
+	c->hdl_ref = 0;
+	c->channel_ref = 1;
 	c->hdl = NULL;
 	set_callback(c);
 
-	mutex_unlock(mutex);
+	if (insert_channel(c) < 0) {
+		goto __failed;
+	}
 
+	mutex_unlock(mutex);
 	return c;
+
+__failed:
+	if (c) {
+		if (c->dev_name)
+			free(c->dev_name);
+		Thread_destroy_mutex(c->mutex);
+		free(c);
+	}
+	mutex_unlock(mutex);
+	return NULL;
 }
 
 void bcp_channel_destroy(bcp_channel_t *c)
@@ -338,6 +344,18 @@ bcp_channel_t* bcp_channel_get(bcp_channel_t *c)
 
 void bcp_channel_put(bcp_channel_t *c)
 {
-	bcp_channel_destroy(c);
+	if (!c) {
+		return;
+	} else {
+		mutex_lock(mutex);
+		if (c->channel_ref == 0) {
+			LOG_E("bcp_channel_put channel_ref == 0.\n");
+			mutex_unlock(mutex);
+		}
+		c->channel_ref--;
+		mutex_unlock(mutex);
+		if (c->channel_ref == 0) {
+			bcp_channel_destroy(c);
+		}
+	}
 }
-

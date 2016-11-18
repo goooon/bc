@@ -57,10 +57,9 @@ static vicp_listener_t *find_listener(vicp_listener_t *c)
 
 	e = ListFind(&listeners, (void*)c);
 	if (e) {
-		c = (vicp_listener_t*)e->content;
+		return (vicp_listener_t*)e->content;
 	}
-
-	return c;
+	return NULL;
 }
 
 static vicp_listener_t *find_listener_bychannel(bcp_channel_t *c)
@@ -100,12 +99,28 @@ void bcp_vicp_data_arrived(void *listener,
 	u8 *buf, u16 len)
 {
 	vicp_listener_t *lsner = (vicp_listener_t*)listener;
+	vicp_data_arrived_callback cb;
+	void *context;
 
-	if (lsner && lsner->vdac) {
-		(*lsner->vdac)(lsner->context, buf, len);
-	} else {
-		free(buf);
+	if (lsner) {
+		mutex_lock(lsner->mutex);
+		cb = lsner->vdac;
+		context = lsner->context;
+		mutex_unlock(lsner->mutex);
+		if (cb) {
+			(*cb)(context, buf, len);
+		}
 	}
+}
+
+static void get_channel(bcp_channel_t *c)
+{
+	bcp_channel_get(c);
+}
+
+static void put_channel(bcp_channel_t *c)
+{
+	bcp_channel_put(c);
 }
 
 int bcp_vicp_regist_channel(bcp_channel_t *c)
@@ -116,7 +131,7 @@ int bcp_vicp_regist_channel(bcp_channel_t *c)
 	mutex_lock(mutex);
 	if (find_listener_bychannel(c)) {
 		mutex_unlock(mutex);
-		return -1;
+		return 0;
 	}
 
 	listener = (vicp_listener_t*)malloc(sizeof(*listener));
@@ -148,7 +163,7 @@ int bcp_vicp_regist_channel(bcp_channel_t *c)
 	bcp_vicp_slice_start(listener->slicer);
 
 	c->listener = listener;
-	bcp_vicp_get_channel(listener);
+	get_channel(listener->ch);
 
 	insert_listener(listener);
 
@@ -168,8 +183,7 @@ __failed:
 		free(listener);
 	}
 	mutex_unlock(mutex);
-
-	return ret;
+	return -1;
 }
 
 int bcp_vicp_unregist_channel(bcp_channel_t *c)
@@ -203,7 +217,7 @@ int bcp_vicp_unregist_channel(bcp_channel_t *c)
 
 	c->listener = NULL;
 
-	bcp_vicp_put_channel(listener);
+	put_channel(listener->ch);
 	Thread_destroy_mutex(listener->mutex);
 
 	remove_listener(listener);
@@ -285,19 +299,10 @@ bcp_channel_t *bcp_vicp_get_channel(void *listener)
 {
 	vicp_listener_t *l = (vicp_listener_t*)listener;
 
-	if (l && l->ch) {
-		return bcp_channel_get(l->ch);
+	if (l) {
+		return l->ch;
 	} else {
 		return NULL;
-	}
-}
-
-void bcp_vicp_put_channel(void *listener)
-{
-	vicp_listener_t *l = (vicp_listener_t*)listener;
-
-	if (l && l->ch) {
-		bcp_channel_put(l->ch);
 	}
 }
 

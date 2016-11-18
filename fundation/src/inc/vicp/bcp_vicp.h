@@ -15,6 +15,11 @@
 #define mutex_unlock(m) Thread_unlock_mutex(m)
 
 /*
+ * mock receiver, sender from local list
+ */
+#define VICP_MOCK_TEST 1
+
+/*
  * vechicle Inter-Connect Protocol
  * functions:
  *     1. codec data by vicp
@@ -56,7 +61,6 @@ void bcp_vicp_get_listener(void *listener);
 void bcp_vicp_put_listener(void *listener);
 
 bcp_channel_t *bcp_vicp_get_channel(void *listener);
-void bcp_vicp_put_channel(void *listener);
 
 /* for inner function */
 void bcp_vicp_data_arrived(void *listener, 

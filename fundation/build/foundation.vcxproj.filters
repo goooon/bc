@@ -200,9 +200,6 @@
     <ClCompile Include="..\src\cpp\bcp_nmea.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cpp\vicp\slice_proto.cpp">
-      <Filter>src\cpp</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cpp\vicp\bcp_vicp_slice.cpp">
       <Filter>src\cpp\vicp</Filter>
     </ClCompile>
@@ -220,6 +217,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cpp\bcp_channel.cpp">
       <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\vicp\slice_proto.cpp">
+      <Filter>src\cpp\vicp</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
