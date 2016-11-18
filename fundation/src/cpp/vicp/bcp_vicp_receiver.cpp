@@ -103,7 +103,7 @@ static u8 *read_whole_block(bcp_channel_t *c,
 	/* read tag */
 	tag = read_tag(r, c, &header[0]);
 	if (tag != VICP_PACKET_TAG) {
-		//LOG_E("read tag invalid, tag = 0x%x.\n", tag);
+		LOG_E("read tag invalid, tag = 0x%x.\n", tag);
 		free(header);
 		return NULL;
 	}
