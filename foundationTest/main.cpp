@@ -709,7 +709,7 @@ static void vicp_test(int argc, char **argv)
 	char *dev_name;
 	bcp_channel_t *c = NULL;
 
-	if (argc < 3) {
+	if (argc < 2) {
 		printf("usage: %s </dev/ttySAC1>", argv[0]);
 		dev_name = (char*)CHANNEL_SERIAL;
 	} else {
@@ -753,7 +753,7 @@ __end:
 
 int main(int argc, char **argv)
 {
-	int ispub;
+	int issub;
 
 	bcp_init();
 
@@ -767,8 +767,8 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	ispub = atoi(argv[1]);
-	if (ispub) {
+	issub = atoi(argv[1]);
+	if (issub) {
 		publishs();
 	} else {
 		subscribes();
