@@ -17,7 +17,7 @@
 /*
  * mock receiver, sender from local list
  */
-#define VICP_MOCK_TEST 1
+//#define VICP_MOCK_TEST 1
 
 /*
  * vechicle Inter-Connect Protocol

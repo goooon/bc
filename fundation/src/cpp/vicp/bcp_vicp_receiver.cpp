@@ -17,6 +17,7 @@
 
 #if !defined(_WIN32) && !defined(_WIN64)
 #include <unistd.h>
+#define WINAPI
 #else
 #include <windows.h>
 #endif

@@ -45,6 +45,13 @@ SET(common_src
 	src/cpp/bcp_serial.cpp
 	src/cpp/bcp_nmea.cpp
 	src/cpp/util/Timestamp.cpp
+	src/cpp/bcp_channel.cpp
+	src/cpp/vicp/bcp_vicp_packet.cpp
+	src/cpp/vicp/slice_proto.cpp
+	src/cpp/vicp/bcp_vicp_receiver.cpp
+	src/cpp/vicp/bcp_vicp_sender.cpp
+	src/cpp/vicp/bcp_vicp_slice.cpp
+	src/cpp/vicp/bcp_vicp.cpp
     )
 
 ##-std=gnu++11 

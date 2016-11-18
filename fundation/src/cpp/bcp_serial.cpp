@@ -15,6 +15,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>  
 #endif
 
 #include "../inc/bcp_serial.h"

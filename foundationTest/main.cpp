@@ -677,8 +677,9 @@ static void vicp_send_cb(void *context, int result)
 }
 
 #define ELE_LEN (1024 - 32 + 1024 + 1)
-static void send_one_packet(bcp_channel_t *c)
+static void send_one_packet(bcp_channel_t *c, const char *dev_name)
 {
+	static int i = 0;
 	bcp_packet_t *p, *pu;
 	u8 *data;
 	u32 len;
@@ -688,7 +689,7 @@ static void send_one_packet(bcp_channel_t *c)
 		LOG_E("malloc failed.\n");
 		return;
 	}
-	memcpy(data, "k", ELE_LEN - 1);
+	sprintf((char*)data, "%d:%s\n", i++, dev_name);
 	data[ELE_LEN - 1] = '0';
 
 	p = bcp_create_one_message((u16)2, (u8)5, bcp_next_seq_id(), 
@@ -701,33 +702,41 @@ static void send_one_packet(bcp_channel_t *c)
 	}
 }
 
-static void vicp_test(void)
+static void vicp_test(int argc, char **argv)
 {
-	int count = 1;
+	int count = 100;
 	int ret;
+	char *dev_name;
 	bcp_channel_t *c = NULL;
 
-	c = bcp_channel_create(BCP_CHANNEL_SERIAL, CHANNEL_SERIAL);
+	if (argc < 3) {
+		printf("usage: %s </dev/ttySAC1>", argv[0]);
+		dev_name = (char*)CHANNEL_SERIAL;
+	} else {
+		dev_name = argv[1];
+	}
+
+	c = bcp_channel_create(BCP_CHANNEL_SERIAL, dev_name);
 	if (!c) {
-		LOG_E("create channel for %s failed.\n", CHANNEL_SERIAL);
+		LOG_E("create channel for %s failed.\n", dev_name);
 		return;
 	}
 
 	if ((ret = c->open(c)) < 0) {
-		LOG_E("open channel %s failed, ret = %d.\n", CHANNEL_SERIAL, ret);
+		LOG_E("open channel %s failed, ret = %d.\n", dev_name, ret);
 		goto __end;
 	}
 
 	if (bcp_vicp_regist_channel(c) < 0) {
-		LOG_E("regist channel for %s failed.\n", CHANNEL_SERIAL);
+		LOG_E("regist channel for %s failed.\n", dev_name);
 		goto __end;
 	}
 
 	bcp_vicp_regist_data_arrived_callback(c, vicp_data_arrived, NULL);
 
 	while (count-- > 0) {
-		send_one_packet(c);
-		//my_sleep(1000);
+		send_one_packet(c, dev_name);
+		my_sleep(1000);
 	}
 
 	while (1) {
@@ -751,7 +760,7 @@ int main(int argc, char **argv)
 	//execl();
 	//serial_test(argc, argv);
 	//nmea_test();
-	vicp_test();
+	vicp_test(argc, argv);
 
 	if (argc < 2) {
 		printf("usage %s {0|1}", argv[0]);

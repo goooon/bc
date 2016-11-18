@@ -17,6 +17,13 @@
 #include "../../inc/vicp/slice_proto.h"
 #include "../../inc/vicp/bcp_vicp.h"
 
+#if !defined(_WIN32) && !defined(_WIN64)
+#include <unistd.h>
+#define WINAPI
+#else
+#include <windows.h>
+#endif
+
 #define DEF_WAIT_ACK_TIMEOUT (10 * 1000)
 #define MAX_RECV_SLICE_TIMEOUT (40 * 1000)
 
