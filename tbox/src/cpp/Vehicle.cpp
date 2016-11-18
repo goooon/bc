@@ -2,6 +2,10 @@
 #include "../inc/Application.h"
 #include "../inc/Event.h"
 #include "../tasks/Element.h"
+
+#undef TAG
+#define TAG "Vehicle"
+
 Vehicle& Vehicle::getInstance()
 {
 	return Application::getInstance().getVehicle();
@@ -53,7 +57,8 @@ Operation::Result Vehicle::reqActiveDoorByVKey()
 {
 	LOG_I("do reqActiveDoorByVKey()");
 	if (apparatus.misc.door_actived)return Operation::Succ;
-	//todo can bus command and will block this operation
+	//todo send can bus command and will block this operation
+	LOG_I("Blicking by can bus Active Door command ...");
 	return Operation::S_Blocking;
 }
 
@@ -68,7 +73,8 @@ Operation::Result Vehicle::reqDeactiveDoor()
 		//todo...
 		return Operation::E_DoorOpened;
 	}
-	//todo can bus command and will block this operation
+	//todo send can bus command and will block this operation
+	LOG_I("Blicking by can bus Deactive Door command...");
 	return Operation::S_Blocking;
 }
 

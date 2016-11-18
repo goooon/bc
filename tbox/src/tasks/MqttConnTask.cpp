@@ -1,7 +1,7 @@
 #include "./MqttConnTask.h"
 #include "../inc/Application.h"
 #undef TAG
-#define TAG "VehicleAuthTask"
+#define TAG "AXX"
 MqttConnTask::MqttConnTask():Task(APPID_MQTT_CONNECT, true) {}
 void MqttConnTask::doTask()
 {

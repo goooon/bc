@@ -3,7 +3,7 @@
 #include "../inc/Event.h"
 #include "../tasks/BCMessage.h"
 #include "../tasks/ErrorCode.h"
-
+#include "../tasks/TaskTable.h"
 #undef TAG
 #define TAG "Task"
 
@@ -114,11 +114,11 @@ ThreadEvent::WaitResult MessageQueue::wait(u32 millSecond)
 void Task::rspAck()
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, 3, seqID);
+	BCMessage msg = pkg.appendMessage(appID, ACK_STEP_ID, seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(0);
-	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, Config::getInstance().getMqttSendTimeOut())) {
+	if (!pkg.post(Config::getInstance().getPublishTopic(), Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("rspAck failed");
 	}
 	else {
@@ -129,13 +129,13 @@ void Task::rspAck()
 void Task::ntfTimeOut()
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
+	BCMessage msg = pkg.appendMessage(appID, NTF_STEP_ID, seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(11);
 	msg.appendFunctionStatus(0);
 
-	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, Config::getInstance().getMqttSendTimeOut())) {
+	if (!pkg.post(Config::getInstance().getPublishTopic(), Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("ntfTimeOut() post failed by %d",appID);
 	}
 	else {
@@ -143,7 +143,7 @@ void Task::ntfTimeOut()
 	}
 }
 
-void Task::rspError(Operation::Result ret)
+void Task::ntfError(Operation::Result ret)
 {
 	u8 ecode = 0;
 	switch (ret)
@@ -186,16 +186,16 @@ void Task::rspError(Operation::Result ret)
 	}
 
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
+	BCMessage msg = pkg.appendMessage(appID, NTF_STEP_ID, seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(ecode);
 	msg.appendFunctionStatus(0);
-	if (!pkg.post(Config::getInstance().pub_topic, 2, Config::getInstance().getMqttSendTimeOut())) {
+	if (!pkg.post(Config::getInstance().pub_topic, Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("sendResponseError failed %d", ret);
 	}
 	else
 	{
-		LOG_I("rspError(%d) ---> TSP", ret);
+		//LOG_I("rspError(%d) ---> TSP", ret);
 	}
 }

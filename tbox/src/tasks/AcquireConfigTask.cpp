@@ -113,7 +113,7 @@ void AcquireConfigTask::reqConfig()
 	msg.appendTimeStamp();
 
 	LOG_I("reqConfig ...");
-	if (!pkg.post(Config::getInstance().pub_topic, 2, Config::getInstance().getMqttSendTimeOut())) {
+	if (!pkg.post(Config::getInstance().pub_topic, Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("reqConfig failed");
 	}
 }

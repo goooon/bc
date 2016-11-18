@@ -1,6 +1,6 @@
 #include "./VKeyDeactiveTask.h"
 #undef TAG
-#define TAG "VKeyDeavtiveTask"
+#define TAG "A02"
 Task* VKeyDeavtiveTask::Create()
 {
 	return bc_new VKeyDeavtiveTask();
@@ -21,7 +21,7 @@ void VKeyDeavtiveTask::doTask()
 			Timestamp now;
 			if (now > expireTime) {
 				LOG_I("VKeyDeavtiveTask Time Out %lld", expireTime.getValue());
-				ntfTimeOut();
+				NtfTimeOut();
 				return;
 			}
 		}
@@ -31,12 +31,12 @@ void VKeyDeavtiveTask::doTask()
 				if (args.e == AppEvent::AutoEvent) {
 					if (args.param1 == Vehicle::DeactiveDoorResult) {
 						if (!args.param2) {
-							rspError(Operation::E_State);
+							RspError(Operation::E_State);
 							break;
 						}
 						else {
 							LOG_I("Deavtive door OK ---> TSP");
-							rspError(Operation::Succ);
+							RspError(Operation::Succ);
 							break;
 						}
 					}
@@ -45,7 +45,7 @@ void VKeyDeavtiveTask::doTask()
 					}
 				}
 				else if (args.e == AppEvent::AbortTasks) {
-					rspError(Operation::W_Aborted);
+					RspError(Operation::W_Aborted);
 					return;
 				}
 				else if (args.e == AppEvent::PackageArrived) {
@@ -53,21 +53,20 @@ void VKeyDeavtiveTask::doTask()
 						//check stepid first
 						BCPackage pkg(args.data);
 						if (args.param2 == 2) {
-							LOG_I("rspAck to TSP");
-							rspAck();
+							RspAck();
 							expireTime.update(Config::getInstance().getDoorDeactiveTimeOut());
 
 							ret = Vehicle::getInstance().reqDeactiveDoor();
 							if (ret == Operation::Succ) {
 								LOG_I("reqDeactiveDoor() Done %d", ret);
-								return rspError(ret);
+								RspError(ret);
 							}
 							else if (ret == Operation::S_Blocking) {
 								LOG_I("reqDeactiveDoor() blocking...");
 							}
 							else {
-								LOG_I("reqDeactiveDoor() Error(%d) ---> TSP",ret);
-								rspError(ret);
+								LOG_I("reqDeactiveDoor() Result(%d) ---> TSP",ret);
+								RspError(ret);
 								return;
 							}
 						}
@@ -86,7 +85,7 @@ void VKeyDeavtiveTask::doTask()
 		}
 		else {
 			LOG_I("waitForKnobTrigger Error %d", wr);
-			rspError(Operation::E_Code);
+			RspError(Operation::E_Code);
 			return;
 		}
 	}

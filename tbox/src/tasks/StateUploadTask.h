@@ -13,7 +13,7 @@ class UnIgnitStateUploadTask : public Task {
 public:
 	static Task* Create();
 	UnIgnitStateUploadTask();
-	void rspAck();
+	//void rspAck();
 	virtual void doTask()OVERRIDE;
 	bool ntfState();
 private:

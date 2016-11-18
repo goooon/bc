@@ -6,7 +6,7 @@ bool ActiveTest::reqRemoteUnlock()
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, 3, seqID);
 	msg.appendAck(1);
-	if (!pkg.post(Config::getInstance().pub_topic, 1, Config::getInstance().getMqttSendTimeOut())) {
+	if (!pkg.post(Config::getInstance().pub_topic, Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("req Auth failed");
 		return true;
 	}

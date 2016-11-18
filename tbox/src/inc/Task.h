@@ -43,7 +43,7 @@ protected:
 	virtual void doTask(){return;}
 	void ntfTimeOut();
 	void rspAck();
-	void rspError(Operation::Result ret);
+	void ntfError(Operation::Result ret);
 private:
 	//called by Application
 	virtual void run()OVERRIDE;
@@ -58,4 +58,8 @@ protected:
 	bool isAsync;
 	MessageQueue msgQueue;
 };
+
+#define RspError(ret) LOG_I("rspError(%d) ---> TSP", ret);ntfError(ret);
+#define RspAck()      LOG_I("RspAck() ---> TSP");rspAck();
+#define NtfTimeOut()  LOG_I("ntfTimeOut() ---> TSP");ntfTimeOut();
 #endif // GUARD_Task_h__
