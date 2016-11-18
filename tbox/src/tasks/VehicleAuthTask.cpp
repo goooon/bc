@@ -2,7 +2,8 @@
 #include "./BCMessage.h"
 #include "../inc/Vehicle.h"
 #include "../inc/Application.h"
-
+#undef TAG
+#define TAG "A00"
 VehicleAuthTask::VehicleAuthTask() :Task(APPID_AUTHENTICATION, true)
 {
 	VehicleAuthTask* p = this;
@@ -113,7 +114,7 @@ void VehicleAuthTask::reqAuth()
 	msg.appendTimeStamp();
 
 	LOG_I("req Auth ...");
-	if (!pkg.post(Config::getInstance().pub_topic, 2, Config::getInstance().getMqttSendTimeOut())) {
+	if (!pkg.post(Config::getInstance().pub_topic, Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("req Auth failed");
 	}
 	else {

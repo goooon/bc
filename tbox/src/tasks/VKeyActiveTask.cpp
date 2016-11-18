@@ -1,7 +1,7 @@
 #include "./VKeyActiveTask.h"
 #include "../inc/Sensor.h"
 #undef TAG
-#define TAG "VKeyActiveTask"
+#define TAG "A01"
 
 Task* VKeyActiveTask::Create()
 {
@@ -17,12 +17,12 @@ VKeyActiveTask::VKeyActiveTask() :Task(APPID_VKEY_ACTIVITION, true)
 void VKeyActiveTask::ntfDoorActived()
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
+	BCMessage msg = pkg.appendMessage(appID, NTF_STEP_ID, seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(ERR_SUCC);
 	msg.appendFunctionStatus(0);
-	if (!pkg.post(Config::getInstance().getPublishTopic(),2, Config::getInstance().getMqttSendTimeOut())) {
+	if (!pkg.post(Config::getInstance().getPublishTopic(), Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("sendResponseUnlocked failed");
 	}
 }
@@ -30,12 +30,12 @@ void VKeyActiveTask::ntfDoorActived()
 void VKeyActiveTask::ntfDoorOpened()
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
+	BCMessage msg = pkg.appendMessage(appID, NTF_STEP_ID, seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(ERR_SUCC);
 	msg.appendFunctionStatus(0);
-	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, Config::getInstance().getMqttSendTimeOut())) {
+	if (!pkg.post(Config::getInstance().getPublishTopic(), Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("sendResponseUnlocked failed");
 	}
 	else {
@@ -52,7 +52,7 @@ void VKeyActiveTask::doTask()
 			Timestamp now;
 			if (now > expireTime) {
 				LOG_I("Active waiting Time Out %lld",expireTime.getValue());
-				ntfTimeOut();
+				NtfTimeOut();
 				Vehicle::getInstance().reqDeactiveDoor();
 				return;
 			}
@@ -63,7 +63,7 @@ void VKeyActiveTask::doTask()
 				if (args.e == AppEvent::AutoEvent) {
 					if (args.param1 == Vehicle::ActiveDoorResult) {
 						if (!args.param2) {
-							rspError(Operation::E_State);
+							RspError(Operation::E_State);
 							break;
 						}
 						else {
@@ -80,7 +80,7 @@ void VKeyActiveTask::doTask()
 					}
 				}
 				else if (args.e == AppEvent::AbortTasks) {
-					rspError(Operation::W_Aborted);
+					RspError(Operation::W_Aborted);
 					return;
 				}
 				else if (args.e == AppEvent::PackageArrived){
@@ -89,26 +89,26 @@ void VKeyActiveTask::doTask()
 						BCPackage pkg(args.data);
 						if (args.param2 == 2) {
 							LOG_I("rspAck to TSP");
-							rspAck();
+							RspAck();
 							expireTime.update(Config::getInstance().getDoorActivationTimeOut());
 
 							ret = Vehicle::getInstance().prepareActiveDoorByVKey();
 							if (ret != Operation::Succ) {
 								LOG_I("prepareActiveDoorByVKey() wrong %d", ret);
-								return rspError(ret);
+								return ntfError(ret);
 							}
 
 							ret = Vehicle::getInstance().reqActiveDoorByVKey();
 							if (ret == Operation::Succ) {
 								LOG_I("reqActiveDoorByVKey() Done %d", ret);
-								return rspError(ret);
+								return ntfError(ret);
 							}
 							else if (ret == Operation::S_Blocking) {
 								LOG_I("reqActiveDoorByVKey() blocking...");
 							}
 							else {
-								LOG_I("reqActiveDoorByVKey() Error(%d) ---> TSP", ret);
-								return rspError(ret);
+								LOG_I("reqActiveDoorByVKey() Result(%d) ---> TSP", ret);
+								return ntfError(ret);
 							}
 						}
 						else {
@@ -130,7 +130,7 @@ void VKeyActiveTask::doTask()
 		}
 		else {
 			LOG_I("waitForKnobTrigger Error %d", wr);
-			rspError(Operation::E_Code);
+			RspError(Operation::E_Code);
 			return;
 		}
 	}

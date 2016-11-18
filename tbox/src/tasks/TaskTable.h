@@ -19,5 +19,9 @@
 
 #define APPID_MQTT_CONNECT			0xFFFF0001
 #define APPID_PACKAGE_QUEUE         0xFFFF0002
+
+
+#define ACK_STEP_ID    3
+#define NTF_STEP_ID    5
 Task* TaskCreate(u32 appId, bcp_packet_t* pkg);
 #endif // GUARD_TaskTable_h__

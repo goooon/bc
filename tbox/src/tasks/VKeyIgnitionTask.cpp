@@ -1,6 +1,6 @@
 #include "./VKeyIgnitionTask.h"
 #undef TAG
-#define TAG "VKeyIgnitionTask"
+#define TAG "A03"
 Task* VKeyIgnitionTask::Create()
 {
 	return bc_new VKeyIgnitionTask();
@@ -22,7 +22,7 @@ void VKeyIgnitionTask::doTask()
 			if (now > expireTime) {
 				LOG_I("VKeyIgnitionTask waiting Time Out %lld", expireTime.getValue());
 				Vehicle::getInstance().prepareVKeyIgnition(false);
-				ntfTimeOut();
+				NtfTimeOut();
 				return;
 			}
 		}
@@ -32,7 +32,7 @@ void VKeyIgnitionTask::doTask()
 				if (args.e == AppEvent::AutoEvent) {
 					if (args.param1 == Vehicle::ActiveDoorResult) {
 						if (!args.param2) {
-							rspError(Operation::E_Door);
+							RspError(Operation::E_Door);
 							break;
 						}
 					}
@@ -46,7 +46,7 @@ void VKeyIgnitionTask::doTask()
 					}
 				}
 				else if (args.e == AppEvent::AbortTasks) {
-					rspError(Operation::W_Aborted);
+					RspError(Operation::W_Aborted);
 					return;
 				}
 				else if (args.e == AppEvent::PackageArrived) {
@@ -55,13 +55,13 @@ void VKeyIgnitionTask::doTask()
 						BCPackage pkg(args.data);
 						if (args.param2 == 2) {
 							LOG_I("rspAck to TSP");
-							rspAck();
+							RspAck();
 							expireTime.update(Config::getInstance().getIgntActivationTimeOut());
 
 							ret = Vehicle::getInstance().prepareVKeyIgnition(true);
 							if (ret != Operation::Succ) {
 								LOG_I("prepareVKeyIgnition() wrong %d", ret);
-								return rspError(ret);
+								return ntfError(ret);
 							}
 						}
 					}
@@ -79,7 +79,7 @@ void VKeyIgnitionTask::doTask()
 		}
 		else {
 			LOG_I("Event Error %d", wr);
-			rspError(Operation::E_Code);
+			RspError(Operation::E_Code);
 			return;
 		}
 	}
@@ -89,12 +89,12 @@ void VKeyIgnitionTask::doTask()
 void VKeyIgnitionTask::ntfIgnited()
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, 5, seqID);
+	BCMessage msg = pkg.appendMessage(appID, NTF_STEP_ID, seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(ERR_SUCC);
 	msg.appendFunctionStatus(0);
-	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, Config::getInstance().getMqttSendTimeOut(),true)) {
+	if (!pkg.post(Config::getInstance().getPublishTopic(), Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut(),true)) {
 		LOG_E("ntfIgnited() failed");
 	}
 }

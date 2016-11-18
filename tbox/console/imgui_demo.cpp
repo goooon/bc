@@ -2212,6 +2212,12 @@ struct ExampleAppConsole : public me::Tracer
 			vs.pedal.shift_level = s ? 1 : 0;
 		}
 
+		ImGui::Text("MoonRoof:"); ImGui::SameLine();
+		int mr = vs.window.moon_roof;
+		if (ImGui::SliderInt("", &mr, 0, 15)) {
+			vs.window.moon_roof = mr;
+		}
+
 		//////////GPS////////////////////////////////////////////////////////////////
 		s = Config::getInstance().getIsGpsDataValid();
 		if (ImGui::Checkbox("GpsData:", &s)) {
@@ -2220,7 +2226,7 @@ struct ExampleAppConsole : public me::Tracer
 		
 #define VEHICLE_SEC(n,v,ni,m)	\
 		degree = Vehicle::getInstance().v;	\
-		if (ImGui::SliderFloat(n, &degree, ni,m)) {	\
+		if (ImGui::SliderFloat(n, &degree, ni,m,"%.8f")) {	\
 			Vehicle::getInstance().v = degree;	\
 		}
 		if (s) {

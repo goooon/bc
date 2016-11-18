@@ -28,12 +28,6 @@
     <Filter Include="src\tasks\a02">
       <UniqueIdentifier>{1ab13205-c767-4515-96d0-bf1f9c607992}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\tasks\a03">
-      <UniqueIdentifier>{eef307fe-ced8-4daa-8650-a674e5291aac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\tasks\a04,a05,a06">
-      <UniqueIdentifier>{f9bc0b4f-5ecc-48b5-8dcd-fadf2c2eb60e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\tasks\axx">
       <UniqueIdentifier>{49682c40-143f-4627-8a48-e71dc9a20c45}</UniqueIdentifier>
     </Filter>
@@ -42,6 +36,12 @@
     </Filter>
     <Filter Include="src\tasks\auth">
       <UniqueIdentifier>{ec039d8c-db32-435e-926e-39755566dbc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\tasks\a03,a04">
+      <UniqueIdentifier>{eef307fe-ced8-4daa-8650-a674e5291aac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\tasks\a05,a06">
+      <UniqueIdentifier>{f9bc0b4f-5ecc-48b5-8dcd-fadf2c2eb60e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -127,10 +127,10 @@
       <Filter>src\tasks\a02</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tasks\VKeyIgnitionTask.h">
-      <Filter>src\tasks\a03</Filter>
+      <Filter>src\tasks\a03,a04</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tasks\StateUploadTask.h">
-      <Filter>src\tasks\a04,a05,a06</Filter>
+      <Filter>src\tasks\a05,a06</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tasks\GpsUploadTask.h">
       <Filter>src\tasks\a07,a08</Filter>
@@ -142,7 +142,7 @@
       <Filter>src\tasks\a07,a08</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tasks\VKeyUnIgnitTask.h">
-      <Filter>src\tasks\a03</Filter>
+      <Filter>src\tasks\a03,a04</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tasks\VehicleAuthTask.h">
       <Filter>src\tasks\auth</Filter>
@@ -213,10 +213,10 @@
       <Filter>src\tasks\a02</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tasks\VKeyIgnitionTask.cpp">
-      <Filter>src\tasks\a03</Filter>
+      <Filter>src\tasks\a03,a04</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tasks\StateUploadTask.cpp">
-      <Filter>src\tasks\a04,a05,a06</Filter>
+      <Filter>src\tasks\a05,a06</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tasks\MqttConnTask.cpp">
       <Filter>src\tasks\axx</Filter>
@@ -228,7 +228,7 @@
       <Filter>src\tasks\a07,a08</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tasks\VKeyUnIgnitTask.cpp">
-      <Filter>src\tasks\a03</Filter>
+      <Filter>src\tasks\a03,a04</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tasks\VehicleAuthTask.cpp">
       <Filter>src\tasks\auth</Filter>

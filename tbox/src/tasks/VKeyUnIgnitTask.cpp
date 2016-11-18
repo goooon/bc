@@ -1,6 +1,6 @@
 #include "./VKeyUnIgnitTask.h"
 #undef TAG
-#define TAG "VKeyUnIgnitTask"
+#define TAG "A04"
 Task* VKeyUnIgnitTask::Create()
 {
 	return bc_new VKeyUnIgnitTask();
@@ -35,7 +35,7 @@ void VKeyUnIgnitTask::ntfUnIgnited()
 	msg.appendTimeStamp();
 	msg.appendErrorElement(ERR_SUCC);
 	msg.appendFunctionStatus(0);
-	if (!pkg.post(Config::getInstance().getPublishTopic(), 2, Config::getInstance().getMqttSendTimeOut(),true)) {
+	if (!pkg.post(Config::getInstance().getPublishTopic(), Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut(),true)) {
 		LOG_E("ntfUnIgnited() failed");
 	}
 }
