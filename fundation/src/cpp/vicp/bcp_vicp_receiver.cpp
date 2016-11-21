@@ -32,7 +32,7 @@ static int read_left(bcp_channel_t *c, u8 *buf, int len)
 		if (ret > 0) {
 			reads += ret;
 		} else if (ret < 0) {
-			LOG_E("read_left failed, ret=%d\n", ret);
+			LOG_E("read_left failed, ret=%d", ret);
 			return reads;
 		}
 	}
@@ -103,7 +103,7 @@ static u8 *read_whole_block(bcp_channel_t *c,
 	/* read tag */
 	tag = read_tag(r, c, &header[0]);
 	if (tag != VICP_PACKET_TAG) {
-		LOG_E("read tag invalid, tag = 0x%x.\n", tag);
+		LOG_E("read tag invalid, tag = 0x%x.", tag);
 		free(header);
 		return NULL;
 	}
@@ -115,7 +115,7 @@ static u8 *read_whole_block(bcp_channel_t *c,
 	ret = read_left(c, &header[4], left);
 	if (ret != left) {
 		free(header);
-		LOG_E("read left header failed, ret = %d.\n", ret);
+		LOG_E("read left header failed, ret = %d.", ret);
 		return NULL;
 	}
 
@@ -137,7 +137,7 @@ static u8 *read_whole_block(bcp_channel_t *c,
 	ret = read_left(c, &data[header_size], left);
 	if (ret != left) {
 		free(data);
-		LOG_E("read left data failed, ret = %d.\n", ret);
+		LOG_E("read left data failed, ret = %d.", ret);
 		return NULL;
 	}
 
@@ -152,12 +152,14 @@ bcp_vicp_packet_t *read_packet_from_list(void);
 static void print_bytes(u8 *data, int total_size)
 {
 	int i;
-	printf("illegeal data, size=%d\n", total_size);
 
+#ifdef PRINT_VICP_DETAIL
+	printf("recv data, size=%d\n", total_size);
 	for (i = 0; i < total_size; i++) {
 		printf("%x ", data[i]);
 	}
 	printf("\n");
+#endif
 }
 
 static bcp_vicp_packet_t *read_one_packet(bcp_vicp_receiver_t *r)
@@ -169,7 +171,7 @@ static bcp_vicp_packet_t *read_one_packet(bcp_vicp_receiver_t *r)
 
 	c = bcp_vicp_get_channel(r->listener);
 	if (!c) {
-		LOG_E("bcp_vicp_get_channel failed at read_on_packet.\n");
+		LOG_E("bcp_vicp_get_channel failed at read_on_packet.");
 		return NULL;
 	}
 
@@ -183,10 +185,12 @@ static bcp_vicp_packet_t *read_one_packet(bcp_vicp_receiver_t *r)
 
 	p = bcp_vicp_packet_unserialize(data, total_size);
 	if (!p) {
+		LOG_E("vicp packet unserialize failed.");
 		print_bytes(data, total_size);
 		free(data);
-		LOG_E("vicp packet unserialize failed.\n");
 		return NULL;
+	} else {
+		print_bytes(data, total_size);
 	}
 	free(data);
 #endif
@@ -196,7 +200,7 @@ static bcp_vicp_packet_t *read_one_packet(bcp_vicp_receiver_t *r)
 
 static void receiver_ack_callback(void *context, int result)
 {
-	//LOG_E("receiver_ack_callback. result=%d\n", result);
+	//LOG_E("receiver_ack_callback. result=%d", result);
 }
 
 static bcp_vicp_sender_t *get_sender(bcp_vicp_receiver_t *r)
@@ -251,7 +255,7 @@ static int notify_data(bcp_vicp_receiver_t *r,
 
 	buf = (u8*)malloc(p->len);
 	if (!buf) {
-		LOG_E("dispatch_packet malloc failed.\n");
+		LOG_E("dispatch_packet malloc failed.");
 		return -1;
 	}
 
@@ -261,6 +265,12 @@ static int notify_data(bcp_vicp_receiver_t *r,
 	return 0;
 }
 
+static ListElement *list_head(List *list)
+{
+	ListElement *current = NULL;
+	return ListNextElement(list, &current);
+}
+
 static int dispatch_packets(bcp_vicp_receiver_t *r)
 {
 	bcp_vicp_packet_t *p;
@@ -268,6 +278,7 @@ static int dispatch_packets(bcp_vicp_receiver_t *r)
 	mutex_lock(r->list_mutex);
 
 	while ((p = (bcp_vicp_packet_t*)ListDetachHead(&r->received_list)) != NULL) {
+		r->recvd_head = list_head(&r->received_list);
 		mutex_unlock(r->list_mutex);
 		if (p->type == VICP_PACKET_ACK) {
 			notify_ack(r, p);
@@ -297,11 +308,21 @@ static void destroy_received_packets(bcp_vicp_receiver_t *r)
 	mutex_unlock(r->list_mutex);
 }
 
+static int insert_head(bcp_vicp_packet_t *p)
+{
+	return (p->type == VICP_PACKET_ACK);
+}
+
 static void add_packet(bcp_vicp_receiver_t *r,
 	bcp_vicp_packet_t *p)
 {
 	mutex_lock(r->list_mutex);
-	ListAppend(&r->received_list, p, sizeof(*p));
+	if (r->recvd_head && !insert_head(p)) {
+		ListAppend(&r->received_list, p, sizeof(*p));
+	} else {
+		ListInsert(&r->received_list, p, sizeof(*p), r->recvd_head);
+		r->recvd_head = list_head(&r->received_list);
+	}
 	mutex_unlock(r->list_mutex);
 }
 
@@ -388,6 +409,7 @@ bcp_vicp_receiver_t *bcp_vcip_receiver_create(void *listener)
 		goto __failed;
 	}
 	ListZero(&r->received_list);
+	r->recvd_head = NULL;
 
 	r->has_bytes = 0;
 	memset(&r->last_bytes, 0, sizeof(r->last_bytes));
@@ -412,7 +434,7 @@ static int start_thread(bcp_vicp_receiver_t *r,
 	mutex_lock(r->mutex);
 
 	if (!*stop) {
-		LOG_W("vicp receiver thread has been started\n");
+		LOG_W("vicp receiver thread has been started.");
 		mutex_unlock(r->mutex);
 		return -1;
 	}

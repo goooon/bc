@@ -668,8 +668,10 @@ static void vicp_send_cb(void *context, int result)
 {
 	static int index = 1;
 	bcp_packet_t *p = (bcp_packet_t*)context;
+
 	if (p) {
-		LOG_I("data send complete, ver = %d, result=%d, index=%d\n", p->hdr.version, result, index++);
+		LOG_I("data send complete, ver = %d, result=%d, index=%d, %p\n", 
+			p->hdr.version, result, index++, p);
 		bcp_packet_destroy(p);
 	} else {
 		LOG_I("data send complete, result=%d, index=%d\n", result, index++);
@@ -677,15 +679,17 @@ static void vicp_send_cb(void *context, int result)
 }
 
 //#define ELE_LEN (1024 - 32 + 1024 + 1)
-#define ELE_LEN (1)
-static void send_one_packet(bcp_channel_t *c, const char *dev_name)
+//#define ELE_LEN (1)
+static void send_one_packet(bcp_channel_t *c, 
+	const char *dev_name, int dlen)
 {
-	static int i = 0;
+	static int i = 1;
+	int k;
 	bcp_packet_t *p, *pu;
 	u8 *data;
 	u32 len;
 
-	data = (u8*)malloc(ELE_LEN);
+	data = (u8*)malloc(dlen);
 	if (!data) {
 		LOG_E("malloc failed.\n");
 		return;
@@ -693,15 +697,18 @@ static void send_one_packet(bcp_channel_t *c, const char *dev_name)
 #if 0
 	sprintf((char*)data, "%d:%s\n", i++, dev_name);
 	data[ELE_LEN - 1] = '0';
-#else
-	data[ELE_LEN - 1] = 'q';
 #endif
 
+	for (k = 0; k < dlen; k++) {
+		data[k] = '>';
+	}
+
 	p = bcp_create_one_message((u16)2, (u8)5, bcp_next_seq_id(), 
-		data, ELE_LEN);
+		data, dlen);
 	free(data);
 
 	if (bcp_packet_serialize(p, &data, &len) >= 0) {
+		printf("send data index=%d, size=%d, p=%p\n", i++, len, p);
 		bcp_vicp_send(c, (const char*)data, (int)len, vicp_send_cb, p, NULL);
 		free(data);
 	}
@@ -709,27 +716,30 @@ static void send_one_packet(bcp_channel_t *c, const char *dev_name)
 
 static void vicp_test(int argc, char **argv)
 {
-	int count = 1000;
-	int ret;
+	int count = 100, ms = 1000;
+	int dlen = 1, ret;
 	char *dev_name;
 	bcp_channel_t *c = NULL;
 
-	if (argc < 2) {
-		printf("usage: %s </dev/ttySAC1>", argv[0]);
+	if (argc < 4) {
+		printf("usage: %s </dev/ttySAC1> <count> <sleep-ms> <data-len>", argv[0]);
 		dev_name = (char*)CHANNEL_SERIAL;
 	} else {
 		dev_name = argv[1];
+		count = atoi(argv[2]);
+		ms = atoi(argv[3]);
+		dlen = atoi(argv[4]);
 	}
 
 	c = bcp_channel_create(BCP_CHANNEL_SERIAL, dev_name);
 	if (!c) {
 		LOG_E("create channel for %s failed.\n", dev_name);
-		//return;
+		return;
 	}
 
 	if ((ret = c->open(c)) < 0) {
 		LOG_E("open channel %s failed, ret = %d.\n", dev_name, ret);
-		//goto __end;
+		goto __end;
 	}
 
 	if (bcp_vicp_regist_channel(c) < 0) {
@@ -739,9 +749,18 @@ static void vicp_test(int argc, char **argv)
 
 	bcp_vicp_regist_data_arrived_callback(c, vicp_data_arrived, NULL);
 
+	my_sleep(4 * 1000);
+	LOG_I("start sending....\n");
+
 	while (count-- > 0) {
-		send_one_packet(c, dev_name);
-		//my_sleep(1000);
+		send_one_packet(c, dev_name, dlen);
+		if (ms > 0) {
+			my_sleep(ms);
+		}
+	}
+
+	while (1) {
+		my_sleep(1000);
 	}
 
 __end:
@@ -749,9 +768,6 @@ __end:
 		c->close(c);
 		bcp_vicp_unregist_channel(c);
 		bcp_channel_destroy(c);
-	}
-	while (1) {
-		my_sleep(1000);
 	}
 }
 

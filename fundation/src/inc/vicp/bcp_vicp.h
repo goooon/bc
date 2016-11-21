@@ -15,6 +15,11 @@
 #define mutex_unlock(m) Thread_unlock_mutex(m)
 
 /*
+ * print detail VICP
+ */
+//#define PRINT_VICP_DETAIL 1
+
+/*
  * mock receiver, sender from local list
  */
 //#define VICP_MOCK_TEST 1

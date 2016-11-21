@@ -180,7 +180,7 @@ static void wait_context_unused(slice_context_t *sc)
 {
 	mutex_lock(sc->mutex);
 	while (sc->ref != 0) {
-		LOG_E("slice context %p having used.\n", sc);
+		LOG_E("slice context %p having used.", sc);
 		mutex_unlock(sc->mutex);
 		msleep(100);
 		mutex_lock(sc->mutex);
@@ -202,7 +202,7 @@ static void dec_ref(slice_context_t *sc)
 	if (sc) {
 		mutex_lock(sc->mutex);
 		if (sc->ref == 0) {
-			LOG_E("slice context[%p] ref == 0.\n", sc);
+			LOG_E("slice context[%p] ref == 0.", sc);
 			mutex_unlock(sc->mutex);
 			return;
 		}
@@ -281,18 +281,18 @@ static void slice_send_callback(void *context,
 		mutex_unlock(slicer->send_mutex);
 		if (sc) {
 			if (sc->state == SLICE_WAIT_GROUP_ID) {
-				LOG_E("request group id failed, result = %d.\n", result);
+				LOG_E("request group id failed, result = %d.", result);
 			} else if (sc->state == SLICE_WAIT_DESC_ACK) {
-				LOG_E("slice desc send failed, result = %d.\n", result);
+				LOG_E("slice desc send failed, result = %d.", result);
 			} else if (sc->state == SLICE_WAIT_DATA_ACK) {
-				LOG_E("slice data(%d,%d) send failed, result = %d.\n", 
+				LOG_E("slice data(%d,%d) send failed, result = %d.", 
 					sc->len, sc->index, result);
 			} else {
-				LOG_E("slice invalid state, result = %d.\n", result);
+				LOG_E("slice invalid state, result = %d.", result);
 			}
 			free_and_notify_context(sc, VICP_SLICE_SEND_FAILED);
 		} else {
-			LOG_E("slice send callback, result = %d.\n", result);
+			LOG_E("slice send callback, result = %d.", result);
 		}
 	}
 
@@ -316,10 +316,19 @@ static void slice_recv_callback(void *context, int result)
 	slicer = cb->slicer;
 
 	if (result < 0) {
+		mutex_lock(slicer->recv_mutex);
+		if (!ListDetach(&slicer->received, sc)) {
+			sc = NULL;
+		}
+		mutex_unlock(slicer->recv_mutex);
 		if (!sc) {
-			LOG_E("slice_recv_callback result = %d.\n", result);
+			LOG_E("slice_recv_callback result = %d.", result);
 		} else {
-			LOG_E("slice_recv_callback [%p] result = %d.\n", sc, result);
+			LOG_E("slice_recv_callback [%p] result = %d.", sc, result);
+		}
+		if (sc) {
+			wait_context_unused(sc);
+			destroy_slice_context(sc);
 		}
 	}
 
@@ -459,7 +468,7 @@ static int send_slice_desc(bcp_vicp_slicer_t *s, bf_t *bf)
 	sc->slice_count = slice_count(sc);
 	sc->timestamp += sc->timeout;
 
-	//LOG_I("send[start] context_id=%d, group_id=%d, len=%d, slice_count=%d\n",
+	//LOG_I("send[start] context_id=%d, group_id=%d, len=%d, slice_count=%d",
 	//	sc->context_id, sc->group_id, sc->len, sc->slice_count);
 
 	if (create_desc_req(&f, g.context_id, 
@@ -543,7 +552,7 @@ static int response_slice_desc_ack(bcp_vicp_slicer_t *s, bf_t *bf)
 		return -1;
 	}
 
-	//LOG_I("recv[start] context_id=%d, group_id=%d, len=%d, slice_count=%d\n", 
+	//LOG_I("recv[start] context_id=%d, group_id=%d, len=%d, slice_count=%d", 
 	//	desc.context_id, desc.group_id, desc.len, desc.slice_count);
 
 	/* receiver, find slice_context, create if not found */
@@ -552,7 +561,7 @@ static int response_slice_desc_ack(bcp_vicp_slicer_t *s, bf_t *bf)
 	if (!sc) {
 		sc = create_recv_context(s, &desc);
 		if (!sc) {
-			LOG_E("create slice failed. group_id=%d\n", desc.group_id);
+			LOG_E("create slice failed. group_id=%d", desc.group_id);
 			result = 1;
 		}
 	}
@@ -589,11 +598,11 @@ static int put_data(slice_context_t *sc, slice_data_t *data)
 	index = data->slice_id * sc->per_slice_size;
 
 	if (data->slice_id >= sc->slice_count) {
-		LOG_E("recv slice id exception [%p] slice_id=%d, slice_count=%d\n",
+		LOG_E("recv slice id exception [%p] slice_id=%d, slice_count=%d",
 			sc, data->slice_id, sc->slice_count);
 		return -1;
 	} else if ((sc->trans_len + data->len) > sc->len) {
-		LOG_E("recv data overflow [%p] slice_id=%d, data_len=%d, total_size=%d\n",
+		LOG_E("recv data overflow [%p] slice_id=%d, data_len=%d, total_size=%d",
 			sc, data->slice_id, data->len, sc->len);
 		return -1;
 	}
@@ -648,7 +657,7 @@ static int recv_slice(bcp_vicp_slicer_t *s, bf_t *bf)
 	mutex_lock(s->recv_mutex);
 	sc = find_slice_context_by_groupid(&s->received, data.group_id);
 	if (!sc) {
-		LOG_E("recv can not found slice context group_id = %d\n",
+		LOG_E("recv can not found slice context group_id = %d",
 			data.group_id);
 		mutex_unlock(s->recv_mutex);
 		return -1;
@@ -661,7 +670,7 @@ static int recv_slice(bcp_vicp_slicer_t *s, bf_t *bf)
 	sc->state = SLICE_WAIT_DATA;
 	sc->timestamp += sc->timeout;
 
-	//LOG_I("recv context_id=%d, group_id=%d, slice_id=%d, len=%d\n", 
+	//LOG_I("recv context_id=%d, group_id=%d, slice_id=%d, len=%d", 
 	//	data.context_id, data.group_id, data.slice_id, data.len);
 
 	/* put data to slice context */
@@ -738,12 +747,12 @@ int send_next_slice(bcp_vicp_slicer_t *s, u8 type,
 	mutex_lock(s->send_mutex);
 	sc = find_slice_context(&s->sending, context_id);
 	if (!sc) {
-		LOG_E("sending can not find slice context_id = %d\n",
+		LOG_E("sending can not find slice context_id = %d",
 			context_id);
 		mutex_unlock(s->send_mutex);
 		return -1;
 	} else if (result != 0) {
-		LOG_E("sending data ack != 0 context_id = %d, result=%d.\n",
+		LOG_E("sending data ack != 0 context_id = %d, result=%d.",
 			context_id, result);
 		mutex_unlock(s->send_mutex);
 		free_send_context(sc, VICP_SLICE_SEND_FAILED);
@@ -762,7 +771,7 @@ int send_next_slice(bcp_vicp_slicer_t *s, u8 type,
 		free_send_context(sc, VICP_SLICE_SEND_OK);
 		return 0;
 	} else if (sc->slice_id >= sc->slice_count) {
-		LOG_E("sending trans failed (slice_id = %d) >= (slice_count = %d).\n",
+		LOG_E("sending trans failed (slice_id = %d) >= (slice_count = %d).",
 			sc->slice_id, sc->slice_count);
 		mutex_unlock(s->send_mutex);
 		dec_ref(sc);
@@ -783,7 +792,7 @@ int send_next_slice(bcp_vicp_slicer_t *s, u8 type,
 
 	sc->state = SLICE_WAIT_DATA_ACK;
 
-	//LOG_I("send context_id=%d, group_id=%d, slice_id=%d, len=%d\n",
+	//LOG_I("send context_id=%d, group_id=%d, slice_id=%d, len=%d",
 	//	sc->context_id, sc->group_id, slice_id, len);
 
 	if (create_data_req(&f, context_id, 
@@ -885,7 +894,7 @@ static void recvd_slice_escaped(bcp_vicp_slicer_t *s)
 	while ((ListNextElement(&s->received, &current)) != NULL) {
 		sc = (slice_context_t*)current->content;
 		if (slice_escaped(sc)) {
-			LOG_E("slice received timeout, group_id=%d\n", 
+			LOG_E("slice received timeout, group_id=%d", 
 				sc->group_id);
 			mutex_unlock(s->recv_mutex);
 			free_recv_context(sc);
@@ -908,7 +917,7 @@ static void send_slice_escaped(bcp_vicp_slicer_t *s)
 	while ((ListNextElement(&s->sending, &current)) != NULL) {
 		sc = (slice_context_t*)current->content;
 		if (slice_escaped(sc)) {
-			LOG_E("slice send timeout, context_id=%d\n", 
+			LOG_E("slice send timeout, context_id=%d", 
 				sc->context_id);
 			mutex_unlock(s->send_mutex);
 			free_send_context(sc, VICP_SLICE_SEND_TIMEOUT);
@@ -957,7 +966,7 @@ static int proto_valid(bf_t *f, u8 *t)
 	ver = r & 0xf;
 
 	if (ver != VICP_SLICE_VERSION) {
-		LOG_E("slice arrived, slice version invalid, ver=%d\n", ver);
+		LOG_E("slice arrived, slice version invalid, ver=%d", ver);
 		return 0;
 	}
 
@@ -1001,7 +1010,7 @@ static int bcp_vicp_slice_arrived(bcp_vicp_slicer_t *slicer,
 		/* TODO: */
 		ret = -1;
 	} else {
-		LOG_E("invalude slice proto, type = %d\n", type);
+		LOG_E("invalude slice proto, type = %d", type);
 	}
 
 	free(data);

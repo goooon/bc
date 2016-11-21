@@ -13,6 +13,7 @@ typedef struct bcp_vicp_receiver_s {
 	mutex_type mutex;
 	void *listener;
 	List received_list; /* packet for waiting post */
+	ListElement *recvd_head;
 	mutex_type list_mutex;
 	int stop; /* received thread */
 	int post_stop; /* post thread */

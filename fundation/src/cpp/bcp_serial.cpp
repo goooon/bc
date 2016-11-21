@@ -389,10 +389,16 @@ int bcp_serial_write(void *hdl, const char* buffer, int len)
 		if ((r = write(s->hdl, p, len)) > 0) {
 			len -= r;
 			p += r;
+		} else if (r < 0 && r != EAGAIN) {
+			break;
 		}
 	}
 
-	return (const char*)p - buffer;
+	if (r < 0 && ((const char*)p - buffer) == 0) {
+		return r;
+	} else {
+		return (const char*)p - buffer;
+	}
 }
 
 static int serial_wait(int fd, int timeout)

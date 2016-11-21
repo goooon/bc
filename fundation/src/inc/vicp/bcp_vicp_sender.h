@@ -9,6 +9,7 @@
 #define VICP_SEND_OK      (0)
 #define VICP_SEND_FAILED  (-1)
 #define VICP_SEND_TIMEOUT (-2)
+#define VICP_WAIT_ACK_TIMEOUT (-3)
 
 typedef struct bcp_vicp_sender_s {
 	mutex_type mutex; /* struct mutex */
@@ -17,6 +18,7 @@ typedef struct bcp_vicp_sender_s {
 	int ack_stop; /* ack check timeout thread flag */
 	List waiting_ack; /* packet for waiting ack */
 	List waiting_send; /* packet for waiting sending */
+	ListElement *send_head;
 	sem_type sem; /* notify send thread */
 	sem_type ack_sem; /* notify ack thread */
 	mutex_type ack_mutex; /* ack list mutex */

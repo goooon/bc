@@ -20,13 +20,14 @@
 #include <windows.h>
 #endif
 
-#define MAX_RETRY_TIMES 5
+#define MAX_WRITE_RETRY_TIMES 10
+#define MAX_SEND_RETRY_TIMES 5
 
 typedef struct sender_pack_s {
 	u64 id;
 	bcp_vicp_packet_t *p;
 	s64 escaped; /* timeout(ms) */
-	int retry; /* retry times  */
+	int retry; /* post pack retry times  */
 	vicp_sender_callback complete;
 	void *context;
 } sender_pack_t;
@@ -111,12 +112,14 @@ static int packet_escaped(sender_pack_t *e)
 static void print_bytes(u8 *data, int total_size)
 {
 	int i;
-	printf("write data, size=%d\n", total_size);
 
+#ifdef PRINT_VICP_DETAIL
+	printf("write data, size=%d\n", total_size);
 	for (i = 0; i < total_size; i++) {
 		printf("%x ", data[i]);
 	}
 	printf("\n");
+#endif
 }
 
 static int channel_write(bcp_channel_t *c, 
@@ -128,10 +131,11 @@ static int channel_write(bcp_channel_t *c,
 	while (bytes != len) {
 		ret = c->write(c, buf + bytes, len - bytes);
 		if (ret < 0) {
-			if (++retry < MAX_RETRY_TIMES) {
+			if (++retry < MAX_WRITE_RETRY_TIMES) {
+				//LOG_E("write dev retry times %d", retry);
 				msleep(10);
 			} else {
-				LOG_E("write dev failed. wrote=%d\n", bytes);
+				LOG_E("write dev failed. wrote=%d", bytes);
 				return -1;
 			}
 		} else {
@@ -141,7 +145,7 @@ static int channel_write(bcp_channel_t *c,
 
 	print_bytes((u8*)buf, bytes);
 
-	return 0;
+	return bytes;
 }
 
 static int send_one_packet(bcp_channel_t *c, bcp_vicp_packet_t *p)
@@ -150,10 +154,12 @@ static int send_one_packet(bcp_channel_t *c, bcp_vicp_packet_t *p)
 	u8 *buf;
 	u32 len;
 
-	if (bcp_vicp_packet_serialize(p, &buf, &len) >= 0) {
-		ret = channel_write(c, (const char*)buf, (int)len);
-		free(buf);
+	if (bcp_vicp_packet_serialize(p, &buf, &len) < 0) {
+		return -1;
 	}
+
+	ret = channel_write(c, (const char*)buf, (int)len);
+	free(buf);
 
 	return ret;
 }
@@ -186,7 +192,7 @@ static void check_ack_list(bcp_vicp_sender_t *s)
 		if (packet_escaped(e)) {
 			ListDetach(&s->waiting_ack, e);
 			mutex_unlock(s->ack_mutex);
-			free_notify_complete(e, VICP_SEND_TIMEOUT);
+			free_notify_complete(e, VICP_WAIT_ACK_TIMEOUT);
 			mutex_lock(s->ack_mutex);
 			current = NULL; /* TODO: */
 		}
@@ -254,21 +260,37 @@ static void post_packet(bcp_channel_t *c,
 	ListAppend(&sent_list, e, sizeof(*e));
 	mutex_unlock(mutex);
 #else
-	++e->retry;
-	if (packet_escaped(e)) {
+	if (packet_escaped(e) && (++e->retry > MAX_SEND_RETRY_TIMES)) {
 		free_notify_complete(e, VICP_SEND_TIMEOUT);
 	} else {
-		if ((ret = send_one_packet(c, e->p)) >= 0) {
+		if ((ret = send_one_packet(c, e->p)) > 0) {
 			if (e->p->type != VICP_PACKET_ACK) {
 				move_to_ack_list(s, e); /* waiting ack */
 			} else {
 				destroy_sender_pack(e);
 			}
 		} else {
-			free_notify_complete(e, VICP_SEND_FAILED);
+			LOG_W("sending failed, waiting next time(sp=%p, retry=%d).", 
+				e, e->retry);
+			/* requeue */
+			mutex_lock(s->send_mutex);
+			ListAppend(&s->waiting_send, e, sizeof(*e));
+			mutex_unlock(s->send_mutex);
+			msleep(100);
 		}
 	}
 #endif
+}
+
+static int insert_head(bcp_vicp_packet_t *p)
+{
+	return (p->type == VICP_PACKET_ACK);
+}
+
+static ListElement *list_head(List *list)
+{
+	ListElement *current = NULL;
+	return ListNextElement(list, &current);
 }
 
 static void send_packet(bcp_vicp_sender_t *s)
@@ -285,6 +307,7 @@ static void send_packet(bcp_vicp_sender_t *s)
 	mutex_lock(s->send_mutex);
 
 	while ((e = (sender_pack_t*)ListDetachHead(&s->waiting_send)) != NULL) {
+		s->send_head = list_head(&s->waiting_send);
 		mutex_unlock(s->send_mutex);
 		post_packet(c, s, e);
 		mutex_lock(s->send_mutex);
@@ -379,7 +402,9 @@ bcp_vicp_sender_t *bcp_vicp_sender_create(void *listener)
 	}
 
 	s->stop = 1;
+	s->ack_stop = 1;
 	s->listener = listener;
+	s->send_head = NULL;
 
 	return s;
 
@@ -461,7 +486,12 @@ int bcp_vicp_sender_packet(bcp_vicp_sender_t *s,
 	sp->context = context;
 
 	mutex_lock(s->send_mutex);
-	ListAppend(&s->waiting_send, sp, sizeof(*sp));
+	if (s->send_head && !insert_head(p)) {
+		ListAppend(&s->waiting_send, sp, sizeof(*sp));
+	} else {
+		ListInsert(&s->waiting_send, sp, sizeof(*sp), s->send_head);
+		s->send_head = list_head(&s->waiting_send);
+	}
 	mutex_unlock(s->send_mutex);
 
 	/* wakeup sender thread */

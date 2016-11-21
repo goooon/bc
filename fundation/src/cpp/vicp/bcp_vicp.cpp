@@ -200,7 +200,7 @@ int bcp_vicp_unregist_channel(bcp_channel_t *c)
 
 	mutex_lock(listener->mutex);
 	if (listener->ref > 0) {
-		LOG_W("listener having used, ref=%d.\n", listener->ref);
+		LOG_W("listener having used, ref=%d.", listener->ref);
 		mutex_unlock(listener->mutex);
 		mutex_unlock(mutex);
 		return -1;
