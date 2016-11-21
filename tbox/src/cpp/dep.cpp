@@ -21,7 +21,7 @@ bool onClientTest(char* cmd) {
 		return true;
 	}
 	if (!strcmp(cmd, "ntfState")) {
-		::PostEvent(AppEvent::InsertTask, 0, 0, bc_new UnIgnitStateUploadTask_Delay_NTF());
+		::PostEvent(AppEvent::InsertTask, APPID_STATE_UNIGNITION_DELAY_NTF, 0, 0);
 		return true;
 	}
 	if (!strcmp(cmd, "ActiveTest")) {

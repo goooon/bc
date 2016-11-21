@@ -130,7 +130,7 @@ public:
 		identity.token.b3 = dw.b0;
 		
 		u32 tmp = Config::getInstance().getAuthToken();
-		LOG_I("TBOX Identity authToken calced 0x%x(%u) Recevied is 0x%x", identity.token.dw, identity.token.dw,tmp);
+		//LOG_I("TBOX Identity authToken calced 0x%x(%u) Recevied is 0x%x", identity.token.dw, identity.token.dw,tmp);
 
 		identity.token.dw = tmp;
 		bcp_element_t *e = bcp_element_create((u8*)&identity, sizeof(Identity));

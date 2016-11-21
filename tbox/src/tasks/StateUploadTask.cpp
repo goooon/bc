@@ -76,12 +76,11 @@ void UnIgnitStateUploadTask_Delay_NTF::doTask()
 		LOG_I("ParkState OK,No need report");
 		return;
 	}
-	LOG_I("ParkState is not Ok,notifing ...");
+	LOG_I("ntfState(%d,%d,%lld),ParkState is not Ok,notifing ...",appID,NTF_STEP_ID,seqID);
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, NTF_STEP_ID, seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
-	msg.appendErrorElement(0);
 	msg.appendVehicleState(Vehicle::getInstance().getApparatus().vehiState);
 	if (!pkg.post(Config::getInstance().pub_topic, Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("StateUploadTask notify failed");

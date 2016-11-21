@@ -59,7 +59,7 @@ protected:
 	MessageQueue msgQueue;
 };
 
-#define RspError(ret) LOG_I("rspError(%d) ---> TSP", ret);ntfError(ret);
-#define RspAck()      LOG_I("RspAck() ---> TSP");rspAck();
-#define NtfTimeOut()  LOG_I("ntfTimeOut() ---> TSP");ntfTimeOut();
+#define RspError(ret) LOG_I("rspError(%d,%d) ---> TSP",appID, ret);ntfError(ret);
+#define RspAck()      LOG_I("RspAck(%d) ---> TSP",appID);rspAck();
+#define NtfTimeOut()  LOG_I("ntfTimeOut(%d) ---> TSP",appID);ntfTimeOut();
 #endif // GUARD_Task_h__

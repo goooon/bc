@@ -396,6 +396,8 @@ bool MqttClient::onRecvPackage(void* data, int len)
 	while ((m = bcp_next_message(p, m)) != NULL) {
 		applicationID = m->hdr.id;
 		u64 seqId = m->hdr.sequence_id;
+		u32 stepId = m->hdr.step_id;
+		LOG_I("Mqtt received appid:%d,stepId:%d", applicationID,stepId);
 		task = Application::getInstance().findTask(applicationID);
 		if (task != NULL) {
 			bool done = task->handlePackage(p);
@@ -414,7 +416,7 @@ bool MqttClient::onRecvPackage(void* data, int len)
 
 void MqttClient::onDeliveryComplete()
 {
-	LOG_I("onDeliveryComplete");
+	//LOG_I("onDeliveryComplete");
 }
 
 void MqttClient::onDisconnected()

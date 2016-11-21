@@ -31,10 +31,10 @@ Operation::Result Vehicle::prepareVKeyIgnition(bool ready)
 		//if (apparatus.vehiState.door.lh_front) {
 		//	return Operation::E_DoorOpened;
 		//}
-		changeState(ReadyToIgnit);
+		//changeState(ReadyToIgnit);
 	}
 	else {
-		changeState(NotReady);
+		//changeState(NotReady);
 	}
 	return Operation::Succ;
 }
@@ -225,6 +225,12 @@ void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 	case NormalMove:
 		movingInAbnormal = false;
 		break;
+	case LeaveReadToIgnit:
+		changeState(NotReady);
+		break;
+	case EnterReadToIgnit:
+		changeState(ReadyToIgnit);
+		break;
 	default:
 		LOG_W("unhandled State %d", param1);
 		break;
@@ -243,7 +249,7 @@ const static char* sstate[] = {
 bool Vehicle::changeState(State next)
 {
 	//todo ...
-	LOG_I("Vehicle state %s -> %s", sstate[state], sstate[next]);
+	//LOG_I("Vehicle state %s -> %s", sstate[state], sstate[next]);
 	State prev = state;
 	state = next;
 	PostEvent(AppEvent::AutoStateChanged, prev, state,0);

@@ -38,18 +38,18 @@ void VKeyReadyToIgnitionTask::doTask()
 						}
 					}
 					else if (args.param1 == Vehicle::Ignite) {
-						LOG_I("VKeyIgnitionTask %d %d", args.param1, args.param2);
+						LOG_I("ntfIgnited() %d %d OK -------------------------", args.param1, args.param2);
 						ntfIgnited();
 						return;
 					}
 					else if (args.param1 == Vehicle::EnterReadToIgnit) {
 						if (args.param2 == 1) {
-							ntfError(Operation::Succ);
-							return;
+							//ntfError(Operation::Succ);
+							//return;
 						}
 						else {
-							ntfError(Operation::E_State);
-							return;
+							//ntfError(Operation::E_State);
+							//return;
 						}
 					}
 					else {
@@ -65,7 +65,7 @@ void VKeyReadyToIgnitionTask::doTask()
 						//check stepid first
 						BCPackage pkg(args.data);
 						if (args.param2 == 2) {
-							LOG_I("rspAck to TSP");
+//							LOG_I("rspAck to TSP");
 							RspAck();
 							expireTime.update(Config::getInstance().getIgntActivationTimeOut());
 
