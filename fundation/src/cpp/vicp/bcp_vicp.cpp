@@ -229,15 +229,15 @@ int bcp_vicp_unregist_channel(bcp_channel_t *c)
 }
 
 int bcp_vicp_send(bcp_channel_t *c,
-	const char *buf, int len, int timeout, 
-	vicp_sender_callback complete, void *context, u32 *id)
+	const char *buf, int len, vicp_sender_callback complete, 
+	void *context, u32 *id)
 {
 	vicp_listener_t *l;
 
 	if (c) {
 		l = (vicp_listener_t*)c->listener;
 		if (l) {
-			return bcp_vicp_slice_send(l->slicer, buf, len, timeout,
+			return bcp_vicp_slice_send(l->slicer, buf, len,
 				complete, context, id);
 		}
 	}
@@ -298,11 +298,14 @@ void bcp_vicp_put_listener(void *listener)
 bcp_channel_t *bcp_vicp_get_channel(void *listener)
 {
 	vicp_listener_t *l = (vicp_listener_t*)listener;
+	bcp_channel_t *ch = NULL;
 
 	if (l) {
-		return l->ch;
-	} else {
-		return NULL;
+		mutex_lock(l->mutex);
+		ch = l->ch;
+		mutex_unlock(l->mutex);
 	}
+
+	return ch;
 }
 

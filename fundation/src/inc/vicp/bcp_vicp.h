@@ -49,8 +49,8 @@ int bcp_vicp_regist_channel(bcp_channel_t *c);
 int bcp_vicp_unregist_channel(bcp_channel_t *c);
 
 int bcp_vicp_send(bcp_channel_t *c,
-	const char *buf, int len, int timeout, 
-	vicp_sender_callback complete, void *context, u32 *id);
+	const char *buf, int len, vicp_sender_callback complete, 
+	void *context, u32 *id);
 
 int bcp_vicp_regist_data_arrived_callback(
 	bcp_channel_t *c,

@@ -10,9 +10,6 @@
 
 #include "../../inc/vicp/bcp_vicp_packet.h"
 
-#define mutex_lock(m) Thread_lock_mutex(m)
-#define mutex_unlock(m) Thread_unlock_mutex(m)
-
 static volatile u32 seq_id = 1;
 static mutex_type mutex = NULL;
 
@@ -33,9 +30,9 @@ u32 bcp_vicp_next_seq_id(void)
 {
 	u32 id = 0;
 
-	//mutex_lock(mutex);
+	Thread_lock_mutex(mutex);
 	id = seq_id++;
-	//mutex_lock(mutex);
+	Thread_unlock_mutex(mutex);
 
 	return id;
 }

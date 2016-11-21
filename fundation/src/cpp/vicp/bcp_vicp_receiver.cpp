@@ -149,6 +149,17 @@ static u8 *read_whole_block(bcp_channel_t *c,
 bcp_vicp_packet_t *read_packet_from_list(void);
 #endif
 
+static void print_bytes(u8 *data, int total_size)
+{
+	int i;
+	printf("illegeal data, size=%d\n", total_size);
+
+	for (i = 0; i < total_size; i++) {
+		printf("%x ", data[i]);
+	}
+	printf("\n");
+}
+
 static bcp_vicp_packet_t *read_one_packet(bcp_vicp_receiver_t *r)
 {
 	bcp_channel_t *c;
@@ -172,6 +183,7 @@ static bcp_vicp_packet_t *read_one_packet(bcp_vicp_receiver_t *r)
 
 	p = bcp_vicp_packet_unserialize(data, total_size);
 	if (!p) {
+		print_bytes(data, total_size);
 		free(data);
 		LOG_E("vicp packet unserialize failed.\n");
 		return NULL;
@@ -199,10 +211,10 @@ static bcp_vicp_sender_t *get_sender(bcp_vicp_receiver_t *r)
 	}
 }
 
-static int send_ack(bcp_vicp_receiver_t *r, 
+static int send_ack(bcp_vicp_receiver_t *r, bcp_vicp_packet_t *p,
 	u8 result, u16 code)
 {
-	return bcp_vicp_send_ack(get_sender(r), result, code, 
+	return bcp_vicp_send_ack(get_sender(r), p->msg_id, result, code, 
 		10 * 1000, receiver_ack_callback, NULL, NULL);
 }
 
@@ -224,9 +236,16 @@ static int notify_ack(bcp_vicp_receiver_t *r,
 static int notify_data(bcp_vicp_receiver_t *r, 
 	bcp_vicp_packet_t *p)
 {
+	fdata_arrived_callback cb;
+	void *context;
 	u8 *buf;
 
-	if (!r->dac) {
+	mutex_lock(r->mutex);
+	cb = r->dac;
+	context = r->context;
+	mutex_unlock(r->mutex);
+	
+	if (!cb) {
 		return -1;
 	}
 
@@ -237,7 +256,7 @@ static int notify_data(bcp_vicp_receiver_t *r,
 	}
 
 	memcpy(buf, p->data, p->len);
-	(*r->dac)(r->context, buf, p->len);
+	(*cb)(context, buf, p->len);
 
 	return 0;
 }
@@ -253,7 +272,7 @@ static int dispatch_packets(bcp_vicp_receiver_t *r)
 		if (p->type == VICP_PACKET_ACK) {
 			notify_ack(r, p);
 		} else {
-			send_ack(r, 0, 0);
+			send_ack(r, p, 0, 0);
 			notify_data(r, p);
 		}
 		bcp_vicp_packet_destroy(p);
@@ -445,7 +464,6 @@ static int stop_thread(bcp_vicp_receiver_t *r,
 	mutex_lock(r->mutex);
 
 	if (*stop) {
-		LOG_W("vicp receiver thread has stoped\n");
 		mutex_unlock(r->mutex);
 		return -1;
 	}
@@ -478,9 +496,7 @@ int bcp_vicp_receiver_stop(bcp_vicp_receiver_t *r)
 void bcp_vicp_receiver_destroy(bcp_vicp_receiver_t *r)
 {
 	if (r) {
-		if (!r->stop || !r->post_stop) {
-			bcp_vicp_receiver_stop(r);
-		}
+		bcp_vicp_receiver_stop(r);
 		Thread_destroy_mutex(r->mutex);
 		free(r);
 	}

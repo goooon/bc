@@ -24,7 +24,8 @@
 #include <windows.h>
 #endif
 
-#define DEF_WAIT_ACK_TIMEOUT (10 * 1000)
+#define MAX_SEND_SLICE_TIMEOUT (30 * 1000)
+#define DEF_WAIT_ACK_TIMEOUT (20 * 1000)
 #define MAX_RECV_SLICE_TIMEOUT (40 * 1000)
 
 /*
@@ -504,12 +505,12 @@ static slice_context_t *create_recv_context(
 	sc->slice_id = 0;
 	sc->data = (u8*)malloc(desc->len);
 	if (!sc->data) {
-		free(sc);
 		Thread_destroy_mutex(sc->mutex);
+		free(sc);
 		return NULL;
 	}
 	sc->len = desc->len;
-	sc->timeout = DEF_WAIT_ACK_TIMEOUT;
+	sc->timeout = MAX_RECV_SLICE_TIMEOUT;
 
 	/* for sender only */
 	sc->index = 0;
@@ -658,7 +659,7 @@ static int recv_slice(bcp_vicp_slicer_t *s, bf_t *bf)
 
 	mutex_lock(sc->mutex);
 	sc->state = SLICE_WAIT_DATA;
-	sc->timestamp += MAX_RECV_SLICE_TIMEOUT;
+	sc->timestamp += sc->timeout;
 
 	//LOG_I("recv context_id=%d, group_id=%d, slice_id=%d, len=%d\n", 
 	//	data.context_id, data.group_id, data.slice_id, data.len);
@@ -696,13 +697,6 @@ __failed:
 	free_slice_req(&f);
 
 	return ret;	
-}
-
-static void notify_data_delivered(slice_context_t *sc, u8 result)
-{
-	if (sc->complete) {
-		(*sc->complete)(sc->context, result);
-	}
 }
 
 int send_next_slice(bcp_vicp_slicer_t *s, u8 type, 
@@ -812,8 +806,8 @@ __failed:
 }
 
 int bcp_vicp_slice_send(bcp_vicp_slicer_t *s,
-	const char *buf, int len, int timeout, 
-	vicp_sender_callback complete, void *context, u32 *id)
+	const char *buf, int len, vicp_sender_callback complete, 
+	void *context, u32 *id)
 {
 	slice_context_t *sc;
 
@@ -845,7 +839,7 @@ int bcp_vicp_slice_send(bcp_vicp_slicer_t *s,
 	}
 	sc->len = (u16)len;
 	sc->index = 0;
-	sc->timeout = timeout;
+	sc->timeout = MAX_SEND_SLICE_TIMEOUT;
 	sc->complete = complete;
 	sc->context = context;
 	sc->direction = SLICE_SEND;
@@ -1143,15 +1137,14 @@ int bcp_vicp_slice_stop(bcp_vicp_slicer_t *s)
 
 void bcp_vicp_slice_destroy(bcp_vicp_slicer_t *s)
 {
-	bcp_vicp_slice_stop(s);
-
-	destroy_slice_list(&s->sending, s->send_mutex);
-	destroy_slice_list(&s->received, s->recv_mutex);
-
-	Thread_destroy_mutex(s->mutex);
-	Thread_destroy_mutex(s->recv_mutex);
-	Thread_destroy_mutex(s->send_mutex);
-	Thread_destroy_sem(s->sem);
-
-	free(s);
+	if (s) {
+		bcp_vicp_slice_stop(s);
+		destroy_slice_list(&s->sending, s->send_mutex);
+		destroy_slice_list(&s->received, s->recv_mutex);
+		Thread_destroy_mutex(s->mutex);
+		Thread_destroy_mutex(s->recv_mutex);
+		Thread_destroy_mutex(s->send_mutex);
+		Thread_destroy_sem(s->sem);
+		free(s);
+	}
 }

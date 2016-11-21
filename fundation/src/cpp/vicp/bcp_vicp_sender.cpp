@@ -108,6 +108,17 @@ static int packet_escaped(sender_pack_t *e)
 	return (e && (current_timestamp() > e->escaped));
 }
 
+static void print_bytes(u8 *data, int total_size)
+{
+	int i;
+	printf("write data, size=%d\n", total_size);
+
+	for (i = 0; i < total_size; i++) {
+		printf("%x ", data[i]);
+	}
+	printf("\n");
+}
+
 static int channel_write(bcp_channel_t *c, 
 	const char *buf, int len)
 {
@@ -115,7 +126,7 @@ static int channel_write(bcp_channel_t *c,
 	int retry = 0;
 
 	while (bytes != len) {
-		ret = c->write(c, buf, len);
+		ret = c->write(c, buf + bytes, len - bytes);
 		if (ret < 0) {
 			if (++retry < MAX_RETRY_TIMES) {
 				msleep(10);
@@ -127,6 +138,8 @@ static int channel_write(bcp_channel_t *c,
 			bytes += ret;
 		}
 	}
+
+	print_bytes((u8*)buf, bytes);
 
 	return 0;
 }
@@ -482,13 +495,12 @@ int bcp_vicp_send_data(bcp_vicp_sender_t *s,
 }
 
 int bcp_vicp_send_ack(bcp_vicp_sender_t *s,
-	u8 result, u16 code, int timeout, 
+	u32 msg_id, u8 result, u16 code, int timeout, 
 	vicp_sender_callback complete, void *context, u64 *id)
 {
 	bcp_vicp_packet_t *vp;
 
-	vp = bcp_vicp_create_ack(bcp_vicp_next_seq_id(), 
-		result, code);
+	vp = bcp_vicp_create_ack(msg_id, result, code);
 	if (!vp) {
 		return -1;
 	}
@@ -509,7 +521,6 @@ static int stop_thread(bcp_vicp_sender_t *s,
 	mutex_lock(s->mutex);
 
 	if (*stop) {
-		LOG_W("vicp sending thread has stoped\n");
 		mutex_unlock(s->mutex);
 		return -1;
 	}
@@ -541,12 +552,13 @@ int bcp_vicp_sender_stop(bcp_vicp_sender_t *s)
 
 void bcp_vicp_sender_destroy(bcp_vicp_sender_t *s)
 {
-	bcp_vicp_sender_stop(s);
-
-	Thread_destroy_sem(s->sem);
-	Thread_destroy_sem(s->ack_sem);
-	Thread_destroy_mutex(s->mutex);
-	Thread_destroy_mutex(s->ack_mutex);
-	Thread_destroy_mutex(s->send_mutex);
-	free(s);
+	if (s) {
+		bcp_vicp_sender_stop(s);
+		Thread_destroy_sem(s->sem);
+		Thread_destroy_sem(s->ack_sem);
+		Thread_destroy_mutex(s->mutex);
+		Thread_destroy_mutex(s->ack_mutex);
+		Thread_destroy_mutex(s->send_mutex);
+		free(s);
+	}
 }

@@ -47,7 +47,7 @@ int bcp_vicp_send_data(bcp_vicp_sender_t *s,
 	vicp_sender_callback complete, void *context, u64 *id);
 
 int bcp_vicp_send_ack(bcp_vicp_sender_t *s,
-	u8 result, u16 code, int timeout, 
+	u32 msg_id, u8 result, u16 code, int timeout,
 	vicp_sender_callback complete, void *context, u64 *id);
 
 void bcp_vicp_sender_notify_ack(bcp_vicp_sender_t *s, 

@@ -676,7 +676,8 @@ static void vicp_send_cb(void *context, int result)
 	}
 }
 
-#define ELE_LEN (1024 - 32 + 1024 + 1)
+//#define ELE_LEN (1024 - 32 + 1024 + 1)
+#define ELE_LEN (1)
 static void send_one_packet(bcp_channel_t *c, const char *dev_name)
 {
 	static int i = 0;
@@ -689,22 +690,26 @@ static void send_one_packet(bcp_channel_t *c, const char *dev_name)
 		LOG_E("malloc failed.\n");
 		return;
 	}
+#if 0
 	sprintf((char*)data, "%d:%s\n", i++, dev_name);
 	data[ELE_LEN - 1] = '0';
+#else
+	data[ELE_LEN - 1] = 'q';
+#endif
 
 	p = bcp_create_one_message((u16)2, (u8)5, bcp_next_seq_id(), 
 		data, ELE_LEN);
 	free(data);
 
 	if (bcp_packet_serialize(p, &data, &len) >= 0) {
-		bcp_vicp_send(c, (const char*)data, (int)len, 20 * 1000, vicp_send_cb, p, NULL);
+		bcp_vicp_send(c, (const char*)data, (int)len, vicp_send_cb, p, NULL);
 		free(data);
 	}
 }
 
 static void vicp_test(int argc, char **argv)
 {
-	int count = 100;
+	int count = 1000;
 	int ret;
 	char *dev_name;
 	bcp_channel_t *c = NULL;
@@ -719,12 +724,12 @@ static void vicp_test(int argc, char **argv)
 	c = bcp_channel_create(BCP_CHANNEL_SERIAL, dev_name);
 	if (!c) {
 		LOG_E("create channel for %s failed.\n", dev_name);
-		return;
+		//return;
 	}
 
 	if ((ret = c->open(c)) < 0) {
 		LOG_E("open channel %s failed, ret = %d.\n", dev_name, ret);
-		goto __end;
+		//goto __end;
 	}
 
 	if (bcp_vicp_regist_channel(c) < 0) {
@@ -736,11 +741,7 @@ static void vicp_test(int argc, char **argv)
 
 	while (count-- > 0) {
 		send_one_packet(c, dev_name);
-		my_sleep(1000);
-	}
-
-	while (1) {
-		my_sleep(1000);
+		//my_sleep(1000);
 	}
 
 __end:
@@ -748,6 +749,9 @@ __end:
 		c->close(c);
 		bcp_vicp_unregist_channel(c);
 		bcp_channel_destroy(c);
+	}
+	while (1) {
+		my_sleep(1000);
 	}
 }
 

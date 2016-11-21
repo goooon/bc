@@ -35,7 +35,7 @@ int bcp_vicp_slice_regist_data_arrived_callback(
 	bcp_vicp_receiver_t *r);
 
 int bcp_vicp_slice_send(bcp_vicp_slicer_t *s,
-	const char *buf, int len, int timeout, 
-	vicp_sender_callback complete, void *context, u32 *id);
+	const char *buf, int len, vicp_sender_callback complete, 
+	void *context, u32 *id);
 
 #endif // __BCP_VICP_SLICE_H__
