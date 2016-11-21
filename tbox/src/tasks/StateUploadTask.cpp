@@ -10,7 +10,6 @@ bool UnIgnitStateUploadTask_NTF::ntfState()
 	LOG_I("ntfState(appId:%d,setpId:%d,seqId:%lld)",appID,NTF_STEP_ID,seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
-	msg.appendErrorElement(0);
 	msg.appendVehicleState(Application::getInstance().getVehicle().getApparatus().vehiState);
 	if (!pkg.post(Config::getInstance().pub_topic, Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("sendResponseUnlocked failed");
