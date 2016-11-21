@@ -9,7 +9,7 @@ Task* VKeyDeavtiveTask::Create()
 VKeyDeavtiveTask::VKeyDeavtiveTask() :Task(APPID_VKEY_DEACTIVITION, true)
 {
 	expireTime.update(Config::getInstance().getIgntActivationTimeOut());
-	LOG_I("VKeyIgnitionTask(%d,%lld) expire: %lld run...", appID, seqID, expireTime.getValue());
+	LOG_I("VKeyDeavtiveTask(%d,%lld) expire: %lld run...", appID, seqID, expireTime.getValue());
 }
 
 void VKeyDeavtiveTask::doTask()

@@ -2133,6 +2133,7 @@ struct ExampleAppConsole : public me::Tracer
 		if (ImGui::SmallButton("clear")) { ClearLog();func("clear"); } ImGui::SameLine();
         if (ImGui::SmallButton("Scroll to bottom")) ScrollToBottom = true;
 
+		
 		int idx = 0;
 		char* cmd;
 		for (;;) {
@@ -2147,6 +2148,9 @@ struct ExampleAppConsole : public me::Tracer
 			}
 			idx++;
 		}
+		//////////////////////////////////////////////////////////////////////////
+		ImGui::Text("Can:"); ImGui::SameLine();
+		ImGui::Checkbox("Auto", &Config::getInstance().canAuto);
 		///////////State///////////////////////////////////////////////////////////////
 		bool s;
 		Apparatus::VehicleState& vs = Vehicle::getInstance().getApparatus().vehiState;
@@ -2169,6 +2173,11 @@ struct ExampleAppConsole : public me::Tracer
 		s = vs.door.rh_rear & 2 ? true : false;
 		if (ImGui::Checkbox("rrd", &s)) {
 			s ? vs.door.rh_rear |= 2 : vs.door.rh_rear &= ~2;
+		}
+		ImGui::SameLine();
+		s = vs.door.ctl_lock & 2 ? true : false;
+		if (ImGui::Checkbox("lock", &s)) {
+			s ? vs.door.ctl_lock |= 2 : vs.door.ctl_lock &= ~2;
 		}
 		ImGui::SameLine();
 		s = vs.door.hood & 2 ? true : false;
@@ -2212,10 +2221,10 @@ struct ExampleAppConsole : public me::Tracer
 			vs.pedal.shift_level = s ? 1 : 0;
 		}
 
-		ImGui::Text("MoonRoof:"); ImGui::SameLine();
-		int mr = vs.window.moon_roof;
+		ImGui::Text("SunRoof:"); ImGui::SameLine();
+		int mr = vs.window.sun_roof;
 		if (ImGui::SliderInt("", &mr, 0, 15)) {
-			vs.window.moon_roof = mr;
+			vs.window.sun_roof = mr;
 		}
 
 		//////////GPS////////////////////////////////////////////////////////////////
@@ -2572,6 +2581,11 @@ struct VehicleConsole : public me::Tracer
 			vs.door.rh_rear = s;
 		}
 		ImGui::SameLine();
+		s = vs.door.ctl_lock & 1;
+		if (ImGui::Checkbox("lock", &s)) {
+			vs.door.ctl_lock = s;
+		}
+		ImGui::SameLine();
 		s = vs.door.hood & 1;
 		if (ImGui::Checkbox("hood", &s)) {
 			vs.door.hood = s;
@@ -2637,7 +2651,7 @@ struct VehicleConsole : public me::Tracer
 		ImGui::SameLine();
 		s = vs.pedal.ingnition & 1;
 		if (ImGui::Checkbox("igned", &s)) {
-			vs.pedal.ingnition = s;
+			PostEvent(AppEvent::AutoEvent, s ? Vehicle::Ignite : Vehicle::UnIgnt, 0, 0);
 		}
 
 		ImGui::SameLine();

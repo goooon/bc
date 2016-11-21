@@ -81,6 +81,10 @@ struct AutoLocation
 	u8 Speed[2];
 	u8 SatelliteNumber;
 	u8 DirectionAngel[2];
+	AutoLocation() {
+		locationType = 1;
+		SatelliteNumber = 1;
+	}
 	void set(u32 lat, u32 lon, u32 alt, u32 s, u32 a)
 	{
 		Endian::toByte(Latitude, lat);

@@ -33,7 +33,7 @@ struct Apparatus {
 		DEF_BIT1(is_head_light_on);		//远光灯on/off
 		DEF_BIT7(reserved);			    //保留以后使用
 	}DECL_GNU_PACKED;
-	struct Door	//total 2 bytes
+	struct Door	//total 3 bytes
 	{//各个车门打开的状态
 		union {
 			struct {
@@ -41,22 +41,25 @@ struct Apparatus {
 				DEF_BIT2(rh_front);	    //右前门 on/off
 				DEF_BIT2(lh_rear);      //左后门 on/off
 				DEF_BIT2(rh_rear);      //右后门 on/off
+				DEF_BIT2(ctl_lock);		//中控锁 on/off
 				DEF_BIT2(hood);		    //引擎盖 on/off
 				DEF_BIT2(luggage_door); //后备箱 on/off
 				DEF_BIT2(fuellid);	    //充电口 on/off
-				DEF_BIT2(reserved1);	//保留以后使用
+				DEF_BIT8(reserved1);    //保留以后使用
 				DEF_BIT8(reserved2);    //保留以后使用
 			}DECL_GNU_PACKED;
-			u16 doors;
-		};
+			u32 doors;
+		}DECL_GNU_PACKED;
 		Door() {
 			lh_front = 2;
 			rh_front = 2;
 			lh_rear = 2;
 			rh_rear = 2;
+			ctl_lock = 2;
 			hood = 2;
 			luggage_door = 2;
 			fuellid = 2;
+			LOG_A(sizeof(Door) == 4, "size wrong for Door %d",sizeof(Door));
 		}
 	}DECL_GNU_PACKED;
 	struct Window	//total 2 bytes
@@ -67,17 +70,20 @@ struct Apparatus {
 				DEF_BIT2(rh_front); 	//右前车窗 on/off
 				DEF_BIT2(lh_rear); 		//左后车窗 on/off
 				DEF_BIT2(rh_rear); 		//右后车窗 on/off
-				DEF_BIT4(moon_roof); 	//车顶车窗 档位 0-15 共16个档位
+				DEF_BIT4(sun_roof); 	//车顶车窗 档位 0-15 共16个档位
 				DEF_BIT4(reserved);		//保留以后使用
-			};
-			u16 winds;
+				DEF_BIT8(reserved1);    //保留以后使用
+				DEF_BIT8(reserved2);    //保留以后使用
+			}DECL_GNU_PACKED;
+			u32 winds;
 		};
 		Window() {
 			lh_front = 2;
 			rh_front = 2;
 			lh_rear = 2;
 			rh_rear = 2;
-			moon_roof = 2;
+			sun_roof = 2;
+			LOG_A(sizeof(Window) == 4, "size wrong for Window %d",sizeof(Window));
 		}
 	}DECL_GNU_PACKED;
 	struct Pedal    //total 4 bytes
@@ -88,10 +94,12 @@ struct Apparatus {
 		DEF_BIT2(parking_break);	//驻车制动 on/off
 		DEF_BIT2(ingnition);		//引擎状态
 		DEF_BIT1(reserved1);		//保留以后使用
+		DEF_BIT8(reserved2);        //保留以后使用
 		Pedal() {
 			parking_break = 3;
 			ingnition = 2;
 			shift_level = 1;
+			LOG_A(sizeof(Pedal) == 4, "size wrong for Pedal %d",sizeof(Pedal));
 		}
 	}DECL_GNU_PACKED;
 	struct Indicator	//total 4 bytes
@@ -118,6 +126,9 @@ struct Apparatus {
 		Door door;					//车门状态
 		Window window;				//车窗状态
 		Pedal pedal;				//驾驶操作状态
+		VehicleState() {
+			LOG_A(sizeof(VehicleState) == sizeof(Door) + sizeof(Window) + sizeof(Pedal), "size wrong for VehicleState %d", sizeof(VehicleState));
+		}
 	}DECL_GNU_PACKED;
 	struct AirCondition
 	{

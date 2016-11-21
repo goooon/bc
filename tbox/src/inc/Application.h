@@ -9,6 +9,7 @@
 #include "./Event.h"
 #include "./Vehicle.h"
 #include "./Schedule.h"
+#include "./CanBus.h"
 #include "../tasks/PackageQueue.h"
 class Application : public Thread
 {
@@ -18,6 +19,7 @@ public:
 	Config& getConfig(void);
 	Vehicle& getVehicle(void);
 	Schedule& getSchedule(void);
+	CanBus& getCanBus(void);
 	PackageQueue& getPackageQueue(void);
 	bool init(int argc, char** argv);
 	//main loop process for app event
@@ -47,6 +49,7 @@ public:
 	bool        netConnected;
 	Vehicle     vehicle;		//vehicle states
 	Schedule    schedule;
+	CanBus      canBus;
 	Config      config;			//setting and configuration
 	TaskQueue   tasksWaiting;	//tasks that waiting for launching
 	TaskList    tasksWorking;	//tasks that already started

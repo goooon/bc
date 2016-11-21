@@ -122,7 +122,7 @@ void Task::rspAck()
 		LOG_E("rspAck failed");
 	}
 	else {
-		LOG_I("rspAck() ---> TSP");
+		LOG_I("rspAck(%d,%d,%lld) ---> TSP",appID,ACK_STEP_ID,seqID);
 	}
 }
 
@@ -132,8 +132,8 @@ void Task::ntfTimeOut()
 	BCMessage msg = pkg.appendMessage(appID, NTF_STEP_ID, seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
-	msg.appendErrorElement(11);
-	msg.appendFunctionStatus(0);
+	msg.appendErrorElement(ERR_TIMEOUT);
+	msg.appendFunctionStatus(RAW_ERR_TIMEOUT);
 
 	if (!pkg.post(Config::getInstance().getPublishTopic(), Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("ntfTimeOut() post failed by %d",appID);

@@ -5,4 +5,6 @@
 #define ERR_AUTHFAIL 1
 #define ERR_TIMEOUT 11
 #define ERR_CONDITION 14
+
+#define RAW_ERR_TIMEOUT 11
 #endif // GUARD_ErrorCode_h__

@@ -20,7 +20,7 @@ void trace_callback(enum MQTTASYNC_TRACE_LEVELS level, char* message)
 		LOG_P("T:MINIMUM %s\r\n", message);
 		break;
 	case MQTTASYNC_TRACE_PROTOCOL:
-		LOG_P("T:PROTOCOL %s\r\n", message);
+		//LOG_P("T:PROTOCOL %s\r\n", message);
 		break;
 	case MQTTASYNC_TRACE_ERROR:
 		LOG_P("T:ERROR  %s\r\n", message);
@@ -110,7 +110,7 @@ static int Client_messageArrived(void* context, char* topicName, int topicLen, M
 static void Client_deliveryComplete(void* context, MQTTAsync_token token)
 {
 	MqttClient* mh = (MqttClient*)context;
-	LOG_I("MQTT Client_deliveryComplete:token %d", token);
+	//LOG_I("MQTT Client_deliveryComplete:token %d", token);
 	mh->onDeliveryComplete();
 }
 
