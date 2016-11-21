@@ -2238,13 +2238,25 @@ struct ExampleAppConsole : public me::Tracer
 		if (ImGui::SliderFloat(n, &degree, ni,m,"%.8f")) {	\
 			Vehicle::getInstance().v = degree;	\
 		}
+
+#define VEHICLE_FSEC(n,v,ni,m)	\
+		degree = Vehicle::getInstance().v;	\
+		if (ImGui::InputFloat(n, &degree)) {	\
+			Vehicle::getInstance().v = degree;	\
+		}
 		if (s) {
 			float degree;
-			VEHICLE_SEC("longitude", gpsData.longitude, 0.0f, 180.0f);
-			VEHICLE_SEC("latitude", gpsData.latitude, 0.0f, 180.0f);
-			VEHICLE_SEC("altitude", gpsData.altitude, 0.0f, 180.0f);
-			VEHICLE_SEC("angle", gpsData.dirAngle, 0.0f, 180.0f);
-			VEHICLE_SEC("speed", gpsData.speed, 0.0f, 180.0f);
+			//VEHICLE_SEC("longitude", gpsData.longitude, 0.0f, 180.0f);
+			//VEHICLE_SEC("latitude", gpsData.latitude, 0.0f, 180.0f);
+			//VEHICLE_SEC("altitude", gpsData.altitude, 0.0f, 180.0f);
+			//VEHICLE_SEC("angle", gpsData.dirAngle, 0.0f, 180.0f);
+			//VEHICLE_SEC("speed", gpsData.speed, 0.0f, 180.0f);
+
+			VEHICLE_FSEC("ilongitude", gpsData.longitude, 0.0f, 180.0f);
+			VEHICLE_FSEC("ilatitude", gpsData.latitude, 0.0f, 180.0f);
+			VEHICLE_FSEC("ialtitude", gpsData.altitude, 0.0f, 180.0f);
+			VEHICLE_FSEC("iangle", gpsData.dirAngle, 0.0f, 180.0f);
+			VEHICLE_FSEC("ispeed", gpsData.speed, 0.0f, 180.0f);
 		}
 
 

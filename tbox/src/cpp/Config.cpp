@@ -12,7 +12,7 @@ Config& Config::getInstance()
 
 u32 Config::getGpsInterval()
 {
-	return Vehicle::getInstance().isDriving() ? gpsIntervalDriving : gpsIntervalStation;
+	return Vehicle::getInstance().isIgnited() ? gpsIntervalDriving : gpsIntervalStation;
 }
 
 bool Config::parse(int argc, char** argv)
@@ -37,7 +37,7 @@ bool Config::parse(int argc, char** argv)
 	doorDeactiveTimeOut = 5000;
 	doorActivationTimeOut = 5000;
 	igntActivationTimeOut = 5000;
-	mqttReConnInterval = 5000;
+	mqttReConnInterval = 50000;
 	authRetryInterval = 5000;
 
 	gpsIntervalStation = 1000 * 5;

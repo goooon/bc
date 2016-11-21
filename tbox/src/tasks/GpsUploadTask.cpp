@@ -101,7 +101,7 @@ void GpsUploadTask_NTF::doTask()
 				LOG_W("No GPS Data Valid");
 				continue;
 			}
-			if (!Vehicle::getInstance().isDriving() && 
+			if (!Vehicle::getInstance().isIgnited() && 
 				!Vehicle::getInstance().isMovingInAbnormal()){
 				if (calcDistance(longPrev, latiPrev, rawGps) > Config::getInstance().getAbnormalMovingDist()) {
 					Vehicle::getInstance().setMovingInAbnormal(true);
