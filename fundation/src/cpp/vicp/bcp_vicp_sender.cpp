@@ -26,7 +26,8 @@
 typedef struct sender_pack_s {
 	u64 id;
 	bcp_vicp_packet_t *p;
-	s64 escaped; /* timeout(ms) */
+	int timeout; /* timeout(ms) */
+	s64 escaped;
 	int retry; /* post pack retry times  */
 	vicp_sender_callback complete;
 	void *context;
@@ -480,7 +481,8 @@ int bcp_vicp_sender_packet(bcp_vicp_sender_t *s,
 	memset(sp, 0, sizeof(*sp));
 	sp->id = next_seq_id();
 	sp->p = p;
-	sp->escaped = current_timestamp() + timeout;
+	sp->timeout = timeout;
+	sp->escaped = current_timestamp() + sp->timeout;
 	sp->retry = 0;
 	sp->complete = complete;
 	sp->context = context;

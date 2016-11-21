@@ -652,7 +652,8 @@ static void nmea_test(void)
 static void vicp_data_arrived(void *context, u8 *buf, u16 len)
 {
 	bcp_packet_t *p;
-
+	
+#if 0
 	LOG_I("data arrived, len=%d\n", len);
 	if (bcp_packet_unserialize(buf, len, &p) < 0) {
 		LOG_E("data unserialize failed.\n");
@@ -660,6 +661,7 @@ static void vicp_data_arrived(void *context, u8 *buf, u16 len)
 		parse_packet(p);
 		bcp_packet_destroy(p);
 	}
+#endif
 
 	free(buf);
 }
@@ -669,6 +671,7 @@ static void vicp_send_cb(void *context, int result)
 	static int index = 1;
 	bcp_packet_t *p = (bcp_packet_t*)context;
 
+#if 0
 	if (p) {
 		LOG_I("data send complete, ver = %d, result=%d, index=%d, %p\n", 
 			p->hdr.version, result, index++, p);
@@ -676,6 +679,14 @@ static void vicp_send_cb(void *context, int result)
 	} else {
 		LOG_I("data send complete, result=%d, index=%d\n", result, index++);
 	}
+#else
+	if (p) {
+		bcp_packet_destroy(p);
+	}
+	if (result != 0) {
+		LOG_I("send, result=%d, index=%d\n", result, index++);
+	}
+#endif
 }
 
 //#define ELE_LEN (1024 - 32 + 1024 + 1)

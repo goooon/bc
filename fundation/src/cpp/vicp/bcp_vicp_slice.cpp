@@ -25,7 +25,7 @@
 #endif
 
 #define MAX_SEND_SLICE_TIMEOUT (30 * 1000)
-#define DEF_WAIT_ACK_TIMEOUT (20 * 1000)
+#define DEF_WAIT_ACK_TIMEOUT (30 * 1000)
 #define MAX_RECV_SLICE_TIMEOUT (40 * 1000)
 
 /*
@@ -286,7 +286,7 @@ static void slice_send_callback(void *context,
 				LOG_E("slice desc send failed, result = %d.", result);
 			} else if (sc->state == SLICE_WAIT_DATA_ACK) {
 				LOG_E("slice data(%d,%d) send failed, result = %d.", 
-					sc->len, sc->index, result);
+					sc->context_id, sc->group_id, result);
 			} else {
 				LOG_E("slice invalid state, result = %d.", result);
 			}
@@ -466,7 +466,7 @@ static int send_slice_desc(bcp_vicp_slicer_t *s, bf_t *bf)
 	sc->group_id = g.group_id;
 	sc->per_slice_size = g.slice_size;
 	sc->slice_count = slice_count(sc);
-	sc->timestamp += sc->timeout;
+	sc->timestamp = current_timestamp() + sc->timeout;
 
 	//LOG_I("send[start] context_id=%d, group_id=%d, len=%d, slice_count=%d",
 	//	sc->context_id, sc->group_id, sc->len, sc->slice_count);
@@ -668,7 +668,7 @@ static int recv_slice(bcp_vicp_slicer_t *s, bf_t *bf)
 
 	mutex_lock(sc->mutex);
 	sc->state = SLICE_WAIT_DATA;
-	sc->timestamp += sc->timeout;
+	sc->timestamp = current_timestamp() + sc->timeout;
 
 	//LOG_I("recv context_id=%d, group_id=%d, slice_id=%d, len=%d", 
 	//	data.context_id, data.group_id, data.slice_id, data.len);
@@ -780,7 +780,7 @@ int send_next_slice(bcp_vicp_slicer_t *s, u8 type,
 	}
 
 	slice_id = sc->slice_id++;
-	sc->timestamp += sc->timeout;
+	sc->timestamp = current_timestamp() + sc->timeout;
 
 	data = &sc->data[sc->index];
 	sc->index += sc->per_slice_size;
@@ -894,8 +894,8 @@ static void recvd_slice_escaped(bcp_vicp_slicer_t *s)
 	while ((ListNextElement(&s->received, &current)) != NULL) {
 		sc = (slice_context_t*)current->content;
 		if (slice_escaped(sc)) {
-			LOG_E("slice received timeout, group_id=%d", 
-				sc->group_id);
+			LOG_E("slice received timeout, context_id=%d, group_id=%d", 
+				sc->context_id, sc->group_id);
 			mutex_unlock(s->recv_mutex);
 			free_recv_context(sc);
 			mutex_lock(s->recv_mutex);

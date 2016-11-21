@@ -232,7 +232,7 @@ static void set_callback(bcp_channel_t *c)
 			c->close = serial_close;
 			c->read = serial_read;
 			c->write = serial_write;
-			c->packet_size = 1 * 1024;
+			c->packet_size = 256;
 			break;
 		default:
 			LOG_W("bcp channel set callback, unkown type = %d\n", c->type);
