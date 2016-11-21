@@ -122,13 +122,13 @@ bool Application::onDebugCommand(const char* cmd)
 		return true;
 	}
 	if (!strcmp(cmd, "reqIgnit")){
-		Task* p = bc_new VKeyIgnitionTask();
+		Task* p = bc_new VKeyReadyToIgnitionTask();
 		p->handleDebug();
 		PostEvent(AppEvent::InsertTask, 0, 0, p);
 		return true;
 	}
 	if (!strcmp(cmd, "reqReady")) {
-		Task* p = bc_new VKeyIgnitionTask();
+		Task* p = bc_new VKeyReadyToIgnitionTask();
 		p->handleDebug();
 		PostEvent(AppEvent::InsertTask, 0, 0, p);
 		return true;
@@ -266,6 +266,9 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 				schedule.update(ts, APPID_STATE_UNIGNITION_NTF);
 			}
 		}
+		else if (param1 == Vehicle::UnIgnt) {
+			startTask(TaskCreate(APPID_STATE_UNIGNITION_NTF, 0), true);
+		}
 		break;
 	case AppEvent::InsertSchedule:
 		schedule.insert(Timestamp(param1, param2), (Task*)data);
@@ -311,6 +314,11 @@ Schedule& Application::getSchedule(void)
 	return schedule;
 }
 
+CanBus& Application::getCanBus(void)
+{
+	return canBus;
+}
+
 PackageQueue& Application::getPackageQueue(void)
 {
 	return pkgQueue;
@@ -338,7 +346,7 @@ Task* Application::findTask(u32 applicationId)
 
 void Application::onMqttStateChanged(u32 param1, u32 param2, void* data)
 {
-	LOG_I("onMqttStateChanged(%d,%d,%p)",param1,param2,data);
+	LOG_I("onMqttStateChanged(%d,%d,0x%p)",param1,param2,data);
 	if (param2 == MqttClient::Subscribed) {
 		if (!config.isServer) { 
 			startTask(TaskCreate(APPID_AUTHENTICATION,0), false);
@@ -372,8 +380,8 @@ void Application::onAutoStateChanged(u32 param1, u32 param2, void* data)
 	else if (prev == Vehicle::Ignited && next == Vehicle::ReadyToIgnit){
 		Timestamp ts;
 		ts.update(Config::getInstance().getStateUploadExpireTime());
-		schedule.replace(ts, bc_new UnIgnitStateUploadTask_NTF());
-		startTask(TaskCreate(APPID_VKEY_UNIGNITION, 0), true);
+		schedule.replace(ts, bc_new UnIgnitStateUploadTask_Delay_NTF());
+//		startTask(TaskCreate(APPID_VKEY_UNIGNITION, 0), true);
 	}
 	else if (prev == Vehicle::ReadyToIgnit && next == Vehicle::Ignited) {
 		startTask(TaskCreate(APPID_STATE_IGNITION, 0), true);

@@ -85,6 +85,9 @@ public:
 		return true;
 	}
 	bool appendVehicleState(Apparatus::VehicleState& state) {
+		if (sizeof(state) != sizeof(state.door) + sizeof(state.pedal) + sizeof(state.window)) {
+			LOG_E("struct not right for VehicleState");
+		}
 		bcp_element_t *e = bcp_element_create((u8*)&state, sizeof(Apparatus::VehicleState));
 		bcp_element_append(msg, e);
 		return true;
@@ -126,11 +129,10 @@ public:
 		identity.token.b2 = dw.b1;
 		identity.token.b3 = dw.b0;
 		
-		LOG_I("TBOX Identity authToken 0x%x(%u)", identity.token.dw, identity.token.dw);
+		u32 tmp = Config::getInstance().getAuthToken();
+		LOG_I("TBOX Identity authToken calced 0x%x(%u) Recevied is 0x%x", identity.token.dw, identity.token.dw,tmp);
 
-		identity.token.dw = Config::getInstance().getAuthToken();
-		LOG_I("TBOX new identity 0x%x", identity.token.dw);
-
+		identity.token.dw = tmp;
 		bcp_element_t *e = bcp_element_create((u8*)&identity, sizeof(Identity));
 		bcp_element_append(msg, e);
 		return true;

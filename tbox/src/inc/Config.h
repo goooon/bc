@@ -90,6 +90,9 @@ public:
 	u32 getMqttDefaultQos() {
 		return mqttQos;
 	}
+	bool getIsAutoCanBus() {
+		return canAuto;
+	}
 	//u32 getAbnormalMovingInterval() {
 	//	return abnormalMovingInterval;
 	//}
@@ -118,6 +121,7 @@ public:
 public:
 	bool isGpsDataValid;
 	bool gpsTaskAtStartup;
+	bool canAuto;
 	
 	u32 unIgnitionNotifyDelay;
 	u32 abnormalMovingDist;   //meter

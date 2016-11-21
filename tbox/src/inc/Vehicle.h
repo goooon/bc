@@ -37,6 +37,8 @@ public:
 		ActiveDoorResult,		//param2 true:succ false:falied
 		DeactiveDoorResult,		//param2 true:succ false:failed
 		AuthIdentity,			//param2 AuthState
+		EnterReadToIgnit,			//进入可点火状态
+		LeaveReadToIgnit,		//
 		Ignite,				    //点火
 		UnIgnt,				    //熄火
 		ShiftLevel,				//param2 curr level
@@ -63,6 +65,7 @@ public:
 	Operation::Result prepareActiveDoorByVKey();
 	Operation::Result reqActiveDoorByVKey();
 	Operation::Result reqDeactiveDoor();
+	Operation::Result reqReadyToIgnition(bool b);
 	Apparatus& getApparatus() { return apparatus; }
 	void setGpsInfo(Vehicle::RawGps& info);
 	bool getGpsInfo(Vehicle::RawGps& info);

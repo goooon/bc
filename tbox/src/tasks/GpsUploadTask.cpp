@@ -1,5 +1,9 @@
 #include "./GpsUploadTask.h"
 #include "../inc/Vehicle.h"
+
+#undef TAG
+#define TAG "GPS"
+
 GpsUploadTask_NTF::GpsUploadTask_NTF() : Task(APPID_GPS_UPLOADING_NTF, true)
 {
 	longPrev = 0;
@@ -161,8 +165,8 @@ void GpsUploadTask_NTF::sendGpsData(GPSDataQueue::GPSInfo info)
 }
 
 static void RawGps2AutoLocation(Vehicle::RawGps& rawGps, AutoLocation& loc) {
-	u32 Latitude = (180.f + rawGps.longitude) * 1000000;
-	u32 Longitude = (90.0f + rawGps.latitude) * 1000000;
+	u32 Longitude =  (180.f + rawGps.longitude) * 1000000;
+	u32 Latitude =  (90.0f + rawGps.latitude) * 1000000;
 	u32 Altitude = (rawGps.altitude * 10) + 100000;
 	u32 speed = (rawGps.speed) * 100;
 	u32 angle = rawGps.dirAngle * 1000000;
@@ -220,7 +224,6 @@ bool GpsUploadTask_NTF::ntfGps(GPSDataQueue::GPSInfo& info)
 	msg.appendIdentity();
 	msg.appendTimeStamp(&info.ts);
 	msg.appendGPSData(info.location);
-	msg.appendFunctionStatus(0);
 	if (!pkg.post(Config::getInstance().pub_topic, Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("ntfGps(%d) failed",info.appId);
 		return false;
@@ -267,6 +270,7 @@ bool GpsUploadTask_NTF::needSendAbnormalGps(Vehicle::RawGps& rawGps)
 	return false;
 }
 #define PI 3.1415926535898
+
 double GpsUploadTask_NTF::calcDistance(double long1, double lat1, Vehicle::RawGps& rawGps)
 {
 	double long2 = rawGps.longitude;
@@ -296,6 +300,7 @@ Task* GpsUploadTask::Create()
 
 void GpsUploadTask::doTask()
 {
+	RspAck();
 	Vehicle::RawGps data;
 	Vehicle::getInstance().getGpsInfo(data);
 	ntfGps(data);
@@ -304,13 +309,14 @@ void GpsUploadTask::doTask()
 bool GpsUploadTask::ntfGps(Vehicle::RawGps& rawGps)
 {
 	AutoLocation data;
-	
+	RawGps2AutoLocation(rawGps, data);
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, NTF_STEP_ID, seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
+	msg.appendErrorElement(0);
 	msg.appendGPSData(data);
-	msg.appendFunctionStatus(0);
+	
 	if (!pkg.post(Config::getInstance().pub_topic, Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("ntfGps failed");
 	}

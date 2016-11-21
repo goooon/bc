@@ -8,10 +8,10 @@
 #include "./BCMessage.h"
 #include "./TaskTable.h"
 //ref http://jira.oa.beecloud.com:8090/pages/viewpage.action?pageId=3997706 a03
-class VKeyIgnitionTask : public Task {
+class VKeyReadyToIgnitionTask : public Task {
 public:
 	static Task* Create();
-	VKeyIgnitionTask();
+	VKeyReadyToIgnitionTask();
 private:
 	virtual void doTask()OVERRIDE;
 protected:

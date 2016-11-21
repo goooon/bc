@@ -1,18 +1,18 @@
 #include "./VKeyIgnitionTask.h"
 #undef TAG
 #define TAG "A03"
-Task* VKeyIgnitionTask::Create()
+Task* VKeyReadyToIgnitionTask::Create()
 {
-	return bc_new VKeyIgnitionTask();
+	return bc_new VKeyReadyToIgnitionTask();
 }
 
-VKeyIgnitionTask::VKeyIgnitionTask() :Task(APPID_VKEY_IGNITION, true)
+VKeyReadyToIgnitionTask::VKeyReadyToIgnitionTask() :Task(APPID_VKEY_IGNITION, true)
 {
 	expireTime.update(Config::getInstance().getIgntActivationTimeOut());
 	LOG_I("VKeyIgnitionTask(%d,%lld) expire: %lld run...", appID, seqID, expireTime.getValue());
 }
 
-void VKeyIgnitionTask::doTask()
+void VKeyReadyToIgnitionTask::doTask()
 {
 	Operation::Result ret;
 	for (;;) {
@@ -22,6 +22,7 @@ void VKeyIgnitionTask::doTask()
 			if (now > expireTime) {
 				LOG_I("VKeyIgnitionTask waiting Time Out %lld", expireTime.getValue());
 				Vehicle::getInstance().prepareVKeyIgnition(false);
+				Vehicle::getInstance().reqReadyToIgnition(false);
 				NtfTimeOut();
 				return;
 			}
@@ -40,6 +41,16 @@ void VKeyIgnitionTask::doTask()
 						LOG_I("VKeyIgnitionTask %d %d", args.param1, args.param2);
 						ntfIgnited();
 						return;
+					}
+					else if (args.param1 == Vehicle::EnterReadToIgnit) {
+						if (args.param2 == 1) {
+							ntfError(Operation::Succ);
+							return;
+						}
+						else {
+							ntfError(Operation::E_State);
+							return;
+						}
 					}
 					else {
 						LOG_W("Unhandled Vehicle Event %d", args.param1);
@@ -62,6 +73,16 @@ void VKeyIgnitionTask::doTask()
 							if (ret != Operation::Succ) {
 								LOG_I("prepareVKeyIgnition() wrong %d", ret);
 								return ntfError(ret);
+							}
+							else {
+								LOG_I("prepareVKeyIgnition() OK");
+							}
+							ret = Vehicle::getInstance().reqReadyToIgnition(true);
+							if (ret != Operation::S_Blocking) {
+								return ntfError(ret);
+							}
+							else {
+								LOG_I("reqReadyToIgnition() OK");
 							}
 						}
 					}
@@ -86,7 +107,7 @@ void VKeyIgnitionTask::doTask()
 	return;
 }
 
-void VKeyIgnitionTask::ntfIgnited()
+void VKeyReadyToIgnitionTask::ntfIgnited()
 {
 	BCPackage pkg;
 	BCMessage msg = pkg.appendMessage(appID, NTF_STEP_ID, seqID);

@@ -2,7 +2,7 @@
 #include "../inc/Application.h"
 #include "../inc/Event.h"
 #include "../tasks/Element.h"
-
+#include "../inc/CanBus.h"
 #undef TAG
 #define TAG "Vehicle"
 
@@ -11,7 +11,7 @@ Vehicle& Vehicle::getInstance()
 	return Application::getInstance().getVehicle();
 }
 
-Vehicle::Vehicle() :authed(Unauthed),state(Enabled),movingInAbnormal(false)
+Vehicle::Vehicle() :authed(Unauthed),state(Disabled),movingInAbnormal(false)
 {
 	gpsValid = false;
 }
@@ -57,9 +57,7 @@ Operation::Result Vehicle::reqActiveDoorByVKey()
 {
 	LOG_I("do reqActiveDoorByVKey()");
 	if (apparatus.misc.door_actived)return Operation::Succ;
-	//todo send can bus command and will block this operation
-	LOG_I("Blicking by can bus Active Door command ...");
-	return Operation::S_Blocking;
+	return CanBus::getInstance().reqActiveDoor(true);
 }
 
 Operation::Result Vehicle::reqDeactiveDoor()
@@ -73,9 +71,12 @@ Operation::Result Vehicle::reqDeactiveDoor()
 		//todo...
 		return Operation::E_DoorOpened;
 	}
-	//todo send can bus command and will block this operation
-	LOG_I("Blicking by can bus Deactive Door command...");
-	return Operation::S_Blocking;
+	return CanBus::getInstance().reqActiveDoor(false);
+}
+
+Operation::Result Vehicle::reqReadyToIgnition(bool b)
+{
+	return CanBus::getInstance().reqEnterReadyToIgnite(b);
 }
 
 void Vehicle::setGpsInfo(Vehicle::RawGps& loc)
@@ -167,6 +168,7 @@ void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 	case ActiveDoorResult:
 		if (param2) {
 			apparatus.misc.door_actived = true;
+			changeState(Enabled);
 		}
 		break;
 	case DeactiveDoorResult:
@@ -176,6 +178,7 @@ void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 		break;
 	case DoorOpened:
 		apparatus.vehiState.door.doors |= 1 << (param2 * 2);
+		changeState(NotReady);
 		break;
 	case DoorClosed:
 		apparatus.vehiState.door.doors &= ~(1 << (param2 * 2));
@@ -228,10 +231,19 @@ void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 	}
 }
 
+const static char* sstate[] = {
+	"Disabled",
+	"Enabled",
+	"NotReady",
+	"ReadyToIgnit",
+	"Ignited",
+	"Forwarding",
+	"Backwarding"
+};
 bool Vehicle::changeState(State next)
 {
 	//todo ...
-	LOG_I("Vehicle state %d -> %d", state, next);
+	LOG_I("Vehicle state %s -> %s", sstate[state], sstate[next]);
 	State prev = state;
 	state = next;
 	PostEvent(AppEvent::AutoStateChanged, prev, state,0);

@@ -1,12 +1,13 @@
 #include "./VKeyUnIgnitTask.h"
+#include "../inc/Application.h"
 #undef TAG
-#define TAG "A04"
+#define TAG "NONE"
 Task* VKeyUnIgnitTask::Create()
 {
 	return bc_new VKeyUnIgnitTask();
 }
 
-VKeyUnIgnitTask::VKeyUnIgnitTask() :Task(APPID_VKEY_UNIGNITION, true)
+VKeyUnIgnitTask::VKeyUnIgnitTask() :Task(0, true)
 {
 	expireTime.update(Config::getInstance().getIgntActivationTimeOut());
 	LOG_I("VKeyIgnitionTask(%d,%lld) expire: %lld run...", appID, seqID, expireTime.getValue());
@@ -34,7 +35,7 @@ void VKeyUnIgnitTask::ntfUnIgnited()
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(ERR_SUCC);
-	msg.appendFunctionStatus(0);
+	msg.appendVehicleState(Application::getInstance().getVehicle().getApparatus().vehiState);
 	if (!pkg.post(Config::getInstance().getPublishTopic(), Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut(),true)) {
 		LOG_E("ntfUnIgnited() failed");
 	}

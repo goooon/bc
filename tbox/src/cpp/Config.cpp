@@ -26,6 +26,7 @@ bool Config::parse(int argc, char** argv)
 	mqttQos = 2;
 	isGpsDataValid = true;
 	gpsTaskAtStartup = true;
+	canAuto = true;
 	mqttSendTimeOut = 5000;
 	gpsQueueSize = 4096;
 	abnormalMovingDist = 50;
@@ -47,6 +48,10 @@ bool Config::parse(int argc, char** argv)
 	 //strncpy(mqttServer, "10.28.248.71:1883", sizeof(mqttServer));//guzhibin
 
 	strncpy(vin, "VIN67423921", sizeof(vin));//main server
+	memset(tsn, ' ', sizeof(tsn));
+	memset(imei, ' ', sizeof(imei));
+	memset(iccid, ' ', sizeof(iccid));
+
 	keepAliveInterval = 20;
 
 	//////////////////////////////////////////////////////////////////////////

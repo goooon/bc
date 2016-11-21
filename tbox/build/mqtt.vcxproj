@@ -46,6 +46,7 @@
     <ClInclude Include="..\src\cpp\CmdParser.h" />
     <ClInclude Include="..\src\inc\Apparatus.h" />
     <ClInclude Include="..\src\inc\Application.h" />
+    <ClInclude Include="..\src\inc\CanBus.h" />
     <ClInclude Include="..\src\inc\Config.h" />
     <ClInclude Include="..\src\inc\CycleQueue.h" />
     <ClInclude Include="..\src\inc\dep.h" />
@@ -85,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cpp\Application.cpp" />
+    <ClCompile Include="..\src\cpp\CanBus.cpp" />
     <ClCompile Include="..\src\cpp\CmdParser.cpp" />
     <ClCompile Include="..\src\cpp\Config.cpp" />
     <ClCompile Include="..\src\cpp\dep.cpp" />

@@ -15,6 +15,9 @@ VehicleDesc::VehicleDesc()
 		if (v == 0)break;;
 		vin[i] = v;
 	}
+	memcpy(iccid, Config::getInstance().iccid, sizeof(iccid));
+	memcpy(imei, Config::getInstance().imei, sizeof(imei));
+	memcpy(tbox_serial, Config::getInstance().tsn, sizeof(tbox_serial));
 }
 
 void TimeStamp::update()

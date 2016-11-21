@@ -18,12 +18,12 @@ static TaskTable tt[] = {
 	{ APPID_VKEY_ACTIVITION,VKeyActiveTask::Create },
 	{ APPID_VKEY_DEACTIVITION,VKeyDeavtiveTask::Create},
 	{ APPID_AUTHENTICATION,VehicleAuthTask::Create},
-	{ APPID_VKEY_IGNITION ,VKeyIgnitionTask::Create},
-	{ APPID_STATE_UNIGNITION_VK,UnIgnitStateUploadTask::Create},
+	{ APPID_VKEY_IGNITION ,VKeyReadyToIgnitionTask::Create},
+	{ APPID_STATE_UNIGNITION_NTF,UnIgnitStateUploadTask_NTF::Create},
 	{ APPID_GPS_UPLOADING,GpsUploadTask::Create},
-	{ APPID_VKEY_UNIGNITION ,VKeyUnIgnitTask::Create},
 	{ APPID_STATE_IGNITION ,IgnitStateUploadTask_NTF::Create },
 	{ APPID_PACKAGE_QUEUE ,PackageQueueTask::Create},
+	{ APPID_STATE_UNIGNITION_VK,StateUploadTask::Create },
 	{-1,0}
 };
 Task* TaskCreate(u32 appId, bcp_packet_t* pkg)
