@@ -21,6 +21,7 @@ void trace_callback(enum MQTTASYNC_TRACE_LEVELS level, char* message)
 		break;
 	case MQTTASYNC_TRACE_PROTOCOL:
 		//LOG_P("T:PROTOCOL %s\r\n", message);
+		MqttClient::getInstance().incHeartBeat();
 		break;
 	case MQTTASYNC_TRACE_ERROR:
 		LOG_P("T:ERROR  %s\r\n", message);
@@ -67,6 +68,16 @@ bool MqttClient::onDebugCommand(const char* cmd)
 	return false;
 }
 
+u32 MqttClient::getHeartBeat()
+{
+	return heartBeatCount;
+}
+
+void MqttClient::incHeartBeat()
+{
+	heartBeatCount++;
+}
+
 static MqttClient* g_client;
 MqttClient& MqttClient::getInstance()
 {
@@ -80,6 +91,7 @@ MqttClient::MqttClient() :state(Disconnected), client(0)
 	LOG_I("Mqtt name:%s value:%s", info->name, info->value);
 	MQTTAsync_setTraceLevel(MQTTASYNC_TRACE_MAXIMUM);
 	g_client = this;
+	heartBeatCount = 0;
 }
 
 MqttClient::~MqttClient()

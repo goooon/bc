@@ -12,8 +12,8 @@
 
 class VKeyDeavtiveTask : public Task {
 public:
-	static Task* Create();
-	VKeyDeavtiveTask();
+	static Task* Create(u32 appId);
+	VKeyDeavtiveTask(u32 appId);
 private:
 	virtual void doTask()OVERRIDE;
 private:

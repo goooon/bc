@@ -1,12 +1,12 @@
 #include "./VKeyDeactiveTask.h"
 #undef TAG
 #define TAG "A02"
-Task* VKeyDeavtiveTask::Create()
+Task* VKeyDeavtiveTask::Create(u32 appId)
 {
-	return bc_new VKeyDeavtiveTask();
+	return bc_new VKeyDeavtiveTask(appId);
 }
-
-VKeyDeavtiveTask::VKeyDeavtiveTask() :Task(APPID_VKEY_DEACTIVITION, true)
+//APPID_VKEY_DEACTIVITION
+VKeyDeavtiveTask::VKeyDeavtiveTask(u32 appId) :Task(appId, true)
 {
 	expireTime.update(Config::getInstance().getIgntActivationTimeOut());
 	LOG_I("VKeyDeavtiveTask(%d,%lld) expire: %lld run...", appID, seqID, expireTime.getValue());

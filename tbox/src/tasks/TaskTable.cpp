@@ -12,7 +12,7 @@
 struct TaskTable
 {
 	u32 idx;
-	Task* (*creator)();
+	Task* (*creator)(u32 appId);
 };
 
 static TaskTable tt[] = {
@@ -35,7 +35,7 @@ Task* TaskCreate(u32 appId, bcp_packet_t* pkg)
 	while (t->creator) {
 		if (t->idx == appId) {
 			LOG_I("TaskCreate(0x%x,0x%x)", appId,  pkg);
-			Task* task = (*t->creator)();
+			Task* task = (*t->creator)(appId);
 			if (pkg) { task->handlePackage(pkg); }
 			return task;
 		}

@@ -123,25 +123,25 @@ bool Application::onDebugCommand(const char* cmd)
 		return true;
 	}
 	if (!strcmp(cmd, "reqDeact")) {
-		Task* p = bc_new VKeyDeavtiveTask();
+		Task* p = TaskCreate(APPID_VKEY_DEACTIVITION, 0);// bc_new VKeyDeavtiveTask();
 		p->handleDebug();
 		PostEvent(AppEvent::InsertTask, 0, 0, p);
 		return true;
 	}
 	if (!strcmp(cmd, "reqActive")) {
-		Task* p = bc_new VKeyActiveTask();
+		Task* p = TaskCreate(APPID_VKEY_ACTIVITION,0); //bc_new VKeyActiveTask();
 		p->handleDebug();
 		PostEvent(AppEvent::InsertTask, 0, 0, p);
 		return true;
 	}
 	if (!strcmp(cmd, "reqIgnit")){
-		Task* p = bc_new VKeyReadyToIgnitionTask();
+		Task* p = TaskCreate(APPID_VKEY_IGNITION, 0); //bc_new VKeyReadyToIgnitionTask();
 		p->handleDebug();
 		PostEvent(AppEvent::InsertTask, 0, 0, p);
 		return true;
 	}
 	if (!strcmp(cmd, "reqReady")) {
-		Task* p = bc_new VKeyReadyToIgnitionTask();
+		Task* p = TaskCreate(APPID_VKEY_IGNITION, 0); //bc_new VKeyReadyToIgnitionTask();
 		p->handleDebug();
 		PostEvent(AppEvent::InsertTask, 0, 0, p);
 		return true;

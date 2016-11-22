@@ -6,10 +6,7 @@
 #undef TAG
 #define TAG "GPS"
 
-//#undef BC_TARGET
-//#define BC_TARGET BC_TARGET_LINUX
-
-GpsUploadTask_NTF::GpsUploadTask_NTF() : Task(APPID_GPS_UPLOADING_NTF, true)
+GpsUploadTask_NTF::GpsUploadTask_NTF() : Task(APPID_GPS_UPLOADING_NTF_CONST, true)
 {
 	longPrev = 0;
 	latiPrev = 0;
@@ -135,8 +132,7 @@ void GpsUploadTask_NTF::doTask()
 			}
 			else if (normalToFire < now) {
 				normalToFire.update(Config::getInstance().getGpsInterval());
-				info.appId = appID;
-				//
+				info.appId = Vehicle::getInstance().isIgnited() ? APPID_GPS_UPLOADING_NTF_MOVE : APPID_GPS_UPLOADING_NTF_CONST;
 				sendGpsData(info);
 			}
 		}
@@ -337,14 +333,14 @@ double GpsUploadTask_NTF::calcDistance(double long1, double lat1, Vehicle::RawGp
 	d = 2 * R * asin(sqrt(sa2 * sa2 + cos(lat1) * cos(lat2) * sb2 * sb2));
 	return d;
 }
-
-GpsUploadTask::GpsUploadTask() : Task(APPID_GPS_UPLOADING, true)
+//APPID_GPS_UPLOADING
+GpsUploadTask::GpsUploadTask(u32 appId) : Task(appId, true)
 {
 }
 
-Task* GpsUploadTask::Create()
+Task* GpsUploadTask::Create(u32 appId)
 {
-	return bc_new GpsUploadTask();
+	return bc_new GpsUploadTask(appId);
 }
 
 void GpsUploadTask::doTask()

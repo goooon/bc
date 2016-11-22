@@ -1,12 +1,12 @@
 #include "./VKeyIgnitionTask.h"
 #undef TAG
 #define TAG "A03"
-Task* VKeyReadyToIgnitionTask::Create()
+Task* VKeyReadyToIgnitionTask::Create(u32 appId)
 {
-	return bc_new VKeyReadyToIgnitionTask();
+	return bc_new VKeyReadyToIgnitionTask(appId);
 }
-
-VKeyReadyToIgnitionTask::VKeyReadyToIgnitionTask() :Task(APPID_VKEY_IGNITION, true)
+//APPID_VKEY_IGNITION
+VKeyReadyToIgnitionTask::VKeyReadyToIgnitionTask(u32 appId) :Task(appId, true)
 {
 	expireTime.update(Config::getInstance().getIgntActivationTimeOut());
 	LOG_I("VKeyIgnitionTask(%d,%lld) expire: %lld run...", appID, seqID, expireTime.getValue());

@@ -87,6 +87,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\cpp\Application.cpp" />
     <ClCompile Include="..\src\cpp\CanBus.cpp" />
+    <ClCompile Include="..\src\cpp\channels.cpp" />
     <ClCompile Include="..\src\cpp\CmdParser.cpp" />
     <ClCompile Include="..\src\cpp\Config.cpp" />
     <ClCompile Include="..\src\cpp\dep.cpp" />

@@ -42,6 +42,8 @@ public:
 	bool isConnected();
 	const char* getTopicName()const;
 	bool onDebugCommand(const char* cmd);
+	void incHeartBeat();
+	u32  getHeartBeat();
 private:
 	bool changeState(State next);
 public:
@@ -52,6 +54,7 @@ public:
 	virtual void onDeliveryComplete()OVERRIDE;
 	virtual void onError(u32 ecode, const char* emsg)OVERRIDE;
 private:
+	u32 heartBeatCount;
 	State state;
 	void* client;
 	char *topicName;
