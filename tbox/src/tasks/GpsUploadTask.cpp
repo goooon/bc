@@ -1,3 +1,4 @@
+#include <math.h>
 #include "./GpsUploadTask.h"
 #include "../inc/Vehicle.h"
 
@@ -254,7 +255,8 @@ bool GpsUploadTask_NTF::ntfExitAbnormal()
 
 bool GpsUploadTask_NTF::needSendAbnormalGps(Vehicle::RawGps& rawGps)
 {
-	double dist = abs(calcDistance(longPrev, latiPrev, rawGps));
+	double dist = calcDistance(longPrev, latiPrev, rawGps);
+	dist = dist < 0.0f ? -dist : dist;
 	Timestamp now;
 	if (dist >= 10.0f) {
 		if (now - abnormalPrev >= Config::getInstance().getAbnormalMovingDuration()){

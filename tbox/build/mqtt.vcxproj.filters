@@ -150,9 +150,6 @@
     <ClInclude Include="..\src\tasks\AcquireConfigTask.h">
       <Filter>src\tasks</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\tasks\PackageQueueTask.h">
-      <Filter>src\tasks\axx</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\inc\CanBus.h">
       <Filter>src\inc</Filter>
     </ClInclude>
@@ -238,9 +235,6 @@
     </ClCompile>
     <ClCompile Include="..\src\tasks\AcquireConfigTask.cpp">
       <Filter>src\tasks</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tasks\PackageQueueTask.cpp">
-      <Filter>src\tasks\axx</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cpp\CanBus.cpp">
       <Filter>src\cpp</Filter>
