@@ -45,6 +45,7 @@ set(SRC_LIST
 	src/cpp/Sensor.cpp
 	src/cpp/Task.cpp
 	src/cpp/Vehicle.cpp
+	src/cpp/channels.cpp
 	src/tasks/AcquireConfigTask.cpp
 	src/tasks/BCMessage.cpp
 	src/tasks/Element.cpp

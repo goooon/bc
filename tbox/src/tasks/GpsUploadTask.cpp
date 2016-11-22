@@ -1,7 +1,7 @@
 #include <math.h>
 #include "./GpsUploadTask.h"
 #include "../inc/Vehicle.h"
-#include "../../../fundation/src/inc/vicp/bcp_vicp.h"
+#include "../inc/channels.h"
 
 #undef TAG
 #define TAG "GPS"
@@ -70,27 +70,17 @@ void GpsUploadTask_NTF::doTask()
 	void *s = 0;
 	void *p = 0;
 	bcp_channel_t *ch = NULL;
+	const char *ch_name = "serial";
 
 #if BC_TARGET == BC_TARGET_LINUX
-	ch = bcp_channel_create(BCP_CHANNEL_SERIAL, VICP_SERIAL_NAME);
+	ch = channels_get(ch_name);
 	if (!ch) {
-		LOG_E("bcp channel create failed, serial: %s\n", VICP_SERIAL_NAME);
-		return;
-	}
-	if (ch->open(ch) < 0) {
-		bcp_channel_destroy(ch);
-		LOG_E("bcp channel open failed, serial: %s\n", VICP_SERIAL_NAME);
-		return;
-	}
-	if (bcp_vicp_regist_channel(ch) < 0) {
-		ch->close(ch);
-		bcp_channel_destroy(ch);
-		LOG_E("bcp regist channel failed, serial: %s\n", VICP_SERIAL_NAME);
+		LOG_I("find channel failed. name: %s\n", ch_name);
 		return;
 	}
 	p = bcp_nmea_create(trace,error);
 	if (!p) {
-		bcp_channel_destroy(ch);
+		channels_put(ch);
 		LOG_I("bcp nmea create failed\n");
 		return;
 	}
@@ -98,7 +88,7 @@ void GpsUploadTask_NTF::doTask()
 	if (!(s = bcp_serial_open(SERIAL_DEVNAME, 9600, 8, P_NONE, 1))) {
 		LOG_I("open %s failed.", SERIAL_DEVNAME);
 		bcp_nmea_destroy(p);
-		bcp_channel_destroy(ch);
+		channels_put(ch);
 		return;
 	}
 #endif
@@ -163,9 +153,7 @@ void GpsUploadTask_NTF::doTask()
 	bcp_serial_close(s);
 	bcp_nmea_destroy(p);
 	if (ch) {
-		bcp_vicp_unregist_channel(ch);
-		ch->close(ch);
-		bcp_channel_destroy(ch);
+		channels_put(ch);
 	}
 #endif
 }
@@ -207,16 +195,24 @@ static void RawGps2AutoLocation(Vehicle::RawGps& rawGps, AutoLocation& loc) {
 }
 
 #if BC_TARGET == BC_TARGET_LINUX
+static void gps_send_cb(void *context, int result)
+{
+	if (result != 0) {
+		LOG_W("gps data sending result = %d\n", result);
+	}
+}
+
 static void gps_send(bcp_channel_t *ch, const char *buf, int len)
 {
 	bcp_packet_t *p;
 	u8 *out;
 	u32 olen;
 
-	p = bcp_create_one_message(APPID_VIS_GPS, 0, bcp_next_seq_id(), (u8*)buf, len);
+	p = bcp_create_one_message(APPID_VIS_GPS, 0, 
+		bcp_next_seq_id(), (u8*)buf, len);
 	if (p) {
 		if (bcp_packet_serialize(p, &out, &olen) >= 0) {
-			bcp_vicp_send(ch, buf, len, NULL, NULL, NULL);
+			bcp_vicp_send(ch, buf, len, gps_send_cb, NULL, NULL);
 			free(out);
 		}
 		bcp_packet_destroy(p);

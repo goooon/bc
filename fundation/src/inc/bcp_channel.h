@@ -15,6 +15,7 @@
 
 typedef struct bcp_channel_s {
 	int type;
+	char *name;
 	char *dev_name; /* such as: /dev/ttySAC0 */
 	void *hdl;
 	int hdl_ref;
@@ -31,11 +32,12 @@ typedef struct bcp_channel_s {
 void bcp_channel_init(void);
 void bcp_channel_uninit(void);
 
-bcp_channel_t *bcp_channel_create(int type, const char *dev_name);
+bcp_channel_t *bcp_channel_create(int type, 
+	const char *name, const char *dev_name);
 void bcp_channel_destroy(bcp_channel_t *c);
 
 bcp_channel_t *bcp_channel_get(bcp_channel_t *c);
-bcp_channel_t *bcp_channel_get_byname(int type, const char *dev_name);
+bcp_channel_t *bcp_channel_get_byname(const char *name);
 void bcp_channel_put(bcp_channel_t *c);
 
 #endif // __BCP_CHANNEL_H__

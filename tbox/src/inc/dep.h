@@ -30,6 +30,27 @@ char* getCommand(int i);
 void onCommand(char* cmd);
 #else
 #include <stdio.h>
+#ifdef LOG_A
+#undef LOG_A
+#endif
+#ifdef LOG_P
+#undef LOG_P
+#endif
+#ifdef LOG_V
+#undef LOG_V
+#endif
+#ifdef LOG_I
+#undef LOG_I
+#endif
+#ifdef LOG_W
+#undef LOG_W
+#endif
+#ifdef LOG_E
+#undef LOG_E
+#endif
+#ifdef LOG_F
+#undef LOG_F
+#endif
 #define LOG_A(expr,...) if(!expr)printf(__VA_ARGS__);
 #define LOG_P(fmt,...) do {printf(fmt, ##__VA_ARGS__);}while(0);
 #define LOG_V(fmt,...) do {printf(fmt, ##__VA_ARGS__);printf("\n");} while (0);

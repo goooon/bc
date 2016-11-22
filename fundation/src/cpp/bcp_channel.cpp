@@ -67,7 +67,7 @@ static bcp_channel_t *find_channel(bcp_channel_t *c)
 	return NULL;
 }
 
-static bcp_channel_t *find_channel_byname(const char *dev_name)
+static bcp_channel_t *find_channel_byname(const char *name)
 {
 	ListElement *current = NULL;
 	bcp_channel_t *c;
@@ -75,7 +75,7 @@ static bcp_channel_t *find_channel_byname(const char *dev_name)
 	while (ListNextElement(&channels, &current) != NULL) {
 		c = (bcp_channel_t*)current->content;
 		if (c) {
-			if (!strcmp(dev_name, c->dev_name)) {
+			if (!strcmp(name, c->name)) {
 				return c;
 			}
 		}
@@ -240,13 +240,14 @@ static void set_callback(bcp_channel_t *c)
 	}
 }
 
-bcp_channel_t *bcp_channel_create(int type, const char *dev_name)
+bcp_channel_t *bcp_channel_create(int type, const char *name, 
+	const char *dev_name)
 {
 	bcp_channel_t *c;
 
 	mutex_lock(mutex);
 
-	c = find_channel_byname(dev_name);
+	c = find_channel_byname(name);
 	if (c) {
 		c->channel_ref++;
 		mutex_unlock(mutex);
@@ -259,6 +260,10 @@ bcp_channel_t *bcp_channel_create(int type, const char *dev_name)
 	}
 
 	memset(c, 0, sizeof(*c));
+	c->name = my_strdup(name);
+	if (!c->name) {
+		goto __failed;
+	}
 	c->dev_name = my_strdup(dev_name);
 	if (!c->dev_name) {
 		goto __failed;
@@ -283,6 +288,8 @@ bcp_channel_t *bcp_channel_create(int type, const char *dev_name)
 
 __failed:
 	if (c) {
+		if (c->name)
+			free(c->name);
 		if (c->dev_name)
 			free(c->dev_name);
 		Thread_destroy_mutex(c->mutex);
@@ -302,6 +309,12 @@ void bcp_channel_destroy(bcp_channel_t *c)
 	mutex_lock(c->mutex);
 
 	if (c->hdl_ref > 0) {
+		mutex_unlock(c->mutex);
+		mutex_unlock(mutex);
+		return;
+	}
+	if (c->channel_ref <= 0) {
+		LOG_E("channel has free?\n");
 		mutex_unlock(c->mutex);
 		mutex_unlock(mutex);
 		return;
@@ -325,9 +338,20 @@ void bcp_channel_destroy(bcp_channel_t *c)
 	free(c);
 }
 
-bcp_channel_t *bcp_channel_get_byname(int type, const char *dev_name)
+bcp_channel_t *bcp_channel_get_byname(const char *name)
 {
-	return bcp_channel_create(type, dev_name);
+	bcp_channel_t *c;
+
+	mutex_lock(mutex);
+	c = find_channel_byname(name);
+	if (c) {
+		c->channel_ref++;
+	} else {
+		c = NULL;
+	}
+	mutex_unlock(mutex);
+
+	return c;
 }
 
 bcp_channel_t* bcp_channel_get(bcp_channel_t *c)
@@ -351,11 +375,12 @@ void bcp_channel_put(bcp_channel_t *c)
 		if (c->channel_ref == 0) {
 			LOG_E("bcp_channel_put channel_ref == 0.\n");
 			mutex_unlock(mutex);
-		}
-		c->channel_ref--;
-		mutex_unlock(mutex);
-		if (c->channel_ref == 0) {
+			return;
+		} else if (c->channel_ref == 1) {
+			mutex_unlock(mutex);
 			bcp_channel_destroy(c);
+			return;
 		}
+		mutex_unlock(mutex);
 	}
 }

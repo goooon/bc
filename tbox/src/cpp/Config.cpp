@@ -53,6 +53,7 @@ bool Config::parse(int argc, char** argv)
 	memset(iccid, ' ', sizeof(iccid));
 
 	keepAliveInterval = 20;
+	startChannel = false;
 
 	//////////////////////////////////////////////////////////////////////////
 	for (int i = 1; i < argc; i++) {
@@ -135,6 +136,10 @@ bool Config::parse(int argc, char** argv)
 				return false;
 			}
 			doorActivationTimeOut = atoi(argv[i + 1]);
+			i++;
+		}
+		else if (!strcmp(argv[i], "-channels")) {
+			startChannel = true;
 			i++;
 		}
 		else {

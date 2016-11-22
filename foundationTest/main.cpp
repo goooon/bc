@@ -742,7 +742,7 @@ static void vicp_test(int argc, char **argv)
 		dlen = atoi(argv[4]);
 	}
 
-	c = bcp_channel_create(BCP_CHANNEL_SERIAL, dev_name);
+	c = bcp_channel_create(BCP_CHANNEL_SERIAL, "serial", dev_name);
 	if (!c) {
 		LOG_E("create channel for %s failed.\n", dev_name);
 		return;

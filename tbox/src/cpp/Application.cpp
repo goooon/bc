@@ -8,6 +8,8 @@
 #include "../test/ActiveTest.h"
 #include "../tasks/TaskTable.h"
 #include "../tasks/GpsUploadTask.h"
+#include "../inc/channels.h"
+
 static Application* g_inst;
 Application& Application::getInstance()
 {
@@ -28,6 +30,9 @@ bool Application::init(int argc, char** argv)
 	mqtt.onDebugCommand("PROTOCOL");
 	if (config.isGpsTaskAtStartup()) {
 		PostEvent(AppEvent::InsertTask, 0, 0, bc_new GpsUploadTask_NTF());
+	}
+	if (config.isStartChannels()) {
+		channels_init();
 	}
 	return true;
 }
