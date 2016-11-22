@@ -17,9 +17,13 @@
 #define APPID_GPS_ABNORMAL_MOVE      12
 #define APPID_STATE_UPLOADING_HK    16
 
+/*
+ * vechile inter-connect system
+ */
+#define APPID_VIS_GPS	0x8000
+
 #define APPID_MQTT_CONNECT			0xFFFF0001
 #define APPID_PACKAGE_QUEUE         0xFFFF0002
-
 
 #define ACK_STEP_ID    3
 #define NTF_STEP_ID    5

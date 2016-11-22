@@ -1,9 +1,13 @@
 #include <math.h>
 #include "./GpsUploadTask.h"
 #include "../inc/Vehicle.h"
+#include "../../../fundation/src/inc/vicp/bcp_vicp.h"
 
 #undef TAG
 #define TAG "GPS"
+
+//#undef BC_TARGET
+//#define BC_TARGET BC_TARGET_LINUX
 
 GpsUploadTask_NTF::GpsUploadTask_NTF() : Task(APPID_GPS_UPLOADING_NTF, true)
 {
@@ -17,8 +21,10 @@ Task* GpsUploadTask_NTF::Create()
 }
 #if defined (_WIN32) || defined(_WIN64)
 #define SERIAL_DEVNAME "COM8"
+#define VICP_SERIAL_NAME "COM7"
 #else
 #define SERIAL_DEVNAME "/dev/ttySAC2"
+#define VICP_SERIAL_NAME "/dev/ttyCh"
 #endif
 
 static void print_nmea_info(bcp_nmea_info_t *info)
@@ -63,9 +69,28 @@ void GpsUploadTask_NTF::doTask()
 {
 	void *s = 0;
 	void *p = 0;
+	bcp_channel_t *ch = NULL;
+
 #if BC_TARGET == BC_TARGET_LINUX
+	ch = bcp_channel_create(BCP_CHANNEL_SERIAL, VICP_SERIAL_NAME);
+	if (!ch) {
+		LOG_E("bcp channel create failed, serial: %s\n", VICP_SERIAL_NAME);
+		return;
+	}
+	if (ch->open(ch) < 0) {
+		bcp_channel_destroy(ch);
+		LOG_E("bcp channel open failed, serial: %s\n", VICP_SERIAL_NAME);
+		return;
+	}
+	if (bcp_vicp_regist_channel(ch) < 0) {
+		ch->close(ch);
+		bcp_channel_destroy(ch);
+		LOG_E("bcp regist channel failed, serial: %s\n", VICP_SERIAL_NAME);
+		return;
+	}
 	p = bcp_nmea_create(trace,error);
 	if (!p) {
+		bcp_channel_destroy(ch);
 		LOG_I("bcp nmea create failed\n");
 		return;
 	}
@@ -73,13 +98,14 @@ void GpsUploadTask_NTF::doTask()
 	if (!(s = bcp_serial_open(SERIAL_DEVNAME, 9600, 8, P_NONE, 1))) {
 		LOG_I("open %s failed.", SERIAL_DEVNAME);
 		bcp_nmea_destroy(p);
+		bcp_channel_destroy(ch);
 		return;
 	}
 #endif
 	GPSDataQueue::GPSInfo info;
 	Vehicle::RawGps rawGps;
 	Vehicle::getInstance().getGpsInfo(rawGps);
-	if (getGps(p, s, info, rawGps)) {
+	if (getGps(p, s, ch, info, rawGps)) {
 		Vehicle::getInstance().setGpsInfo(rawGps);
 		longPrev = rawGps.longitude;
 		latiPrev = rawGps.latitude;
@@ -95,7 +121,7 @@ void GpsUploadTask_NTF::doTask()
 		if (wr == ThreadEvent::TimeOut) {
 			Timestamp now;
 			
-			if (getGps(p, s, info,rawGps)) {
+			if (getGps(p, s, ch, info,rawGps)) {
 				Vehicle::getInstance().setGpsInfo(rawGps);
 			}
 			else {
@@ -136,6 +162,11 @@ void GpsUploadTask_NTF::doTask()
 #if BC_TARGET == BC_TARGET_LINUX
 	bcp_serial_close(s);
 	bcp_nmea_destroy(p);
+	if (ch) {
+		bcp_vicp_unregist_channel(ch);
+		ch->close(ch);
+		bcp_channel_destroy(ch);
+	}
 #endif
 }
 
@@ -175,16 +206,37 @@ static void RawGps2AutoLocation(Vehicle::RawGps& rawGps, AutoLocation& loc) {
 	loc.SatelliteNumber = rawGps.satelliteNumber;
 }
 
-bool GpsUploadTask_NTF::getGps(void* p, void* s, GPSDataQueue::GPSInfo& gpsinfo, Vehicle::RawGps& rawGps)
+#if BC_TARGET == BC_TARGET_LINUX
+static void gps_send(bcp_channel_t *ch, const char *buf, int len)
+{
+	bcp_packet_t *p;
+	u8 *out;
+	u32 olen;
+
+	p = bcp_create_one_message(APPID_VIS_GPS, 0, bcp_next_seq_id(), (u8*)buf, len);
+	if (p) {
+		if (bcp_packet_serialize(p, &out, &olen) >= 0) {
+			bcp_vicp_send(ch, buf, len, NULL, NULL, NULL);
+			free(out);
+		}
+		bcp_packet_destroy(p);
+	}
+}
+#endif
+
+bool GpsUploadTask_NTF::getGps(void* p, void* s, void *ch, GPSDataQueue::GPSInfo& gpsinfo, Vehicle::RawGps& rawGps)
 {
 	gpsinfo.ts.update();
 #if BC_TARGET == BC_TARGET_LINUX
 	int r;
 	char buff[2048] = { 0, };
 	bcp_nmea_info_t *info;
+	bcp_channel_t *bch = (bcp_channel_t*)ch;
+
 	while((r = bcp_serial_read(s, buff,sizeof(buff), 1000)) >= 0)
 	{
 		if (r > 0) {
+			gps_send(bch, buff, r);
 			if (bcp_nmea_parse(p, buff, r) > 0) {
 				/* has new sentence */
 				info = bcp_nmea_info(p);
@@ -202,7 +254,7 @@ bool GpsUploadTask_NTF::getGps(void* p, void* s, GPSDataQueue::GPSInfo& gpsinfo,
 						rawGps.altitude = info->elevation;
 						rawGps.dirAngle = info->mtrack;
 						rawGps.speed = info->speed;
-						RawGps2AutoLocation(rawGps,gpsinfo.location)
+						RawGps2AutoLocation(rawGps, gpsinfo.location);
 					}
 					return true;
 				}

@@ -43,6 +43,9 @@
     <Filter Include="src\tasks\a04,a05,a06">
       <UniqueIdentifier>{f9bc0b4f-5ecc-48b5-8dcd-fadf2c2eb60e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\tasks\vis">
+      <UniqueIdentifier>{d211762a-f757-4f75-95aa-dda0281a7e27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\inc\Message.h">
@@ -153,6 +156,9 @@
     <ClInclude Include="..\src\inc\CanBus.h">
       <Filter>src\inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\tasks\vis\visGpsTask.h">
+      <Filter>src\tasks\vis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -238,6 +244,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cpp\CanBus.cpp">
       <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\vis\visGpsTask.cpp">
+      <Filter>src\tasks\vis</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

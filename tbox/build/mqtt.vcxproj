@@ -73,6 +73,7 @@
     <ClInclude Include="..\src\tasks\StateUploadTask.h" />
     <ClInclude Include="..\src\tasks\TaskTable.h" />
     <ClInclude Include="..\src\tasks\VehicleAuthTask.h" />
+    <ClInclude Include="..\src\tasks\vis\visGpsTask.h" />
     <ClInclude Include="..\src\tasks\VKeyActiveTask.h" />
     <ClInclude Include="..\src\tasks\VKeyDeactiveTask.h" />
     <ClInclude Include="..\src\tasks\VKeyIgnitionTask.h" />
@@ -106,6 +107,7 @@
     <ClCompile Include="..\src\tasks\StateUploadTask.cpp" />
     <ClCompile Include="..\src\tasks\TaskTable.cpp" />
     <ClCompile Include="..\src\tasks\VehicleAuthTask.cpp" />
+    <ClCompile Include="..\src\tasks\vis\visGpsTask.cpp" />
     <ClCompile Include="..\src\tasks\VKeyActiveTask.cpp" />
     <ClCompile Include="..\src\tasks\VKeyDeactiveTask.cpp" />
     <ClCompile Include="..\src\tasks\VKeyIgnitionTask.cpp" />
@@ -237,8 +239,8 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)\;$(SolutionDir)lib\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>foundation.lib;paho-mqtt3a.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib;$(SolutionDir)$(Configuration)\;$(SolutionDir)lib\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>nmealib.lib;foundation.lib;paho-mqtt3a.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
