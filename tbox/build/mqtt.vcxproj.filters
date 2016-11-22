@@ -159,6 +159,9 @@
     <ClInclude Include="..\src\tasks\vis\visGpsTask.h">
       <Filter>src\tasks\vis</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\tasks\PackageQueueTask.h">
+      <Filter>src\tasks\axx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -250,6 +253,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cpp\channels.cpp">
       <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\PackageQueueTask.cpp">
+      <Filter>src\tasks\axx</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
