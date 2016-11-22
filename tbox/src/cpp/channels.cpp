@@ -48,7 +48,10 @@ static void packet_arrived(void *context, u8 *buf, u16 len)
 				::PostEvent(AppEvent::AbortTasks, app_id, 0, p);
 			}
 		} else {
-			::PostEvent(AppEvent::InsertTask, 0, 0, TaskCreate(app_id, p));
+			task = TaskCreate(app_id, p);
+			if (task) {
+				::PostEvent(AppEvent::InsertTask, 0, 0, task);
+			}
 		}
 	}
 
