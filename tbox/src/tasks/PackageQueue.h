@@ -18,7 +18,8 @@ public:
 	{
 		if (mutex.lock() == ThreadMutex::Succed)
 		{
-			bool r = pkgs.push(Node(buf,len));
+			Node node(buf,len);
+			bool r = pkgs.push(node);
 			mutex.unlock();
 			return r;
 		}

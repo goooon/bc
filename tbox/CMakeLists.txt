@@ -33,22 +33,34 @@ SET( CMAKE_CXX_FLAGS  "${MY_CXX_FLAGS} ${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE
 SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
 
 set(SRC_LIST 
-		src/cpp/Application.cpp
-		src/cpp/Mqtt.cpp
-		src/cpp/dep.cpp
-		src/cpp/Task.cpp
-		src/cpp/CmdParser.cpp
-		src/cpp/Config.cpp
-		src/cpp/main.cpp
-		src/cpp/Event.cpp
-		src/cpp/Schedule.cpp
-		src/cpp/stdinout.cpp
-		src/cpp/Vehicle.cpp
-		src/tasks/TaskTable.cpp
-		src/tasks/RemoteUnlockTask.cpp
-		src/tasks/StateUploadTask.cpp
-		src/tasks/VKeyIgnitionTask.cpp
-		
+	src/cpp/Application.cpp
+	src/cpp/CanBus.cpp
+	src/cpp/CmdParser.cpp
+	src/cpp/Config.cpp
+	src/cpp/dep.cpp
+	src/cpp/Event.cpp
+	src/cpp/main.cpp
+	src/cpp/Mqtt.cpp
+	src/cpp/Schedule.cpp
+	src/cpp/Sensor.cpp
+	src/cpp/Task.cpp
+	src/cpp/Vehicle.cpp
+	src/tasks/AcquireConfigTask.cpp
+	src/tasks/BCMessage.cpp
+	src/tasks/Element.cpp
+	src/tasks/GPSDataQueue.cpp
+	src/tasks/GpsUploadTask.cpp
+	src/tasks/MqttConnTask.cpp
+	src/tasks/PackageQueue.cpp
+	src/tasks/StateUploadTask.cpp
+	src/tasks/TaskTable.cpp
+	src/tasks/VehicleAuthTask.cpp
+	src/tasks/VKeyActiveTask.cpp
+	src/tasks/VKeyDeactiveTask.cpp
+	src/tasks/VKeyIgnitionTask.cpp
+	src/tasks/VKeyUnIgnitTask.cpp
+	src/tasks/vis/visGpsTask.cpp
+	src/test/ActiveTest.cpp
 	)
 add_executable(tbox ${SRC_LIST})
 TARGET_LINK_LIBRARIES(tbox pthread ${LIBS_SYSTEM}) 
