@@ -10,4 +10,5 @@
 #include "./crc32.h"
 #include "./bcp_nmea.h"
 #include "./bcp_serial.h"
+
 #endif // GUARD_fundation_h__

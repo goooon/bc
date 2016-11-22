@@ -2,7 +2,6 @@
 #define __VICP_CHANNELS_H__
 
 #include "./dep.h"
-#include "../../../fundation/src/inc/vicp/bcp_vicp.h"
 
 void channels_init(void);
 bcp_channel_t *channels_get(const char *name);

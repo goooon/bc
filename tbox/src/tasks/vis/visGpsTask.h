@@ -7,6 +7,7 @@
 #include "../TaskTable.h"
 class visGpsTask : public Task {
 public:
+	static Task* Create();
 	visGpsTask();
 	void printGps(bcp_packet_t *pkg);
 protected:

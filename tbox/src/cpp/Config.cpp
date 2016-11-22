@@ -140,7 +140,6 @@ bool Config::parse(int argc, char** argv)
 		}
 		else if (!strcmp(argv[i], "-channels")) {
 			startChannel = true;
-			i++;
 		}
 		else {
 			showCmdLine();

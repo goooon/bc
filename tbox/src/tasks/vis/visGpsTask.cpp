@@ -1,6 +1,11 @@
 #include "./visGpsTask.h"
 #include "../../inc/Application.h"
 
+Task* visGpsTask::Create()
+{
+	return bc_new visGpsTask();
+}
+
 visGpsTask::visGpsTask() :Task(APPID_VIS_GPS, true) {}
 
 void visGpsTask::printGps(bcp_packet_t *pkg)

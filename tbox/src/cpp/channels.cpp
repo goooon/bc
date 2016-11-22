@@ -1,7 +1,6 @@
 #include "../inc/Application.h"
 #include "../inc/channels.h"
 #include "../tasks/TaskTable.h"
-#include "../../../fundation/src/inc/vicp/bcp_vicp.h"
 
 #define __countof(a) (sizeof(a) / sizeof(a[0]))
 
@@ -28,6 +27,8 @@ static void packet_arrived(void *context, u8 *buf, u16 len)
 	bcp_message_t *m = NULL;
 	bcp_element_t *e = NULL;
 
+	LOG_I("vicp data arrived %p:%d.", buf, len);
+
 	if (bcp_packet_unserialize((u8*)buf, (u32)len, &p) < 0) {
 		LOG_E("bcp_packet_unserialize failed");
 		free(buf);
@@ -50,6 +51,8 @@ static void packet_arrived(void *context, u8 *buf, u16 len)
 			::PostEvent(AppEvent::InsertTask, 0, 0, TaskCreate(app_id, p));
 		}
 	}
+
+	free(buf);
 }
 
 static int regist_channel(channel_conf_t *c)
@@ -78,6 +81,8 @@ static int regist_channel(channel_conf_t *c)
 
 	bcp_vicp_regist_data_arrived_callback(ch, packet_arrived, c);
 	c->ch = ch;
+
+	LOG_I("regist channel %s: %s", c->name, c->dev_name);
 
 	return 0;
 }

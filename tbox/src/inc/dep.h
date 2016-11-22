@@ -2,6 +2,8 @@
 #define MQTT_GUARD_dep_h__
 
 #include "../../../fundation/src/inc/fundation.h"
+#include "../../../fundation/src/inc/bcp.h"
+#include "../../../fundation/src/inc/vicp/bcp_vicp.h"
 
 #if defined(WIN32) || defined(WIN64)
 #define OVERRIDE override

@@ -19,16 +19,24 @@ Application& Application::getInstance()
 bool Application::init(int argc, char** argv)
 {
 	g_inst = this;
+
 	LOG_I("Application::init(%d)", argc);
 	DebugCode( for (int i = 0; i < argc; ++i) {
 		LOG_I("    %s", argv[i]);
 	})
-		if (!config.parse(argc, argv))return false;
+	
+	if (!config.parse(argc, argv))
+		return false;
+
+	bcp_init();
+
 	//launch thread to do branch task
 	netConnected = false;
 	Thread::startThread(this);
 	mqtt.onDebugCommand("PROTOCOL");
+	
 	if (config.isGpsTaskAtStartup()) {
+		LOG_I("start GPS task.");
 		PostEvent(AppEvent::InsertTask, 0, 0, bc_new GpsUploadTask_NTF());
 	}
 	if (config.isStartChannels()) {

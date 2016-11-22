@@ -84,7 +84,6 @@ void GpsUploadTask_NTF::doTask()
 		LOG_I("bcp nmea create failed\n");
 		return;
 	}
-
 	if (!(s = bcp_serial_open(SERIAL_DEVNAME, 9600, 8, P_NONE, 1))) {
 		LOG_I("open %s failed.", SERIAL_DEVNAME);
 		bcp_nmea_destroy(p);
@@ -105,7 +104,6 @@ void GpsUploadTask_NTF::doTask()
 		latiPrev = rawGps.latitude;
 	}
 	normalToFire.update(Config::getInstance().getGpsInterval());
-	
 	for (;;) {
 		ThreadEvent::WaitResult wr = waitForEvent(500);
 		if (wr == ThreadEvent::TimeOut) {
@@ -212,7 +210,8 @@ static void gps_send(bcp_channel_t *ch, const char *buf, int len)
 		bcp_next_seq_id(), (u8*)buf, len);
 	if (p) {
 		if (bcp_packet_serialize(p, &out, &olen) >= 0) {
-			bcp_vicp_send(ch, buf, len, gps_send_cb, NULL, NULL);
+			bcp_vicp_send(ch, (const char*)out, (int)olen, 
+				gps_send_cb, NULL, NULL);
 			free(out);
 		}
 		bcp_packet_destroy(p);
