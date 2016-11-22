@@ -6,7 +6,7 @@
 #include "./VKeyIgnitionTask.h"
 #include "./GpsUploadTask.h"
 #include "./VKeyUnIgnitTask.h"
-//#include "./PackageQueueTask.h"
+#include "./PackageQueueTask.h"
 #include "./vis/visGpsTask.h"
 #include "../inc/dep.h"
 struct TaskTable
@@ -23,7 +23,7 @@ static TaskTable tt[] = {
 	{ APPID_STATE_UNIGNITION_NTF,UnIgnitStateUploadTask_NTF::Create},
 	{ APPID_GPS_UPLOADING,GpsUploadTask::Create},
 	//{ APPID_STATE_IGNITION ,IgnitStateUploadTask_NTF::Create },
-	//{ APPID_PACKAGE_QUEUE ,PackageQueueTask::Create},
+	{ APPID_PACKAGE_QUEUE ,PackageQueueTask::Create},
 	{ APPID_STATE_UNIGNITION_VK,StateUploadTask::Create },
 	{ APPID_VIS_GPS, visGpsTask::Create },
 	{-1,0}
