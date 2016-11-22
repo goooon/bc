@@ -60,6 +60,7 @@ set(SRC_LIST
 	src/tasks/VKeyDeactiveTask.cpp
 	src/tasks/VKeyIgnitionTask.cpp
 	src/tasks/VKeyUnIgnitTask.cpp
+	src/tasks/PackageQueueTask.cpp
 	src/tasks/vis/visGpsTask.cpp
 	src/test/ActiveTest.cpp
 	)
