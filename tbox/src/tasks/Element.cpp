@@ -29,7 +29,7 @@ void TimeStamp::update()
 	day = tblock->tm_mday;
 	hour = tblock->tm_hour;
 	min = tblock->tm_min;
-	month = tblock->tm_mon;
+	month = tblock->tm_mon + 1;
 	sec = tblock->tm_sec;
 	year = tblock->tm_year;
 }

@@ -4,14 +4,15 @@
 #include "../inc/Application.h"
 #undef TAG
 #define TAG "A00"
-VehicleAuthTask::VehicleAuthTask() :Task(APPID_AUTHENTICATION, true)
+//APPID_AUTHENTICATION
+VehicleAuthTask::VehicleAuthTask(u32 appId) :Task(appId, true)
 {
 	VehicleAuthTask* p = this;
 }
 
-Task* VehicleAuthTask::Create()
+Task* VehicleAuthTask::Create(u32 appId)
 {
-	return bc_new VehicleAuthTask();
+	return bc_new VehicleAuthTask(appId);
 }
 
 void VehicleAuthTask::doTask()

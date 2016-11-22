@@ -3,12 +3,12 @@
 #undef TAG
 #define TAG "A01"
 
-Task* VKeyActiveTask::Create()
+Task* VKeyActiveTask::Create(u32 appId)
 {
-	return bc_new VKeyActiveTask();
+	return bc_new VKeyActiveTask(appId);
 }
-
-VKeyActiveTask::VKeyActiveTask() :Task(APPID_VKEY_ACTIVITION, true)
+//APPID_VKEY_ACTIVITION
+VKeyActiveTask::VKeyActiveTask(u32 appId) :Task(appId, true)
 {
 	expireTime.update(Config::getInstance().getDoorActivationTimeOut());
 	LOG_I("RemoteUnlockTask(%d,%lld) expire: %lld run...", appID, seqID, expireTime.getValue());

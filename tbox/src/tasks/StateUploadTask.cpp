@@ -11,20 +11,20 @@ bool UnIgnitStateUploadTask_NTF::ntfState()
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendVehicleState(Application::getInstance().getVehicle().getApparatus().vehiState);
-	if (!pkg.post(Config::getInstance().pub_topic, Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
+	if (!pkg.post(Config::getInstance().pub_topic, Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut(),true)) {
 		LOG_E("sendResponseUnlocked failed");
 		return false;
 	}
 	return true;
 }
 
-Task* UnIgnitStateUploadTask_NTF::Create()
-{
-	Application::getInstance().getSchedule().remove(APPID_STATE_UNIGNITION_NTF);
-	return bc_new UnIgnitStateUploadTask_NTF();
+Task* UnIgnitStateUploadTask_NTF::Create(u32 appId)
+{//APPID_STATE_UNIGNITION_NTF
+	Application::getInstance().getSchedule().remove(appId);
+	return bc_new UnIgnitStateUploadTask_NTF(appId);
 }
 
-UnIgnitStateUploadTask_NTF::UnIgnitStateUploadTask_NTF() :Task(APPID_STATE_UNIGNITION_NTF, true)
+UnIgnitStateUploadTask_NTF::UnIgnitStateUploadTask_NTF(u32 appId) :Task(appId, true)
 {
 	expireTime.update(Config::getInstance().getDoorActivationTimeOut());
 }
@@ -108,12 +108,12 @@ void IgnitStateUploadTask_NTF::doTask()
 #undef TAG
 #define TAG "A0X"
 
-Task* StateUploadTask::Create()
+Task* StateUploadTask::Create(u32 appId)
 {
-	return bc_new StateUploadTask();
+	return bc_new StateUploadTask(appId);
 }
-
-StateUploadTask::StateUploadTask() :Task(APPID_STATE_UNIGNITION_VK, true)
+//APPID_STATE_UNIGNITION_VK
+StateUploadTask::StateUploadTask(u32 appId) :Task(appId, true)
 {
 
 }

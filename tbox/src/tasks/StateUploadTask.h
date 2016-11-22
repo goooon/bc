@@ -11,8 +11,8 @@
 //ref http://jira.oa.beecloud.com:8090/pages/viewpage.action?pageId=3997706 a04,a05,a06
 class StateUploadTask : public Task {
 	public:
-		static Task* Create();
-		StateUploadTask();
+		static Task* Create(u32 appId);
+		StateUploadTask(u32 appId);
 		//void rspAck();
 		virtual void doTask()OVERRIDE;
 		bool ntfState();
@@ -21,8 +21,8 @@ class StateUploadTask : public Task {
 };
 class UnIgnitStateUploadTask_NTF : public Task {
 public:
-	static Task* Create();
-	UnIgnitStateUploadTask_NTF();
+	static Task* Create(u32 appId);
+	UnIgnitStateUploadTask_NTF(u32 appId);
 	//void rspAck();
 	virtual void doTask()OVERRIDE;
 	bool ntfState();

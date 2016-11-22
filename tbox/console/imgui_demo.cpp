@@ -2220,6 +2220,12 @@ struct ExampleAppConsole : public me::Tracer
 		if (ImGui::Checkbox("#", &s)) {
 			vs.pedal.shift_level = s ? 1 : 0;
 		}
+		ImGui::Text("Parking Break Valid:"); ImGui::SameLine();
+		s = vs.pedal.parking_break & 2 ? true : false;
+		if (ImGui::Checkbox("#", &s)) {
+			s ? vs.pedal.parking_break |= 2 : vs.pedal.parking_break &= ~2;
+		}
+		
 
 		ImGui::Text("SunRoof:"); ImGui::SameLine();
 		int mr = vs.window.sun_roof;
@@ -2568,8 +2574,8 @@ struct VehicleConsole : public me::Tracer
 		SLIDE_SEC("NormalCheckDuration", durationEnterNormal);
 		SLIDE_SEC("unIgnitionNotifyDelay", unIgnitionNotifyDelay);
 
-		ImGui::Text("Vehicle State :"); ImGui::SameLine(); ImGui::Text(Vehicle::getInstance().getStateString());
-
+		ImGui::Text("Vehicle State : %s", Vehicle::getInstance().getStateString());
+		ImGui::Text("Mqtt HeartBeat:%d", MqttClient::getInstance().getHeartBeat());
 		bool s;
 		Apparatus::VehicleState& vs = Vehicle::getInstance().getApparatus().vehiState;
 		ImGui::Text("Door :"); ImGui::SameLine();
@@ -2651,6 +2657,13 @@ struct VehicleConsole : public me::Tracer
 		if(ImGui::RadioButton("R", &g, 2))vs.pedal.shift_level = 2;; ImGui::SameLine();
 		if(ImGui::RadioButton("N", &g, 3))vs.pedal.shift_level = 3;; ImGui::SameLine();
 		if(ImGui::RadioButton("D", &g, 4))vs.pedal.shift_level = 4;;
+
+		s = vs.pedal.parking_break & 1;
+		ImGui::Text("Other:"); ImGui::SameLine();
+		if (ImGui::Checkbox("parking_break", &s)) {
+			//vs.window.rh_rear = s;
+			s ? vs.pedal.parking_break |= 1 : vs.pedal.parking_break &= ~1;
+		}
 
 		ImGui::Text("Driv :"); ImGui::SameLine();
 		s = Application::getInstance().isNetConnected();

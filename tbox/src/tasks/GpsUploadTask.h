@@ -33,8 +33,8 @@ private:
 class GpsUploadTask : public Task
 {
 public:
-	GpsUploadTask();
-	static Task* Create();
+	GpsUploadTask(u32 appId);
+	static Task* Create(u32 appId);
 protected:
 	virtual void doTask();
 private:

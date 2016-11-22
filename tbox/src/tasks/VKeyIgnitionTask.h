@@ -10,8 +10,8 @@
 //ref http://jira.oa.beecloud.com:8090/pages/viewpage.action?pageId=3997706 a03
 class VKeyReadyToIgnitionTask : public Task {
 public:
-	static Task* Create();
-	VKeyReadyToIgnitionTask();
+	static Task* Create(u32 appId);
+	VKeyReadyToIgnitionTask(u32 appId);
 private:
 	virtual void doTask()OVERRIDE;
 protected:

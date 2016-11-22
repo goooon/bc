@@ -8,8 +8,8 @@
 class VehicleAuthTask : public Task {
 public:
 	const static int AppId = APPID_AUTHENTICATION;
-	VehicleAuthTask();
-	static Task* Create();
+	VehicleAuthTask(u32 appId);
+	static Task* Create(u32 appId);
 protected:
 	virtual void doTask();
 private:
