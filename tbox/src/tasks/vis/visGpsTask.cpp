@@ -1,12 +1,12 @@
 #include "./visGpsTask.h"
 #include "../../inc/Application.h"
 
-Task* visGpsTask::Create()
+Task* visGpsTask::Create(u32 appId)
 {
-	return bc_new visGpsTask();
+	return bc_new visGpsTask(appId);
 }
 
-visGpsTask::visGpsTask() :Task(APPID_VIS_GPS, true) {}
+visGpsTask::visGpsTask(u32 appId) :Task(appId, true) {}
 
 void visGpsTask::printGps(bcp_packet_t *pkg)
 {
