@@ -1,5 +1,7 @@
 #include "./visGpsTask.h"
 #include "../../inc/Application.h"
+#include "../../inc/Mqtt.h"
+#include "../BCMessage.h"
 
 Task* visGpsTask::Create(u32 appId)
 {

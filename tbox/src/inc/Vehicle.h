@@ -41,6 +41,7 @@ public:
 		LeaveReadToIgnit,		//
 		Ignite,				    //µã»ð
 		UnIgnt,				    //Ï¨»ð
+		ShiftType,				//param2 is Manual(0)/Auto(1) type;
 		ShiftLevel,				//param2 curr level
 		DoorOpened,				//param2 door id
 		DoorClosed,				//param2

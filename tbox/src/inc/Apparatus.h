@@ -90,11 +90,14 @@ struct Apparatus {
 	{//和行驶操作有关状态
 		DEF_BIT8(brake);	        //刹车踏板阻尼大小/或者踏下的程度，256 level
 		DEF_BIT8(accelerator);      //油门大小/或者踏下的程度, 256 level
-		DEF_BIT3(shift_level);		//0:未采集到,1:P,2:R,3:N,4:D,5:S
+		DEF_BIT3(shift_level);		//自动：0:N,1:P,2:R,4:D,5:S
+									//手动: 0:N,1,2,3,4,5,6
+		DEF_BIT1(shift_type);		//手动：0，自动：1
+		DEF_BIT1(shift_valid);		//档位是否有效：0，无效，1有效
+		DEF_BIT1(reserved);			//保留
 		DEF_BIT2(parking_break);	//驻车制动 on/off
 		DEF_BIT2(ingnition);		//引擎状态
-		DEF_BIT1(reserved1);		//保留以后使用
-		DEF_BIT8(reserved2);        //保留以后使用
+		DEF_BIT6(reserved2);        //保留以后使用
 		Pedal() {
 			parking_break = 3;
 			ingnition = 2;

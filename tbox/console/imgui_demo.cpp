@@ -2215,11 +2215,61 @@ struct ExampleAppConsole : public me::Tracer
 			s ? vs.window.rh_rear |= 2 : vs.window.rh_rear &= ~2;
 		}
 
-		ImGui::Text("Shift Valid:"); ImGui::SameLine();
-		s = vs.pedal.shift_level != 0;
-		if (ImGui::Checkbox("#", &s)) {
-			vs.pedal.shift_level = s ? 1 : 0;
+		ImGui::Text("Shift :"); ImGui::SameLine();
+		s = vs.pedal.shift_valid != 0;
+		if (ImGui::Checkbox("Valid", &s)) {
+			vs.pedal.shift_valid = s ? 1 : 0;
 		}
+		s = vs.pedal.shift_type;
+		if (ImGui::Checkbox("IsAuto", &s)) {
+			PostEvent(AppEvent::AutoEvent, Vehicle::ShiftType, s, 0);
+		}
+
+
+		int g = vs.pedal.shift_level;
+		if (s) {
+			if (ImGui::RadioButton("N", &g, 0)) {
+				PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 0, 0);
+			}ImGui::SameLine();
+			if (ImGui::RadioButton("P", &g, 1)) {
+				PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 1, 0);
+			}ImGui::SameLine();
+			if (ImGui::RadioButton("R", &g, 2)) {
+				PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 2, 0);
+			}ImGui::SameLine();
+			if (ImGui::RadioButton("D", &g, 3)) {
+				PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 3, 0);
+			}ImGui::SameLine();
+			if (ImGui::RadioButton("S", &g, 4)) {
+				PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 4, 0);
+			}
+		}
+		else {
+			if (ImGui::RadioButton("R", &g, 7)) {
+				PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 7, 0);
+			}ImGui::SameLine();
+			if (ImGui::RadioButton("N", &g, 0)) {
+				PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 0, 0);
+			}ImGui::SameLine();
+			if (ImGui::RadioButton("1", &g, 1)) {
+				PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 1, 0);
+			}ImGui::SameLine();
+			if (ImGui::RadioButton("2", &g, 2)) {
+				PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 2, 0);
+			}ImGui::SameLine();
+			if (ImGui::RadioButton("3", &g, 3)) {
+				PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 3, 0);
+			}ImGui::SameLine();
+			if (ImGui::RadioButton("4", &g, 4)) {
+				PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 4, 0);
+			}ImGui::SameLine();
+			if (ImGui::RadioButton("5", &g, 5)) {
+				PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 5, 0);
+			}
+		}
+		//
+		
+		//////////////////////////////////////////////////////////////////////////
 		ImGui::Text("Parking Break Valid:"); ImGui::SameLine();
 		s = vs.pedal.parking_break & 2 ? true : false;
 		if (ImGui::Checkbox("#", &s)) {
@@ -2652,11 +2702,24 @@ struct VehicleConsole : public me::Tracer
 
 		int g = vs.pedal.shift_level;
 		ImGui::Text("Shift:"); ImGui::SameLine();
-		//if(ImGui::RadioButton("#", &g, 0))vs.pedal.shift_level = 0; ImGui::SameLine();
-		if(ImGui::RadioButton("P", &g, 1))vs.pedal.shift_level = 1; ImGui::SameLine();
-		if(ImGui::RadioButton("R", &g, 2))vs.pedal.shift_level = 2;; ImGui::SameLine();
-		if(ImGui::RadioButton("N", &g, 3))vs.pedal.shift_level = 3;; ImGui::SameLine();
-		if(ImGui::RadioButton("D", &g, 4))vs.pedal.shift_level = 4;;
+		if (!vs.pedal.shift_type) {
+			
+			if (ImGui::RadioButton("N", &g, 0))vs.pedal.shift_level = 0; ImGui::SameLine();
+			if (ImGui::RadioButton("1", &g, 1))vs.pedal.shift_level = 1; ImGui::SameLine();
+			if (ImGui::RadioButton("2", &g, 2))vs.pedal.shift_level = 2; ImGui::SameLine();
+			if (ImGui::RadioButton("3", &g, 3))vs.pedal.shift_level = 3; ImGui::SameLine();
+			if (ImGui::RadioButton("4", &g, 4))vs.pedal.shift_level = 4; ImGui::SameLine();
+			if (ImGui::RadioButton("5", &g, 5))vs.pedal.shift_level = 5; ImGui::SameLine();
+			if (ImGui::RadioButton("R", &g, 7))vs.pedal.shift_level = 7; 
+		}
+		else{
+			//if(ImGui::RadioButton("#", &g, 0))vs.pedal.shift_level = 0; ImGui::SameLine();
+			if (ImGui::RadioButton("P", &g, 1))vs.pedal.shift_level = 1; ImGui::SameLine();
+			if (ImGui::RadioButton("R", &g, 2))vs.pedal.shift_level = 2;; ImGui::SameLine();
+			if (ImGui::RadioButton("N", &g, 0))vs.pedal.shift_level = 0;; ImGui::SameLine();
+			if (ImGui::RadioButton("D", &g, 3))vs.pedal.shift_level = 3;; ImGui::SameLine();
+			if (ImGui::RadioButton("S", &g, 4))vs.pedal.shift_level = 4;; 
+		}
 
 		s = vs.pedal.parking_break & 1;
 		ImGui::Text("Other:"); ImGui::SameLine();

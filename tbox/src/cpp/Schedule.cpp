@@ -60,6 +60,10 @@ void Schedule::insert(Timestamp fireTime, Task* task)
 
 void Schedule::replace(Timestamp fireTime, Task* task)
 {
+	if (task == nullptr) {
+		LOG_E("replace task is null");
+		return;
+	}
 	remove(task->getApplicationId());
 	insert(fireTime, task);
 }

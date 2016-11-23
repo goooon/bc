@@ -6,15 +6,15 @@
 #undef TAG
 #define TAG "GPS"
 
-GpsUploadTask_NTF::GpsUploadTask_NTF() : Task(APPID_GPS_UPLOADING_NTF_CONST, true)
+GpsUploadTask_NTF::GpsUploadTask_NTF(u32 appId) : Task(appId, true)
 {
 	longPrev = 0;
 	latiPrev = 0;
 }
 
-Task* GpsUploadTask_NTF::Create()
+Task* GpsUploadTask_NTF::Create(u32 appId)
 {
-	return bc_new GpsUploadTask_NTF();
+	return bc_new GpsUploadTask_NTF(appId);
 }
 #if defined (_WIN32) || defined(_WIN64)
 #define SERIAL_DEVNAME "COM8"
@@ -62,6 +62,32 @@ static void error(const char *str, size_t str_size) {
 	LOG_E(str);
 }
 
+void GpsUploadTask_NTF::sendGps(GPSDataQueue::GPSInfo& info, Vehicle::RawGps & rawGps)
+{
+	Timestamp now;
+	if (!Vehicle::getInstance().isIgnited() &&
+		!Vehicle::getInstance().isMovingInAbnormal()) {
+		if (calcDistance(longPrev, latiPrev, rawGps) > Config::getInstance().getAbnormalMovingDist()) {
+			Vehicle::getInstance().setMovingInAbnormal(true);
+			LOG_W("Vehicle is moving in abnormal");
+			abnormalPrev.update();
+			longPrev = rawGps.longitude;
+			latiPrev = rawGps.latitude;
+		}
+	}
+	if (Vehicle::getInstance().isMovingInAbnormal()) {
+		if (needSendAbnormalGps(rawGps)) {
+			info.appId = APPID_GPS_ABNORMAL_MOVE;
+			sendGpsData(info);
+		}
+	}
+	else if (normalToFire < now) {
+		normalToFire.update(Config::getInstance().getGpsInterval());
+		info.appId = Vehicle::getInstance().isIgnited() ? APPID_GPS_UPLOADING_NTF_MOVE : APPID_GPS_UPLOADING_NTF_CONST;
+		sendGpsData(info);
+	}
+}
+
 void GpsUploadTask_NTF::doTask()
 {
 	void *s = 0;
@@ -104,7 +130,7 @@ void GpsUploadTask_NTF::doTask()
 	for (;;) {
 		ThreadEvent::WaitResult wr = waitForEvent(500);
 		if (wr == ThreadEvent::TimeOut) {
-			Timestamp now;
+			
 			
 			if (getGps(p, s, ch, info,rawGps)) {
 				Vehicle::getInstance().setGpsInfo(rawGps);
@@ -113,33 +139,12 @@ void GpsUploadTask_NTF::doTask()
 				LOG_W("No GPS Data Valid");
 				continue;
 			}
-			if (!Vehicle::getInstance().isIgnited() && 
-				!Vehicle::getInstance().isMovingInAbnormal()){
-				if (calcDistance(longPrev, latiPrev, rawGps) > Config::getInstance().getAbnormalMovingDist()) {
-					Vehicle::getInstance().setMovingInAbnormal(true);
-					LOG_W("Vehicle is moving in abnormal");
-					abnormalPrev.update();
-					longPrev = rawGps.longitude;
-					latiPrev = rawGps.latitude;
-				}
-			}
-			if (Vehicle::getInstance().isMovingInAbnormal()) {
-				info.appId = APPID_GPS_ABNORMAL_MOVE;
-				if (needSendAbnormalGps(rawGps)) {
-					//LOG_I("send abnormal gps data");
-					sendGpsData(info);
-				}
-			}
-			else if (normalToFire < now) {
-				normalToFire.update(Config::getInstance().getGpsInterval());
-				info.appId = Vehicle::getInstance().isIgnited() ? APPID_GPS_UPLOADING_NTF_MOVE : APPID_GPS_UPLOADING_NTF_CONST;
-				sendGpsData(info);
-			}
+			sendGps(info,rawGps);
 		}
 		else {
 			MessageQueue::Args args;
 			if (msgQueue.out(args)){
-
+				sendGps(info, rawGps);
 			}
 		}
 	}

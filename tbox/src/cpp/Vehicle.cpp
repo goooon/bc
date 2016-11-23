@@ -103,10 +103,16 @@ bool Vehicle::isParkState()
 		apparatus.vehiState.window.rh_front == 2 &&
 		apparatus.vehiState.window.lh_rear == 2 &&
 		apparatus.vehiState.window.rh_rear == 2 &&
+		apparatus.vehiState.window.sun_roof == 1 &&
 
-		apparatus.vehiState.pedal.shift_level == 1 &&
 		apparatus.vehiState.pedal.parking_break == 3) {
 		return true;
+	}
+	if (apparatus.vehiState.pedal.shift_type) {
+		if (apparatus.vehiState.pedal.shift_level == 1)return true;
+	}
+	else {
+		if (apparatus.vehiState.pedal.shift_level == 7)return true;
 	}
 	return false;
 }
@@ -211,13 +217,11 @@ void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 			changeState(ReadyToIgnit);
 		}
 		break;
+	case ShiftType:
+		getApparatus().vehiState.pedal.shift_type = param2;
+		break;
 	case ShiftLevel:
-		if (param2 >= 5 || param1 == 0) {
-			LOG_E("Unknow ShiftLevel %d", param1);
-		}
-		else{
-			Vehicle::getInstance().getApparatus().vehiState.pedal.shift_level = param2;
-		}
+		getApparatus().vehiState.pedal.shift_level = param2;
 		break;
 	case AbormalMove:
 		movingInAbnormal = true;

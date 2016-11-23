@@ -1,9 +1,7 @@
-#ifndef GUARD_MqttConnTask_h__
-#define GUARD_MqttConnTask_h__
+#ifndef GUARD_VIS_GPSTask_h__
+#define GUARD_VIS_GPSTask_h__
 
 #include "../../inc/Task.h"
-#include "../../inc/Mqtt.h"
-#include "../BCMessage.h"
 #include "../TaskTable.h"
 class visGpsTask : public Task {
 public:

@@ -21,11 +21,13 @@ static TaskTable tt[] = {
 	{ APPID_AUTHENTICATION,VehicleAuthTask::Create},
 	{ APPID_VKEY_IGNITION ,VKeyReadyToIgnitionTask::Create},
 	{ APPID_STATE_UNIGNITION_NTF,UnIgnitStateUploadTask_NTF::Create},
+	{ APPID_STATE_UNIGNITION_DELAY_NTF ,UnIgnitStateUploadTask_Delay_NTF::Create},
 	{ APPID_GPS_UPLOADING,GpsUploadTask::Create},
 	//{ APPID_STATE_IGNITION ,IgnitStateUploadTask_NTF::Create },
 	{ APPID_PACKAGE_QUEUE ,PackageQueueTask::Create},
 	{ APPID_STATE_UNIGNITION_VK,StateUploadTask::Create },
 	{ APPID_VIS_GPS, visGpsTask::Create },
+	{ APPID_GPS_UPLOADING_NTF_CONST,GpsUploadTask_NTF::Create},
 	{-1,0}
 };
 

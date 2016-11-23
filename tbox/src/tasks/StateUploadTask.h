@@ -31,9 +31,8 @@ private:
 };
 class UnIgnitStateUploadTask_Delay_NTF : public Task {
 public:
-	static Task* Create();
-	UnIgnitStateUploadTask_Delay_NTF() :Task(APPID_STATE_UNIGNITION_DELAY_NTF, true) {}
-	UnIgnitStateUploadTask_Delay_NTF(int appid) :Task(appid, true) {}
+	static Task* Create(u32 appId);
+	UnIgnitStateUploadTask_Delay_NTF(u32 appId) :Task(appId, true) {}
 	virtual void doTask()OVERRIDE;
 private:
 };

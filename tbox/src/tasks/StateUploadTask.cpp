@@ -65,9 +65,9 @@ void UnIgnitStateUploadTask_NTF::doTask()
 
 #undef TAG
 #define TAG "A06"
-Task* UnIgnitStateUploadTask_Delay_NTF::Create()
+Task* UnIgnitStateUploadTask_Delay_NTF::Create(u32 appId)
 {
-	return bc_new UnIgnitStateUploadTask_Delay_NTF();
+	return bc_new UnIgnitStateUploadTask_Delay_NTF(appId);
 }
 
 void UnIgnitStateUploadTask_Delay_NTF::doTask()

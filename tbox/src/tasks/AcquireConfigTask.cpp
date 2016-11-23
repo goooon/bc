@@ -120,7 +120,6 @@ void AcquireConfigTask::reqConfig()
 
 void AcquireConfigTask::parseConfig(ConfigElement& ce)
 {
-	UByte2 wd;
 	ConfigElement::Node* n = 0;
 	for (int i = 0; i < ce.count; ++i) {
 		n = ce.getNextNode(n);
@@ -128,8 +127,8 @@ void AcquireConfigTask::parseConfig(ConfigElement& ce)
 		{
 		case 1://Location Run Frequency
 			if (n->arglen == 2) {
-				wd.from(&n->arg[0]);
-				Config::getInstance().setGpsIntervalInDriving(wd.wd);
+				u16 freq = Endian::toU16(&n->arg[0]);
+				Config::getInstance().setGpsIntervalInDriving(freq * 1000);
 			}
 			else {
 				LOG_E("Location Run Frequency length wrong %d", n->arglen);
@@ -137,8 +136,8 @@ void AcquireConfigTask::parseConfig(ConfigElement& ce)
 			break;
 		case 2://Location Stopped Frequency
 			if (n->arglen == 2) {
-				wd.from(&n->arg[0]);
-				Config::getInstance().setIgntActivationTimeOut(wd.wd);
+				u16 freq = Endian::toU16(&n->arg[0]);
+				Config::getInstance().setIgntActivationTimeOut(freq * 1000);
 			}
 			else {
 				LOG_E("Location Stopped Frequency length wrong %d", n->arglen);
@@ -146,8 +145,8 @@ void AcquireConfigTask::parseConfig(ConfigElement& ce)
 			break;
 		case 3://Abnormal Moving Video Duration
 			if (n->arglen == 2) {
-				wd.from(&n->arg[0]);
-				Config::getInstance().setAbnormalMovingDuration(wd.wd);
+				u16 freq = Endian::toU16(&n->arg[0]);
+				Config::getInstance().setAbnormalMovingDuration(freq * 1000);
 			}
 			else {
 				LOG_E("Abnormal Moving Video Duration length wrong %d", n->arglen);

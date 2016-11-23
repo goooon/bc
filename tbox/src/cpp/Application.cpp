@@ -37,7 +37,7 @@ bool Application::init(int argc, char** argv)
 	
 	if (config.isGpsTaskAtStartup()) {
 		LOG_I("start GPS task.");
-		PostEvent(AppEvent::InsertTask, 0, 0, bc_new GpsUploadTask_NTF());
+		PostEvent(AppEvent::InsertTask, 0, 0, TaskCreate(APPID_GPS_UPLOADING_NTF_CONST,0));
 	}
 	if (config.isStartChannels()) {
 		channels_init();
@@ -393,7 +393,7 @@ void Application::onAutoStateChanged(u32 param1, u32 param2, void* data)
 	else if (prev == Vehicle::Ignited && next == Vehicle::ReadyToIgnit){
 		Timestamp ts;
 		ts.update(Config::getInstance().getStateUploadExpireTime());
-		schedule.replace(ts, bc_new UnIgnitStateUploadTask_Delay_NTF());
+		schedule.replace(ts, TaskCreate(APPID_STATE_UNIGNITION_DELAY_NTF,0));
 //		startTask(TaskCreate(APPID_VKEY_UNIGNITION, 0), true);
 	}
 	else if (prev == Vehicle::ReadyToIgnit && next == Vehicle::Ignited) {

@@ -66,7 +66,7 @@ bool onClientTest(char* cmd) {
 
 	OPER_DOOR(Ignite, "Ignite", pedal.ingnition, 0, true);
 	OPER_DOOR(UnIgnt, "UnIgnt", pedal.ingnition, 0, false);
-	if (!strcmp(cmd, "#")) {
+	/*if (!strcmp(cmd, "#")) {
 		PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 0, 0);
 		return true;
 	}
@@ -85,7 +85,7 @@ bool onClientTest(char* cmd) {
 	if (!strcmp(cmd, "D")) {
 		PostEvent(AppEvent::AutoEvent, Vehicle::ShiftLevel, 4, 0);
 		return true;
-	}
+	}*/
 
 	//if (!strcmp("openDoor0", cmd)) {
 	//	Vehicle::getInstance().getApparatus().vehiState.door.lh_front = true;
@@ -184,7 +184,6 @@ char* getCommand(int i)
 		"openWind0","openWind1","openWind2","openWind3","\0",
 		"shutWind0","shutWind1","shutWind2","shutWind3","\0",
 		"Active","DeActived","Ignite","UnIgnt","\0",
-		"P","R","N","D","\0",
 		"reqActive","reqDeact","reqReady","reqIgnit","AbnMove","NorMove","\0",
 		0
 	};

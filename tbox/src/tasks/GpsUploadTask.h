@@ -10,8 +10,8 @@
 class GpsUploadTask_NTF : public Task
 {
 public:
-	GpsUploadTask_NTF();
-	static Task* Create();
+	GpsUploadTask_NTF(u32 appId);
+	static Task* Create(u32 appId);
 protected:
 	virtual void doTask();
 
@@ -23,6 +23,7 @@ private:
 	bool ntfExitAbnormal();
 	bool needSendAbnormalGps(Vehicle::RawGps& rawGps);
 	double calcDistance(double long1, double lat1, Vehicle::RawGps& rawGps);
+	void sendGps(GPSDataQueue::GPSInfo& info, Vehicle::RawGps & raw);
 private:
 	Timestamp normalToFire;
 	double longPrev;
