@@ -648,6 +648,7 @@ static int recv_slice(bcp_vicp_slicer_t *s, bf_t *bf)
 	recv_complete = 0;
 	result = 0;
 	code = 0;
+	data.buf = NULL;
 
 	if (parse_data_req(bf, &data) < 0) {
 		return -1;
@@ -659,6 +660,9 @@ static int recv_slice(bcp_vicp_slicer_t *s, bf_t *bf)
 	if (!sc) {
 		LOG_E("recv can not found slice context group_id = %d",
 			data.group_id);
+		if (data.buf) {
+			free(data.buf);
+		}
 		mutex_unlock(s->recv_mutex);
 		return -1;
 	}
@@ -704,6 +708,9 @@ __failed:
 		free_recv_context(sc);
 	}
 	free_slice_req(&f);
+	if (data.buf) {
+		free(data.buf);
+	}
 
 	return ret;	
 }
