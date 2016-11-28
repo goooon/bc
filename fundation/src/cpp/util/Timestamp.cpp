@@ -18,15 +18,15 @@ Timestamp::Timestamp(int year, int day, int hour, int min, int mon, int sec)
 
 s64 current_timestamp(void)
 {
-#if BC_TARGET == BC_TARGET_LINUX
+#if BC_TARGET == BC_TARGET_WIN
+	return GetTickCount();
+#else
 	//gettimeofday(&tm, NULL);
 	//ms = tm.tv_sec * 1000 + tm.tv_usec / 1000;
 
 	struct timespec tss;
 	clock_gettime(CLOCK_MONOTONIC, &tss);
 	return (tss.tv_sec * 1000 + tss.tv_nsec / 1000000);
-#elif BC_TARGET == BC_TARGET_WIN
-	return GetTickCount();
 #endif
 }
 

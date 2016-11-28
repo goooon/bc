@@ -53,6 +53,7 @@ class Runnable : public BCMemory
 {
 public:
 	virtual void run() = 0;
+	virtual ~Runnable() {}
 };
 class Thread : public Runnable
 {

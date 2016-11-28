@@ -12,6 +12,7 @@ public:
 	virtual bool onRecvPackage(void* data, int len) { return true; }
 	virtual void onDeliveryComplete(){}
 	virtual void onError(u32 ecode, const char* emsg){}
+	virtual ~IMqttHandler() {}
 };
 class MqttClient : public IMqttHandler
 {

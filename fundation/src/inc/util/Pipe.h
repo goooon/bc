@@ -26,10 +26,10 @@ class Pipe
 	/// to a reference-counted PipeImpl object.
 {
 public:
-#if BC_TARGET == BC_TARGET_LINUX
-	typedef int ID;
-#elif BC_TARGET == BC_TARGET_WIN
+#if BC_TARGET == BC_TARGET_WIN
 	typedef HANDLE ID;
+#else
+	typedef int ID;
 #endif
 	enum CloseMode /// used by close()
 	{
@@ -84,10 +84,10 @@ private:
 };
 class NamedPipe
 {
-#if BC_TARGET == BC_TARGET_LINUX
-	typedef int ID;
-#elif BC_TARGET == BC_TARGET_WIN
+#if BC_TARGET == BC_TARGET_WIN
 	typedef HANDLE ID;
+#else
+	typedef int ID;
 #endif
 public:
 	//size = 0 means open
