@@ -54,6 +54,7 @@ bool Config::parse(int argc, char** argv)
 
 	keepAliveInterval = 20;
 	startChannel = false;
+	startOnAndroid = false;
 
 	//////////////////////////////////////////////////////////////////////////
 	for (int i = 1; i < argc; i++) {
@@ -140,6 +141,9 @@ bool Config::parse(int argc, char** argv)
 		}
 		else if (!strcmp(argv[i], "-channels")) {
 			startChannel = true;
+		}
+		else if (!strcmp(argv[i], "-startOnAndroid")) {
+			startOnAndroid= true;
 		}
 		else {
 			showCmdLine();

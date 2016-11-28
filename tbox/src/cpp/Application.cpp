@@ -10,6 +10,10 @@
 #include "../tasks/GpsUploadTask.h"
 #include "../inc/channels.h"
 
+#if BC_TARGET == BC_TARGET_ANDROID
+#include "../android/android_vicp.h"
+#endif
+
 static Application* g_inst;
 Application& Application::getInstance()
 {
@@ -42,6 +46,12 @@ bool Application::init(int argc, char** argv)
 	if (config.isStartChannels()) {
 		channels_init();
 	}
+#if BC_TARGET == BC_TARGET_ANDROID
+	if (config.isStartOnAndroid()) {
+		android_vicp_init();
+	}
+#endif
+
 	return true;
 }
 

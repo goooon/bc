@@ -3,6 +3,10 @@
 #include "../../inc/Mqtt.h"
 #include "../BCMessage.h"
 
+#if BC_TARGET == BC_TARGET_ANDROID
+#include "../../android/android_vicp.h"
+#endif
+
 Task* visGpsTask::Create(u32 appId)
 {
 	return bc_new visGpsTask(appId);
@@ -19,6 +23,9 @@ void visGpsTask::printGps(bcp_packet_t *pkg)
 		e = NULL;
 		while ((e = bcp_next_element(m, e)) != NULL) {
 			printf("%s", e->data);
+#if BC_TARGET == BC_TARGET_ANDROID
+			android_vicp_notify(m->hdr.id, e->data, e->len);
+#endif
 		}
 	}
 }

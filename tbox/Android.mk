@@ -54,7 +54,10 @@ LOCAL_SRC_FILES:= \
 	src/tasks/VKeyUnIgnitTask.cpp    \
 	src/tasks/PackageQueueTask.cpp   \
 	src/tasks/vis/visGpsTask.cpp     \
-	src/test/ActiveTest.cpp
+	src/test/ActiveTest.cpp          \
+	src/android/IVICPListener.cpp    \
+	src/android/IVICPSystem.cpp      \
+	src/android/VICPSystem.cpp
 
 LOCAL_MODULE := tbox
 
@@ -63,6 +66,7 @@ LOCAL_SHARED_LIBRARIES := \
 	libutils \
 	liblog \
 	libnmea \
+	libbinder \
 	libpaho-mqtt3a \
 	libfoundation
 

@@ -21,6 +21,7 @@ public:
 		printf("-tsn tbox serial number code,utf8 string,20 length\r\n");
 		printf("-gps on/off notify gps info\r\n");
 		printf("-channels start channel for vicp\r\n");
+		printf("-startOnAndroid start on android system for vicp\r\n");
 	}
 	void setDoorActivationTimeOut(u32 to) {
 		doorActivationTimeOut = to;
@@ -101,6 +102,7 @@ public:
 	u32  getAuthToken() { return authToken; }
 	void setAuthToken(u32 t) { authToken = t; }
 	bool isStartChannels() { return startChannel; }
+	bool isStartOnAndroid() { return startOnAndroid; }
 public:
 	bool parse(int argc, char** argv);
 	const char* getPublishTopic() { return pub_topic; }
@@ -120,6 +122,7 @@ public:
 	char iccid[20];
 	u32  authToken;
 	bool startChannel;
+	bool startOnAndroid;
 	//////////////////////////////////////////////////////////////////////////
 public:
 	bool isGpsDataValid;
