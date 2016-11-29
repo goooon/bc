@@ -59,11 +59,12 @@ static void push_buff(const char *buf, int len)
 	Thread_unlock_mutex(mutex);
 }
 
-static char *pop_buff(void)
+static char *pop_buff(int *len)
 {
 	char *p = NULL;
 	Thread_lock_mutex(mutex);
-	bf_read_bytes_only(&bf, (u8**)&p, bf.index);
+	*len = (int)bf.index;
+	bf_read_bytes_only(&bf, (u8**)&p, *len);
 	bf_reset(&bf, 0);
 	Thread_unlock_mutex(mutex);
 	return p;
@@ -327,7 +328,7 @@ bool GpsUploadTask_NTF::getGps(void* p, GPSDataQueue::GPSInfo& gpsinfo, Vehicle:
 	char *buf = NULL;
 	bcp_nmea_info_t *info;
 
-	buf = pop_buff();
+	buf = pop_buff(&r);
 	if (buf) {
 		if (bcp_nmea_parse(p, buf, r) > 0) {
 			/* has new sentence */
