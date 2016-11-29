@@ -79,6 +79,7 @@ void VICPSystem::registerListener(int32_t app_id,
 	lsr = new myVICPListener(app_id, listener);
 	if (lsr != NULL) {
     	mListeners.add(lsr);
+		LOG_I("%s new listener: %p", __FUNCTION__, &listener);
 	}
     listener->asBinder()->linkToDeath(this);
 }
@@ -199,7 +200,7 @@ static void VICP_System_notify(int32_t app_id,
 }
 }  // namespace android
 
-class androidVicpLoop : public Thread
+class androidVicpServerLoop : public Thread
 {
 	virtual void run() OVERRIDE
 	{
@@ -209,7 +210,7 @@ class androidVicpLoop : public Thread
 
 int android_vicp_server_start(void)
 {
-	Thread::startThread(new androidVicpLoop());
+	Thread::startThread(new androidVicpServerLoop());
 	return 0;
 }
 

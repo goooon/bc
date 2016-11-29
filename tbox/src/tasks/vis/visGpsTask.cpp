@@ -22,9 +22,10 @@ void visGpsTask::printGps(bcp_packet_t *pkg)
 	while ((m = bcp_next_message(pkg, m)) != NULL) {
 		e = NULL;
 		while ((e = bcp_next_element(m, e)) != NULL) {
-			printf("%s", e->data);
 #if BC_TARGET == BC_TARGET_ANDROID
 			android_vicp_notify(m->hdr.id, e->data, e->len);
+#else
+			printf("%s", e->data);
 #endif
 		}
 	}

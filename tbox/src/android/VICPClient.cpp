@@ -42,13 +42,22 @@ namespace android {
 void VICPListener::data_arrived(int32_t app_id, 
 		uint8_t *buf, int32_t len)
 {
-	LOG_I("%s app_id: %d, data: %s, len: %d", __FUNCTION__,
-		app_id, buf, len);
+	LOG_I("%s client app_id: %d, len: %d", 
+		__FUNCTION__, app_id, len);
 }
 void VICPListener::binderDied(const wp<IBinder>& who)
 {
 	LOG_I("%s, who: %p", __FUNCTION__, &who);
 }
+
+class GPSListener:
+	public VICPListener
+{
+	void data_arrived(int32_t app_id, uint8_t *buf, int32_t len)
+	{
+		LOG_I("%s gps, len: %d", __FUNCTION__, len);
+	}
+};
 
 static void joinThreadPool(void)
 {
@@ -70,17 +79,27 @@ static int client_main(void)
 		return -1;
 	}
 
-	sp<VICPListener> listener = new VICPListener();
-	service->registerListener(APPID_GPS, listener);
+	int32_t appid = APPID_GPS;
+	sp<GPSListener> listener = new GPSListener();
 
+	service->registerListener(appid, listener);
 	joinThreadPool();
 
 	return 0;
 }
 } // namespace android
 
+class androidVicpClientLoop : public Thread
+{
+	virtual void run() OVERRIDE
+	{
+		android::client_main();
+	}
+};
+
 int android_vicp_client_start(void)
 {
-	return android::client_main();
+	Thread::startThread(new androidVicpClientLoop());
+	return 0;
 }
 
