@@ -59,7 +59,8 @@ LOCAL_SRC_FILES:= \
 	src/android/IVICPListener.cpp    \
 	src/android/IVICPSystem.cpp      \
 	src/android/VICPSystem.cpp       \
-	dep/mpu6050/main6050.cpp
+	dep/mpu6050/main6050.cpp         \
+	src/android/VICPClient.cpp
 
 LOCAL_MODULE := tbox
 

@@ -132,7 +132,8 @@ public:
 	u32  getAuthToken() { return authToken; }
 	void setAuthToken(u32 t) { authToken = t; }
 	bool isStartChannels() { return startChannel; }
-	bool isStartOnAndroid() { return startOnAndroid; }
+	bool isStartAndroidServer() { return startAndroidServer; }
+	bool isStartAndroidClient() { return startAndroidClient; }
 public:
 	bool parse(int argc, char** argv);
 	const char* getPublishTopic() { return pub_topic; }
@@ -152,7 +153,8 @@ public:
 	char iccid[20];
 	u32  authToken;
 	bool startChannel;
-	bool startOnAndroid;
+	bool startAndroidServer;
+	bool startAndroidClient;
 	//////////////////////////////////////////////////////////////////////////
 public:
 	bool isGpsDataValid;

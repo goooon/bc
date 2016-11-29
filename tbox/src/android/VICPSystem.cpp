@@ -32,6 +32,8 @@
 #include "VICPSystem.h"
 #include "IVICPListener.h"
 #include "IVICPSystem.h"
+#include "../inc/Application.h"
+
 
 /* tbox */
 #include "../inc/dep.h"
@@ -60,7 +62,7 @@ void VICPSystem::registerListener(int32_t app_id,
 {
 	sp<myVICPListener> lsr;
 
-	ALOGI("%s, app_id: %d, listener: %p", __FUNCTION__, 
+	LOG_I("%s, app_id: %d, listener: %p", __FUNCTION__, 
 		app_id, &listener);
 
     if (listener == NULL)
@@ -86,7 +88,7 @@ void VICPSystem::unregisterListener(int32_t app_id,
 {
 	sp<myVICPListener> lsr;
 
-	ALOGI("%s, app_id: %d, listener: %p", __FUNCTION__, 
+	LOG_I("%s, app_id: %d, listener: %p", __FUNCTION__, 
 		app_id, &listener);
 
     if (listener == NULL)
@@ -106,7 +108,7 @@ void VICPSystem::unregisterListener(int32_t app_id,
 static void android_vicp_send_cb(void *context, int result)
 {
 	if (result != 0) {
-		ALOGW("%s result = %d", __FUNCTION__, result);
+		LOG_W("%s result = %d", __FUNCTION__, result);
 	}
 }
 
@@ -141,7 +143,7 @@ void VICPSystem::send(int32_t app_id, uint8_t *buf, int32_t len)
 	ch = channels_get(ch_name);
 	if (!ch) {
 		free(buf);
-		ALOGW("find channel failed. name: %s\n", ch_name);
+		LOG_W("find channel failed. name: %s\n", ch_name);
 		return;
 	} else {
 		android_pack_send(ch, (int)app_id, 
@@ -166,7 +168,7 @@ void VICPSystem::binderDied(const wp<IBinder>& who)
 {    
 	sp<myVICPListener> lsr;
 
-	ALOGI("%s, who: %p", __FUNCTION__, &who);
+	LOG_I("%s, who: %p", __FUNCTION__, &who);
 
 	Mutex::Autolock _l(mLock);
     for (size_t i = 0; i < mListeners.size(); i++) {
@@ -205,7 +207,7 @@ class androidVicpLoop : public Thread
 	}
 };
 
-int android_vicp_init(void)
+int android_vicp_server_start(void)
 {
 	Thread::startThread(new androidVicpLoop());
 	return 0;

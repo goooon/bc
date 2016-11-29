@@ -48,8 +48,10 @@ bool Application::init(int argc, char** argv)
 		channels_init();
 	}
 #if BC_TARGET == BC_TARGET_ANDROID
-	if (config.isStartOnAndroid()) {
-		android_vicp_init();
+	if (config.isStartAndroidServer()) {
+		android_vicp_server_start();
+	} else if (config.isStartAndroidClient()) {
+		android_vicp_client_start();
 	}
 #endif
 
