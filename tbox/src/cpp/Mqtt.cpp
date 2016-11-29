@@ -117,7 +117,7 @@ static int Client_messageArrived(void* context, char* topicName, int topicLen, M
 		LOG_E("unknown topic %s,ignored", topicName);
 		return 0;
 	}
-	if (message == nullptr) {
+	if (message == NULLPTR) {
 		LOG_E("message is null,ignored");
 		return 0;
 	}
@@ -125,7 +125,7 @@ static int Client_messageArrived(void* context, char* topicName, int topicLen, M
 		LOG_E("payload length wrong,ignored");
 		return 0;
 	}
-	if (message->payload == nullptr) {
+	if (message->payload == NULLPTR) {
 		LOG_E("payload is null,ignored");
 		return 0;
 	}

@@ -53,11 +53,13 @@ LOCAL_SRC_FILES:= \
 	src/tasks/VKeyIgnitionTask.cpp   \
 	src/tasks/VKeyUnIgnitTask.cpp    \
 	src/tasks/PackageQueueTask.cpp   \
+	src/tasks/VehicleShakeTask.cpp    \
 	src/tasks/vis/visGpsTask.cpp     \
 	src/test/ActiveTest.cpp          \
 	src/android/IVICPListener.cpp    \
 	src/android/IVICPSystem.cpp      \
-	src/android/VICPSystem.cpp
+	src/android/VICPSystem.cpp       \
+	dep/mpu6050/main6050.cpp
 
 LOCAL_MODULE := tbox
 

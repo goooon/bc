@@ -61,8 +61,10 @@ set(SRC_LIST
 	src/tasks/VKeyIgnitionTask.cpp
 	src/tasks/VKeyUnIgnitTask.cpp
 	src/tasks/PackageQueueTask.cpp
+	src/tasks/VehicleShakeTask.cpp
 	src/tasks/vis/visGpsTask.cpp
 	src/test/ActiveTest.cpp
+	dep/mpu6050/main6050.cpp
 	)
 add_executable(tbox ${SRC_LIST})
 TARGET_LINK_LIBRARIES(tbox pthread ${LIBS_SYSTEM}) 

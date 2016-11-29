@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <pthread.h>
 
 #define conversion_rate 205
@@ -162,7 +163,7 @@ void init_6050()
 	ioctl(fd6050, I2C_RETRIES, 1);//设置重发次数
 	
 	write_6050(PWR_MGMT_1, 0x80);	//解除休眠状态
-	sleep(1);
+	usleep(1000);
 	write_6050(PWR_MGMT_1, 0x00);
 	write_6050(SMPLRT_DIV, 0x07);
 	write_6050(CONFIG, 0x06);
@@ -473,6 +474,7 @@ static void* process_shock(void* data)
 	return NULL;
 }
 
+#ifdef MAIN6050_TEST
 int main(int argc, const char* argv[])
 {
 	char c;
@@ -499,6 +501,7 @@ int main(int argc, const char* argv[])
 	}	
 	return 0;
 }
+#endif
 #else
 int action_init(const action_config* t) { return 0; }
 void action_deinit() {}

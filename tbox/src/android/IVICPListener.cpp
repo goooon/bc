@@ -47,6 +47,42 @@ public:
 
 IMPLEMENT_META_INTERFACE(VICPListener, "com.beecloud.vicp.IVICPListener");
 
+status_t BnVICPListener::onTransact(uint32_t code,
+	const Parcel& data,
+	Parcel* reply,
+	uint32_t flags)
+{
+    switch(code) {
+		case TRANSACT_VICP_DATA_ARRIVED: {
+            CHECK_INTERFACE(IVICPListener, data, reply);
+			int32_t app_id = data.readInt32();
+			int32_t buf_len = data.readInt32();
+			uint8_t *buf = NULL;
+
+			if ((buf_len >= 0 && buf_len <= (int32_t)data.dataAvail())) {
+				buf = (uint8_t*)malloc(buf_len);
+				const void *p = data.readInplace(buf_len);
+				if (buf) {
+					memcpy(buf, p, buf_len);
+				}
+			}
+			int32_t len = data.readInt32();
+			if (buf_len != len) {
+				ALOGW("buf_len=%d != len=%d", buf_len, len);
+				if (buf) {
+					free(buf);
+					buf = NULL;
+				}
+			}
+			if (buf) {
+            	data_arrived(app_id, buf, len);
+			}
+			return OK;
+		}
+    }
+    return BBinder::onTransact(code, data, reply, flags);
+};
+
 // ----------------------------------------------------------------------------
 
 }; // namespace android
