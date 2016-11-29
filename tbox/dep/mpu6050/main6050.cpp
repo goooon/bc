@@ -156,7 +156,7 @@ void init_6050()
 	if(fd6050<0)
 	{
 		perror("open i2c device failed\r\n");
-		exit(-1);
+		return;
 	}
 
 	ioctl(fd6050, I2C_TIMEOUT, 2);//设置超时时间

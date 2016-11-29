@@ -18,7 +18,7 @@ protected:
 	void sendGpsData(GPSDataQueue::GPSInfo info);
 
 private:
-	bool getGps(void* p,void* s, void *ch, GPSDataQueue::GPSInfo& data,Vehicle::RawGps& rawGps);
+	bool getGps(void* p, GPSDataQueue::GPSInfo& data,Vehicle::RawGps& rawGps);
 	bool ntfGps(GPSDataQueue::GPSInfo& info);
 	bool ntfEnterAbnormal();
 	bool ntfExitAbnormal();
