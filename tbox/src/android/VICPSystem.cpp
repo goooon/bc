@@ -39,16 +39,11 @@
 #include "../inc/channels.h"
 
 namespace android {
-	
-static sp<VICPSystem> s = NULL;
 
 void VICPSystem::notifyListeners(int32_t app_id, 
 		uint8_t* buf, int32_t len)
 {
 	sp<myVICPListener> lsr;
-
-	//ALOGI("%s, app_id: %d, this: %p, mListeners: %p, mListeners.size()=%d", __FUNCTION__, 
-	//	app_id, this, &mListeners, mListeners.size());
 
     Mutex::Autolock _l(mLock);
     for (size_t i = 0; i < mListeners.size(); i++) {
@@ -65,16 +60,13 @@ void VICPSystem::registerListener(int32_t app_id,
 {
 	sp<myVICPListener> lsr;
 
-	//ALOGI("%s, app_id: %d, this: %p, mListeners: %p, mListeners.size()=%d", __FUNCTION__, 
-	//	app_id, this, &mListeners, mListeners.size());
+	ALOGI("%s, app_id: %d, listener: %p", __FUNCTION__, 
+		app_id, &listener);
 
     if (listener == NULL)
         return;
 
     Mutex::Autolock _l(mLock);
-	if (s != this) {
-		s = this;
-	}
     for (size_t i = 0; i < mListeners.size(); i++) {
 		lsr = mListeners[i];
         if (lsr->listener->asBinder() == listener->asBinder()) {
@@ -85,8 +77,6 @@ void VICPSystem::registerListener(int32_t app_id,
 	lsr = new myVICPListener(app_id, listener);
 	if (lsr != NULL) {
     	mListeners.add(lsr);
-		ALOGI("%s, app_id: %d, listener: %p", __FUNCTION__, 
-			app_id, &listener);
 	}
     listener->asBinder()->linkToDeath(this);
 }
@@ -96,8 +86,8 @@ void VICPSystem::unregisterListener(int32_t app_id,
 {
 	sp<myVICPListener> lsr;
 
-	//ALOGI("%s, app_id: %d, this: %p, mListeners: %p, mListeners.size()=%d", __FUNCTION__, 
-	//	app_id, this, &mListeners, mListeners.size());
+	ALOGI("%s, app_id: %d, listener: %p", __FUNCTION__, 
+		app_id, &listener);
 
     if (listener == NULL)
         return;
@@ -106,8 +96,6 @@ void VICPSystem::unregisterListener(int32_t app_id,
     for (size_t i = 0; i < mListeners.size(); i++) {
 		lsr = mListeners[i];
         if (lsr->listener->asBinder() == listener->asBinder()) {
-			ALOGI("%s, app_id: %d, listener: %p", __FUNCTION__, 
-				app_id, &listener);
             lsr->listener->asBinder()->unlinkToDeath(this);
             mListeners.removeAt(i);
             break;
@@ -146,8 +134,6 @@ void VICPSystem::send(int32_t app_id, uint8_t *buf, int32_t len)
 	bcp_channel_t *ch;
 	const char *ch_name = "serial";
 
-	//ALOGI("%s, app_id: %d, this: %p", __FUNCTION__, app_id, this);
-
 	if (!buf) {
 		return;
 	}
@@ -180,37 +166,33 @@ void VICPSystem::binderDied(const wp<IBinder>& who)
 {    
 	sp<myVICPListener> lsr;
 
-	//ALOGI("%s, this: %p, mListeners: %p, mListeners.size()=%d", __FUNCTION__, 
-	//	this, &mListeners, mListeners.size());
+	ALOGI("%s, who: %p", __FUNCTION__, &who);
 
 	Mutex::Autolock _l(mLock);
     for (size_t i = 0; i < mListeners.size(); i++) {
 		lsr = mListeners[i];
         if (lsr->listener->asBinder() == who) {
-			ALOGI("%s, listener: %p", __FUNCTION__, &lsr);
             mListeners.removeAt(i);
             break;
         }
     }
 }
 
-static int VICPSystem_init(void) {
-	sp<VICPSystem> s = NULL;
-
-	ALOGI("%s enter.", __FUNCTION__);
-
+static sp<VICPSystem> s = NULL;
+static int VICPSystem_init(void)
+{
     s = new VICPSystem();
-	s->publishAndJoinThreadPool();
-
-	ALOGI("%s exit.", __FUNCTION__);
-
-	return 0;
+	if (s != NULL) {
+		s->publishAndJoinThreadPool();
+		return 0;
+	}
+	return -1;
 }
 static void VICP_System_notify(int32_t app_id,
 	uint8_t *buf, int32_t len)
 {
-	if (android::s != NULL) {
-		android::s->notifyListeners(app_id, buf, len);
+	if (s != NULL) {
+		s->notifyListeners(app_id, buf, len);
 	}
 }
 }  // namespace android

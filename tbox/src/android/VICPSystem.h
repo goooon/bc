@@ -20,6 +20,10 @@
 #include <stdint.h>
 #include <binder/IBinder.h>
 #include <binder/BinderService.h>
+#include <binder/IServiceManager.h>
+#include <binder/IPCThreadState.h>
+#include <binder/ProcessState.h>
+#include <binder/IServiceManager.h>
 #include <utils/Mutex.h>
 #include <utils/String16.h>
 #include <utils/Vector.h>
@@ -43,15 +47,22 @@ public:
 };
 
 class VICPSystem : 
-		public BinderService<VICPSystem>,
 		public BnVICPSystem,
 		public IBinder::DeathRecipient
 {
-	friend class BinderService<VICPSystem>;
-	static char const* getServiceName() ANDROID_API { 
+public:
+	char const* getServiceName() { 
 		return "VICPSystem"; 
 	}
-public:
+	status_t publish(bool allowIsolated = false) {
+		sp<IServiceManager> sm(defaultServiceManager());
+		return sm->addService(
+				String16(getServiceName()), this, allowIsolated);
+	}
+    void publishAndJoinThreadPool(bool allowIsolated = false) {
+        publish(allowIsolated);
+        joinThreadPool();
+    }
     void notifyListeners(int32_t app_id, 
 		uint8_t* buf, int32_t len);
 
@@ -66,6 +77,13 @@ private:
 	void send(int32_t app_id, uint8_t *buf, int32_t len);
     status_t dump(int fd, const Vector<String16>& args);
     void binderDied(const wp<IBinder>& who);
+
+	static void joinThreadPool() {
+		sp<ProcessState> ps(ProcessState::self());
+		ps->startThreadPool();
+		ps->giveThreadPoolName();
+		IPCThreadState::self()->joinThreadPool();
+	}
 };
 
 };  // namespace android
