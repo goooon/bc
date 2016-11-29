@@ -112,7 +112,23 @@ static void Client_connectionLost(void* context, char* cause)
 static int Client_messageArrived(void* context, char* topicName, int topicLen, MQTTAsync_message* message)
 {
 	MqttClient* mh = (MqttClient*)context;
-	LOG_I("MQTT Client_messageArrived: %s", topicName);
+	LOG_I("<<<< Client_messageArrived: %s", topicName);
+	if (strcmp(topicName, mh->getTopicName())) {
+		LOG_E("unknown topic %s,ignored", topicName);
+		return 0;
+	}
+	if (message == nullptr) {
+		LOG_E("message is null,ignored");
+		return 0;
+	}
+	if (message->payloadlen == 0) {
+		LOG_E("payload length wrong,ignored");
+		return 0;
+	}
+	if (message->payload == nullptr) {
+		LOG_E("payload is null,ignored");
+		return 0;
+	}
 	int ret = mh->onRecvPackage(message->payload,message->payloadlen);
 	MQTTAsync_freeMessage(&message);
 	MQTTAsync_free(topicName);
@@ -374,6 +390,9 @@ void MqttClient::onConnected(bool succ)
 				LOG_W("MQTTAsync_subscribe Fail %d", rc);
 				onError(rc, "MQTTAsync_subscribe");
 			}
+			else {
+				LOG_I("Subscribed \"%s\" succ", topicName);
+			}
 		}
 		else {
 			LOG_W("changeState failed");
@@ -402,7 +421,7 @@ bool MqttClient::onRecvPackage(void* data, int len)
 	//找到applicationID, session对应的task,
 	bcp_message_t *m = NULL;
 	bcp_element_t *e = NULL;
-
+	bool package_handled = false;
 	//bcp_messages_foreach(p, bcp_message_foreach_callback, NULL);
 
 	while ((m = bcp_next_message(p, m)) != NULL) {
@@ -410,18 +429,35 @@ bool MqttClient::onRecvPackage(void* data, int len)
 		u64 seqId = m->hdr.sequence_id;
 		u32 stepId = m->hdr.step_id;
 		LOG_I("Mqtt received appid:%d,stepId:%d", applicationID,stepId);
+
 		task = Application::getInstance().findTask(applicationID);
 		if (task != NULL) {
 			bool done = task->handlePackage(p);
 			if (!done) {
 				//创建新的任务，放入队列
-				::PostEvent(AppEvent::AbortTasks, applicationID, 0, p);
+				::PostEvent(AppEvent::AbortTasks, applicationID, 0, 0);
+			}
+			else {
+				package_handled = true;
 			}
 		}
 		else {
-			if(applicationID != APPID_AUTHENTICATION)
-				::PostEvent(AppEvent::InsertTask, 0, 0, TaskCreate(applicationID,p));
+			if (applicationID != APPID_AUTHENTICATION) {
+				if (TSP_ACK_STEP_ID == stepId) {
+					//ignore ack from tsp
+				}
+				else {
+					task = TaskCreate(applicationID, p);
+					if (task) {
+						::PostEvent(AppEvent::InsertTask, applicationID, 0, task);
+						package_handled = true;
+					}
+				}
+			}
 		}
+	}
+	if (!package_handled) {
+		bcp_packet_destroy(p);
 	}
 	return true;
 }
@@ -441,7 +477,6 @@ void MqttClient::onDisconnected()
 
 void MqttClient::onSubscribed()
 {
-	//LOG_I("MqttHandler::onSubscribed()");
 	if (changeState(Subscribed)) {}
 	else {
 		LOG_W("changeSubstate failed");

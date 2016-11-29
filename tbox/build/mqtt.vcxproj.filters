@@ -22,6 +22,9 @@
     <Filter Include="src\test">
       <UniqueIdentifier>{f33cacdc-6748-4fac-bf46-3d72be4da718}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\tasks\a00">
+      <UniqueIdentifier>{25f71748-a589-45bf-a6a9-c6070fef7e28}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\tasks\a01">
       <UniqueIdentifier>{7ec23ae5-f9ca-4b5d-8ce6-723556c8cbb9}</UniqueIdentifier>
     </Filter>
@@ -37,6 +40,9 @@
     <Filter Include="src\tasks\a07,a08,a09,a10">
       <UniqueIdentifier>{aa6a01c4-ef87-4cda-b8f3-25b55755dafe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\tasks\a11">
+      <UniqueIdentifier>{ba0bf8ba-0d3c-4691-8317-c0402e6ffba8}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\tasks\a03">
       <UniqueIdentifier>{eef307fe-ced8-4daa-8650-a674e5291aac}</UniqueIdentifier>
     </Filter>
@@ -45,6 +51,9 @@
     </Filter>
     <Filter Include="src\tasks\vis">
       <UniqueIdentifier>{d211762a-f757-4f75-95aa-dda0281a7e27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dep\mpu6050">
+      <UniqueIdentifier>{27b5c04b-c191-4610-8644-6ad574455760}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -150,9 +159,6 @@
     <ClInclude Include="..\src\tasks\VehicleAuthTask.h">
       <Filter>src\tasks\auth</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\tasks\AcquireConfigTask.h">
-      <Filter>src\tasks</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\inc\CanBus.h">
       <Filter>src\inc</Filter>
     </ClInclude>
@@ -161,6 +167,15 @@
     </ClInclude>
     <ClInclude Include="..\src\tasks\PackageQueueTask.h">
       <Filter>src\tasks\axx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\AcquireConfigTask.h">
+      <Filter>src\tasks\a00</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dep\mpu6050\main6050.h">
+      <Filter>dep\mpu6050</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\VehicleShakeTask.h">
+      <Filter>src\tasks\a11</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -242,9 +257,6 @@
     <ClCompile Include="..\src\tasks\VehicleAuthTask.cpp">
       <Filter>src\tasks\auth</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\tasks\AcquireConfigTask.cpp">
-      <Filter>src\tasks</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cpp\CanBus.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
@@ -256,6 +268,15 @@
     </ClCompile>
     <ClCompile Include="..\src\tasks\PackageQueueTask.cpp">
       <Filter>src\tasks\axx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\AcquireConfigTask.cpp">
+      <Filter>src\tasks\a00</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\VehicleShakeTask.cpp">
+      <Filter>src\tasks\a11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dep\mpu6050\main6050.cpp">
+      <Filter>dep\mpu6050</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1667,7 +1667,8 @@ thread_return_type WINAPI MQTTAsync_receiveThread(void* n)
 		MQTTAsyncs* m = NULL;
 		MQTTPacket* pack = NULL;
 
-		Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);MQTTAsync_unlock_mutex(mqttasync_mutex);
+		Log(TRACE_MEDIUM,0,"unlocking  %d\r\n",__LINE__);
+		MQTTAsync_unlock_mutex(mqttasync_mutex);
 		pack = MQTTAsync_cycle(&sock, timeout, &rc);
 		Log(TRACE_MEDIUM,0,"locking  %d\r\n",__LINE__);
 		MQTTAsync_lock_mutex(mqttasync_mutex);

@@ -38,21 +38,33 @@ bool onClientTest(char* cmd) {
 		PostEvent(AppEvent::AutoEvent, Vehicle::op, id, 0); \
 		return true; \
 	}
-	OPER_DOOR(DoorOpened, "openDoor0", door.lh_front, 0, true);
-	OPER_DOOR(DoorOpened, "openDoor1", door.rh_front, 1, true);
+	//OPER_DOOR(DoorOpened, "openDoor0", door.lh_front, 0, true);
+	if (!strcmp("openDoor0", cmd)) {
+		PostEvent(AppEvent::AutoEvent, Vehicle::DoorOpened, 4, 0);
+		PostEvent(AppEvent::AutoEvent, Vehicle::DoorOpened, 0, 0);
+		return true;
+	}
+	//OPER_DOOR(DoorOpened, "openDoor1", door.rh_front, 1, true);
+	if (!strcmp("openDoor1", cmd)) {
+		PostEvent(AppEvent::AutoEvent, Vehicle::DoorOpened, 4, 0);
+		PostEvent(AppEvent::AutoEvent, Vehicle::DoorOpened, 1, 0);
+		return true;
+	}
 	OPER_DOOR(DoorOpened, "openDoor2", door.lh_rear,  2, true);
 	OPER_DOOR(DoorOpened, "openDoor3", door.rh_rear,  3, true);
-	OPER_DOOR(DoorOpened, "openHood",  door.hood,     4, true);
-	OPER_DOOR(DoorOpened, "openLugDoor", door.luggage_door, 5, true);
-	OPER_DOOR(DoorOpened, "openPowerPlug", door.fuellid,    6, true);
+	OPER_DOOR(DoorOpened, "openCtrl", door.rh_rear, 4, true);
+	OPER_DOOR(DoorOpened, "openHood",  door.hood,     5, true);
+	OPER_DOOR(DoorOpened, "openLugDoor", door.luggage_door,6, true);
+	OPER_DOOR(DoorOpened, "openPowerPlug", door.fuellid,    7, true);
 
 	OPER_DOOR(DoorClosed, "shutDoor0", door.lh_front, 0,false);
 	OPER_DOOR(DoorClosed, "shutDoor1", door.rh_front, 1, false);
 	OPER_DOOR(DoorClosed, "shutDoor2", door.lh_rear, 2, false);
 	OPER_DOOR(DoorClosed, "shutDoor3", door.rh_rear, 3, false);
-	OPER_DOOR(DoorClosed, "shutHood", door.hood, 4, false);
-	OPER_DOOR(DoorClosed, "shutLugDoor", door.luggage_door, 5, false);
-	OPER_DOOR(DoorClosed, "shutPowerPlug", door.fuellid, 6, false);
+	OPER_DOOR(DoorClosed, "shutCtrl", door.rh_rear, 4, false);
+	OPER_DOOR(DoorClosed, "shutHood", door.hood, 5, false);
+	OPER_DOOR(DoorClosed, "shutLugDoor", door.luggage_door, 6, false);
+	OPER_DOOR(DoorClosed, "shutPowerPlug", door.fuellid, 7, false);
 
 	OPER_DOOR(WindOpened, "openWind0", window.lh_front, 0, true);
 	OPER_DOOR(WindOpened, "openWind1", window.rh_front, 1, true);
@@ -179,12 +191,12 @@ char* getCommand(int i)
 	const char* cmd[] = {
 		"ssh","auth", "\0",
 		"ntfState","\0",
-		"openDoor0", "openDoor1", "openDoor2", "openDoor3", "openHood", "openLugDoor", "openPowerPlug","\0",
-		"shutDoor0", "shutDoor1", "shutDoor2", "shutDoor3", "shutHood", "shutLugDoor", "shutPowerPlug","\0",
+		"openDoor0", "openDoor1", "openDoor2", "openDoor3", "openCtrl","openHood", "openLugDoor", "openPowerPlug","\0",
+		"shutDoor0", "shutDoor1", "shutDoor2", "shutDoor3", "shutCtrl","shutHood", "shutLugDoor", "shutPowerPlug","\0",
 		"openWind0","openWind1","openWind2","openWind3","\0",
 		"shutWind0","shutWind1","shutWind2","shutWind3","\0",
 		"Active","DeActived","Ignite","UnIgnt","\0",
-		"reqActive","reqDeact","reqReady","reqIgnit","AbnMove","NorMove","\0",
+		"reqActive","reqDeact","reqReady","AbnMove","NorMove","\0",
 		0
 	};
 	return (char*)cmd[i];

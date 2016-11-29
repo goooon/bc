@@ -55,7 +55,6 @@ void VKeyDeavtiveTask::doTask()
 						if (args.param2 == 2) {
 							RspAck();
 							expireTime.update(Config::getInstance().getDoorDeactiveTimeOut());
-
 							ret = Vehicle::getInstance().reqDeactiveDoor();
 							if (ret == Operation::Succ) {
 								LOG_I("reqDeactiveDoor() Done %d", ret);

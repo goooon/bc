@@ -29,10 +29,8 @@ bool Config::parse(int argc, char** argv)
 	canAuto = true;
 	mqttSendTimeOut = 5000;
 	gpsQueueSize = 4096;
-	abnormalMovingDist = 50;
 	unIgnitionNotifyDelay = 1000;
 	gpsIntervalAbormal = 10000;
-	durationEnterNormal = 30000;
 	//abnormalMovingInterval = 10;
 	doorDeactiveTimeOut = 5000;
 	doorActivationTimeOut = 5000;
@@ -43,6 +41,13 @@ bool Config::parse(int argc, char** argv)
 	gpsIntervalStation = 1000 * 5;
 	gpsIntervalDriving = 1000 * 3;
 	stateUploadExpireTime = 2 * 1000; //2 min
+
+	AbnormalMovingStartTimeLimit = 10 * 1000;
+	AbnormalMovingStartDistanceLimit = 10;
+	AbnormalMovingStopTimeLimit = 20 * 1000;
+	AbnormalMovingStopDistanceLimit = 5;
+	checkShakingInterval = 1000;
+
 	strncpy(mqttServerIp, "10.28.4.40:1884", sizeof(mqttServerIp));//main server
 	 //strncpy(mqttServer, "139.219.238.66:1883", sizeof(mqttServer));//test server
 	 //strncpy(mqttServer, "10.28.248.71:1883", sizeof(mqttServer));//guzhibin

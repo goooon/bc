@@ -38,8 +38,8 @@ private:
 };
 class IgnitStateUploadTask_NTF : public Task {
 public:
-	static Task* Create();
-	IgnitStateUploadTask_NTF() :Task(APPID_STATE_IGNITION, true) {}
+	static Task* Create(u32 appId);
+	IgnitStateUploadTask_NTF(u32 appId) :Task(appId, true) {}
 	virtual void doTask()OVERRIDE;
 private:
 };

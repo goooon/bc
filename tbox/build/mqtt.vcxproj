@@ -43,6 +43,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\dep\mpu6050\main6050.h" />
     <ClInclude Include="..\src\cpp\CmdParser.h" />
     <ClInclude Include="..\src\inc\Apparatus.h" />
     <ClInclude Include="..\src\inc\Application.h" />
@@ -74,6 +75,7 @@
     <ClInclude Include="..\src\tasks\StateUploadTask.h" />
     <ClInclude Include="..\src\tasks\TaskTable.h" />
     <ClInclude Include="..\src\tasks\VehicleAuthTask.h" />
+    <ClInclude Include="..\src\tasks\VehicleShakeTask.h" />
     <ClInclude Include="..\src\tasks\vis\visGpsTask.h" />
     <ClInclude Include="..\src\tasks\VKeyActiveTask.h" />
     <ClInclude Include="..\src\tasks\VKeyDeactiveTask.h" />
@@ -86,6 +88,7 @@
     <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\dep\mpu6050\main6050.cpp" />
     <ClCompile Include="..\src\cpp\Application.cpp" />
     <ClCompile Include="..\src\cpp\CanBus.cpp" />
     <ClCompile Include="..\src\cpp\channels.cpp" />
@@ -110,6 +113,7 @@
     <ClCompile Include="..\src\tasks\StateUploadTask.cpp" />
     <ClCompile Include="..\src\tasks\TaskTable.cpp" />
     <ClCompile Include="..\src\tasks\VehicleAuthTask.cpp" />
+    <ClCompile Include="..\src\tasks\VehicleShakeTask.cpp" />
     <ClCompile Include="..\src\tasks\vis\visGpsTask.cpp" />
     <ClCompile Include="..\src\tasks\VKeyActiveTask.cpp" />
     <ClCompile Include="..\src\tasks\VKeyDeactiveTask.cpp" />

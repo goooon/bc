@@ -71,9 +71,14 @@ void VKeyActiveTask::doTask()
 						}
 					}
 					else if (args.param1 == Vehicle::DoorOpened) {
-						LOG_I("rspDoorOpened %d %d", args.param1,args.param2);
-						ntfDoorOpened();
-						break;
+						if (args.param2 == 0) {//left front door
+							LOG_I("rspDoorOpened %d %d", args.param1, args.param2);
+							ntfDoorOpened();
+							break;
+						}
+						else if (Vehicle::getInstance().getApparatus().vehiState.door.ctl_lock == 2) {
+							LOG_I("ctrl lock,should be unlocked");
+						}
 					}
 					else {
 						LOG_W("Unhandled Vehicle Event %d", args.param1);
@@ -121,7 +126,7 @@ void VKeyActiveTask::doTask()
 					}
 				}
 				else  if(args.e == AppEvent::AutoStateChanged){
-					LOG_W("Unhandled Event %d %d %d %lld", args.e,args.param1,args.param2,args.data);
+					LOG_W("Unhandled AppEvent::AutoStateChanged %d %d %lld", args.param1,args.param2,args.data);
 				}
 				else {
 					LOG_E("Unhandled Event %d", args.e);
