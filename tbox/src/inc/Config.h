@@ -68,15 +68,45 @@ public:
 	u32 getGPSQueueSize() {
 		return gpsQueueSize;
 	}
+	u32 getAbnormalMovingStartTimeLimit() {
+		return AbnormalMovingStartTimeLimit;
+	}
+	void setAbnormalMovingStartTimeLimit(u32 s) {
+		AbnormalMovingStartTimeLimit = s;
+	}
+	u32 getAbnormalMovingStartDistanceLimit() {
+		return AbnormalMovingStartDistanceLimit;
+	}
+	void setAbnormalMovingStartDistanceLimit(u32 d) {
+		AbnormalMovingStartDistanceLimit = d;
+	}
+	u32 getAbnormalMovingStopTimeLimit() {
+		return AbnormalMovingStopTimeLimit;
+	}
+	void setAbnormalMovingStopTimeLimit(u32 s) {
+		AbnormalMovingStopTimeLimit = s;
+	}
+	void setAbnormalMovingStopDistanceLimit(u32 d) {
+		AbnormalMovingStopDistanceLimit = d;
+	}
+	u32 getAbnormalMovingStopDistanceLimit() {
+		return AbnormalMovingStopDistanceLimit;
+	}
+	u32 getCheckShakingInterval() {
+		return checkShakingInterval;
+	}
+	void setCheckShakingInterval(u32 c) {
+		checkShakingInterval = c;
+	}
 	bool isGpsTaskAtStartup() {
 		return gpsTaskAtStartup;
 	}
-	u32 getAbnormalMovingDist() {
+	/*u32 getAbnormalMovingDist() {
 		return abnormalMovingDist;
-	}
-	u32 getDurationEnterNormal() {
+	}*/
+	/*u32 getDurationEnterNormal() {
 		return durationEnterNormal;
-	}
+	}*/
 	u32 getMqttSendTimeOut() {
 		return mqttSendTimeOut;
 	}
@@ -130,7 +160,6 @@ public:
 	bool canAuto;
 	
 	u32 unIgnitionNotifyDelay;
-	u32 abnormalMovingDist;   //meter
 	u32 gpsQueueSize;
 	u32 mqttQos;
 	u32 mqttReConnInterval;
@@ -138,10 +167,18 @@ public:
 	u32 gpsIntervalDriving;
 	u32 gpsIntervalStation;
 	u32 gpsIntervalAbormal;
-	u32 durationEnterNormal;
+
+	//u32 durationEnterNormal;
 	u32 doorDeactiveTimeOut;
 	u32 doorActivationTimeOut;
 	u32 igntActivationTimeOut;
 	u32 stateUploadExpireTime;
+
+	u32 checkShakingInterval;
+
+	u32 AbnormalMovingStartTimeLimit;
+	u32 AbnormalMovingStartDistanceLimit;
+	u32 AbnormalMovingStopTimeLimit;
+	u32 AbnormalMovingStopDistanceLimit;
 };
 #endif // GUARD_Config_h__

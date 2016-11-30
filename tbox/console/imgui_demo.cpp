@@ -2282,7 +2282,13 @@ struct ExampleAppConsole : public me::Tracer
 		if (ImGui::SliderInt("", &mr, 0, 15)) {
 			vs.window.sun_roof = mr;
 		}
-
+		extern void Sensor6050Callback(int);
+		s = Vehicle::getInstance().isShaking();
+		if (ImGui::Checkbox("Shaking", &s)) {
+			Vehicle::getInstance().setAbnormalShaking(s);
+			Sensor6050Callback(7);
+		}
+		
 		//////////GPS////////////////////////////////////////////////////////////////
 		s = Config::getInstance().getIsGpsDataValid();
 		if (ImGui::Checkbox("GpsData:", &s)) {
@@ -2307,7 +2313,10 @@ struct ExampleAppConsole : public me::Tracer
 			//VEHICLE_SEC("altitude", gpsData.altitude, 0.0f, 180.0f);
 			//VEHICLE_SEC("angle", gpsData.dirAngle, 0.0f, 180.0f);
 			//VEHICLE_SEC("speed", gpsData.speed, 0.0f, 180.0f);
-
+			float t = Vehicle::getInstance().gpsData.longitude;
+			if (ImGui::SliderFloat("flongitude", &t, 0.0f, 180.0f)){
+				Vehicle::getInstance().gpsData.longitude = t;
+			}
 			VEHICLE_FSEC("ilongitude", gpsData.longitude, 0.0f, 180.0f);
 			VEHICLE_FSEC("ilatitude", gpsData.latitude, 0.0f, 180.0f);
 			VEHICLE_FSEC("ialtitude", gpsData.altitude, 0.0f, 180.0f);
@@ -2609,20 +2618,29 @@ struct VehicleConsole : public me::Tracer
 		if (ImGui::SliderInt(n, &second, 0, 60 * 5)) {	\
 			Config::getInstance().v = second * 1000;	\
 		}
+#define SLIDE_DIST(n,v)	\
+		second = Config::getInstance().v;	\
+		if (ImGui::SliderInt(n, &second, 0, 100)) {	\
+			Config::getInstance().v = second;	\
+		}
+
 		SLIDE_SEC("doorActiveTimeOut", doorActivationTimeOut);
 		SLIDE_SEC("doorDeactiveTimeOut", doorDeactiveTimeOut);
 		SLIDE_SEC("IgnitTimeOut", igntActivationTimeOut);
 		SLIDE_SEC("UploadTimeOut", stateUploadExpireTime);
 		SLIDE_SEC("MqttReConnInterval", mqttReConnInterval);
 		SLIDE_SEC("AuthRetryInterval", authRetryInterval);
+		SLIDE_SEC("unIgnitionNotifyDelay", unIgnitionNotifyDelay);
 
 		SLIDE_SEC("GPSDriving", gpsIntervalDriving);
 		SLIDE_SEC("GPSStation", gpsIntervalStation);
 		SLIDE_SEC("GPSAbormal", gpsIntervalAbormal);
+		SLIDE_SEC("ShakingInterval", checkShakingInterval);
 
-		SLIDE_SEC("AbnormalDist", abnormalMovingDist);
-		SLIDE_SEC("NormalCheckDuration", durationEnterNormal);
-		SLIDE_SEC("unIgnitionNotifyDelay", unIgnitionNotifyDelay);
+		SLIDE_SEC("AbnormalMovingStartTimeLimit", AbnormalMovingStartTimeLimit);
+		SLIDE_DIST("AbnormalMovingStartDistanceLimit", AbnormalMovingStartDistanceLimit);
+		SLIDE_SEC("AbnormalMovingStopTimeLimit", AbnormalMovingStopTimeLimit);
+		SLIDE_DIST("AbnormalMovingStopDistanceLimit", AbnormalMovingStopDistanceLimit);
 
 		ImGui::Text("Vehicle State : %s", Vehicle::getInstance().getStateString());
 		ImGui::Text("Mqtt HeartBeat:%d", MqttClient::getInstance().getHeartBeat());
@@ -2653,7 +2671,7 @@ struct VehicleConsole : public me::Tracer
 		}
 		ImGui::SameLine();
 		s = vs.door.ctl_lock & 1;
-		if (ImGui::Checkbox("lock", &s)) {
+		if (ImGui::Checkbox("ctrl", &s)) {
 			//vs.door.ctl_lock = s;
 			s ? vs.door.ctl_lock |= 1 : vs.door.ctl_lock &= ~1;
 		}

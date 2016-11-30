@@ -14,6 +14,8 @@ Vehicle& Vehicle::getInstance()
 Vehicle::Vehicle() :authed(Unauthed),state(Disabled),movingInAbnormal(false)
 {
 	gpsValid = false;
+	isVKey = false;
+	seqId = (u64)(1ULL << 63) + 1;
 }
 
 Operation::Result Vehicle::prepareVKeyIgnition(bool ready)
@@ -36,6 +38,7 @@ Operation::Result Vehicle::prepareVKeyIgnition(bool ready)
 	else {
 		//changeState(NotReady);
 	}
+	isVKey = true;
 	return Operation::Succ;
 }
 
@@ -64,14 +67,29 @@ Operation::Result Vehicle::reqDeactiveDoor()
 {
 	LOG_I("do reqDeactiveDoor()");
 	if (!apparatus.misc.door_actived)return Operation::Succ;
-	if (apparatus.vehiState.door.lh_front == 3 ||
-		apparatus.vehiState.door.rh_front == 3 ||
-		apparatus.vehiState.door.lh_rear == 3 ||
-		apparatus.vehiState.door.rh_rear == 3){
-		//todo...
+	if (apparatus.vehiState.door.lh_front == TriState::Valid_Opened ||
+		apparatus.vehiState.door.rh_front == TriState::Valid_Opened ||
+		apparatus.vehiState.door.lh_rear == TriState::Valid_Opened ||
+		apparatus.vehiState.door.rh_rear == TriState::Valid_Opened){
 		return Operation::E_DoorOpened;
 	}
 	return CanBus::getInstance().reqActiveDoor(false);
+}
+
+bool Vehicle::hasDoorOpened()
+{
+	if (apparatus.vehiState.door.lh_front == TriState::Valid_Closed ||
+		apparatus.vehiState.door.rh_front == TriState::Valid_Closed ||
+		apparatus.vehiState.door.lh_rear == TriState::Valid_Closed ||
+		apparatus.vehiState.door.rh_rear == TriState::Valid_Closed) {
+		return true;
+	}
+	return false;
+}
+
+bool Vehicle::isCtrlLockOpened()
+{
+	return apparatus.vehiState.door.ctl_lock == 3 ? true : false;
 }
 
 Operation::Result Vehicle::reqReadyToIgnition(bool b)
@@ -92,20 +110,20 @@ bool Vehicle::getGpsInfo(Vehicle::RawGps& info)
 
 bool Vehicle::isParkState()
 {
-	if (apparatus.vehiState.door.lh_front == 2 &&
-		apparatus.vehiState.door.rh_front == 2 &&
-		apparatus.vehiState.door.lh_rear == 2 &&
-		apparatus.vehiState.door.rh_rear == 2 &&
-		apparatus.vehiState.door.hood == 2 &&
-		apparatus.vehiState.door.luggage_door == 2 &&
+	if (apparatus.vehiState.door.lh_front == TriState::Valid_Closed &&
+		apparatus.vehiState.door.rh_front == TriState::Valid_Closed &&
+		apparatus.vehiState.door.lh_rear == TriState::Valid_Closed &&
+		apparatus.vehiState.door.rh_rear == TriState::Valid_Closed &&
+		apparatus.vehiState.door.hood == TriState::Valid_Closed &&
+		apparatus.vehiState.door.luggage_door == TriState::Valid_Closed &&
 
-		apparatus.vehiState.window.lh_front == 2 &&
-		apparatus.vehiState.window.rh_front == 2 &&
-		apparatus.vehiState.window.lh_rear == 2 &&
-		apparatus.vehiState.window.rh_rear == 2 &&
+		apparatus.vehiState.window.lh_front == TriState::Valid_Closed &&
+		apparatus.vehiState.window.rh_front == TriState::Valid_Closed &&
+		apparatus.vehiState.window.lh_rear == TriState::Valid_Closed &&
+		apparatus.vehiState.window.rh_rear == TriState::Valid_Closed &&
 		apparatus.vehiState.window.sun_roof == 1 &&
 
-		apparatus.vehiState.pedal.parking_break == 3) {
+		apparatus.vehiState.pedal.parking_break == TriState::Valid_On) {
 		return true;
 	}
 	if (apparatus.vehiState.pedal.shift_type) {
@@ -157,6 +175,17 @@ void Vehicle::setMovingInAbnormal(bool b)
 	movingInAbnormal = b;
 }
 
+void Vehicle::setAbnormalShaking(bool s)
+{
+	shaking = s;
+}
+
+u64 Vehicle::getTBoxSequenceId()
+{
+	if (seqId == 0)seqId = (u64)(1ULL << 63) + 1;
+	return seqId++;
+}
+
 //Operation::Result Vehicle::reqLockDoor()
 //{
 //	LOG_I("do reqLockDoor()");
@@ -183,10 +212,17 @@ void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 		}
 		break;
 	case DoorOpened:
+		if (!isCtrlLockOpened() && param2 != 4) {
+			LOG_W("Ctrl_Lock still Shutted,but door %d oppened,something is wrong",param2);
+		}
 		apparatus.vehiState.door.doors |= 1 << (param2 * 2);
 		changeState(NotReady);
 		break;
 	case DoorClosed:
+		if (isCtrlLockOpened() && hasDoorOpened() && param2 == 4) {
+			LOG_W("Door still Opened,can't shut Ctrl_Lock");
+			break;
+		}
 		apparatus.vehiState.door.doors &= ~(1 << (param2 * 2));
 		break;
 	case WindOpened:
@@ -250,6 +286,7 @@ const static char* sstate[] = {
 	"Forwarding",
 	"Backwarding"
 };
+
 bool Vehicle::changeState(State next)
 {
 	//todo ...

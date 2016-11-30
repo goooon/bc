@@ -6,8 +6,8 @@
 bool UnIgnitStateUploadTask_NTF::ntfState()
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, NTF_STEP_ID, seqID);
-	LOG_I("ntfState(appId:%d,setpId:%d,seqId:%lld)",appID,NTF_STEP_ID,seqID);
+	BCMessage msg = pkg.appendMessage(appID, NTF_STEP_ID, Vehicle::getInstance().getTBoxSequenceId());
+	LOG_I("ntfState(appId:%d,setpId:%d,seqId:%lld)",appID,NTF_STEP_ID, Vehicle::getInstance().getTBoxSequenceId());
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendVehicleState(Application::getInstance().getVehicle().getApparatus().vehiState);
@@ -72,13 +72,18 @@ Task* UnIgnitStateUploadTask_Delay_NTF::Create(u32 appId)
 
 void UnIgnitStateUploadTask_Delay_NTF::doTask()
 {
+	if (Vehicle::getInstance().hasDoorOpened()) {
+		LOG_I("ParkState Door Opened,No need report");
+		return;
+	}
 	if (Vehicle::getInstance().isParkState()) {
 		LOG_I("ParkState OK,No need report");
 		return;
 	}
-	LOG_I("ntfState(%d,%d,%lld),ParkState is not Ok,notifing ...",appID,NTF_STEP_ID,seqID);
+	u64 sid = Vehicle::getInstance().getTBoxSequenceId();
+	LOG_I("ntfState(%d,%d,%lld),ParkState is not Ok,notifing ...",appID,NTF_STEP_ID, sid);
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, NTF_STEP_ID, seqID);
+	BCMessage msg = pkg.appendMessage(appID, NTF_STEP_ID, sid);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendVehicleState(Vehicle::getInstance().getApparatus().vehiState);
@@ -89,9 +94,9 @@ void UnIgnitStateUploadTask_Delay_NTF::doTask()
 
 #undef TAG
 #define TAG "A0X"
-Task* IgnitStateUploadTask_NTF::Create()
+Task* IgnitStateUploadTask_NTF::Create(u32 appId)
 {
-	return bc_new IgnitStateUploadTask_NTF();
+	return bc_new IgnitStateUploadTask_NTF(appId);
 }
 
 void IgnitStateUploadTask_NTF::doTask()
@@ -100,7 +105,7 @@ void IgnitStateUploadTask_NTF::doTask()
 	BCMessage msg = pkg.appendMessage(appID, NTF_STEP_ID, seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
-	msg.appendVehicleState(Vehicle::getInstance().getApparatus().vehiState);
+	//msg.appendVehicleState(Vehicle::getInstance().getApparatus().vehiState);
 	if (!pkg.post(Config::getInstance().pub_topic, Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("IgnitStateUploadTask_NTF notify failed");
 	}

@@ -776,7 +776,7 @@ s32 bcp_packet_unserialize(u8 *buf, u32 len, bcp_packet_t **p)
 
 	if (len < sof_size + eof_size) {
 		bcp_packet_destroy(pk);
-		LOG_W("bcp_packet_unserialize buf size failed.\n");
+		LOG_W("  bcp_packet_unserialize buf size failed.\n");
 		return -1;
 	}
 

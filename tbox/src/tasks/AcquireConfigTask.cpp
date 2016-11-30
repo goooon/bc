@@ -1,13 +1,13 @@
 #include "./AcquireConfigTask.h"
 
-AcquireConfigTask::AcquireConfigTask() :Task(APPID_ACQUIRE_CONFIG, true)
+AcquireConfigTask::AcquireConfigTask(u32 appId) :Task(appId, true)
 {
 
 }
 
-Task* AcquireConfigTask::Create()
+Task* AcquireConfigTask::Create(u32 appId)
 {
-	return bc_new AcquireConfigTask();
+	return bc_new AcquireConfigTask(appId);
 }
 
 void AcquireConfigTask::doTask()
@@ -150,6 +150,42 @@ void AcquireConfigTask::parseConfig(ConfigElement& ce)
 			}
 			else {
 				LOG_E("Abnormal Moving Video Duration length wrong %d", n->arglen);
+			}
+			break;
+		case 4://Abnormal Moving StartTimeLimit	4	1	车辆异动开始的时间判断标准 单位：秒
+			if (n->arglen == 1) {
+				u8 s = n->arg[0];
+				Config::getInstance().setAbnormalMovingDuration(s * 1000);
+			}
+			else {
+				LOG_E("Abnormal Moving StartTimeLimit length wrong %d", n->arglen);
+			}
+			break;
+		case 5://Abnormal Moving StartDistanceLimit	5	1	车辆异动开始的距离判断标准 单位：米
+			if (n->arglen == 1) {
+				u8 s = n->arg[0];
+				Config::getInstance().setAbnormalMovingStartDistanceLimit(s);
+			}
+			else {
+				LOG_E("Abnormal Moving StartDistanceLimit length wrong %d", n->arglen);
+			}
+			break;
+		case 6://Abnormal Moving StopTimeLimit	6	1	车辆异动停止的时间判断标准 单位：秒
+			if (n->arglen == 1) {
+				u8 s = n->arg[0];
+				Config::getInstance().setAbnormalMovingStopTimeLimit(s * 1000);
+			}
+			else {
+				LOG_E("Abnormal Moving StartDistanceLimit length wrong %d", n->arglen);
+			}
+			break;
+		case 7://Abnormal Moving StopDistanceLimit	7	1	车辆异动停止的距离判断标准 单位：米
+			if (n->arglen == 1) {
+				u8 s = n->arg[0];//durationEnterNormal
+				Config::getInstance().setAbnormalMovingStopDistanceLimit(s);
+			}
+			else {
+				LOG_E("Abnormal Moving StartDistanceLimit length wrong %d", n->arglen);
 			}
 			break;
 		default:

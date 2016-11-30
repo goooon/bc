@@ -7,8 +7,8 @@
 #include "./TaskTable.h"
 class AcquireConfigTask : public Task {
 public:
-	AcquireConfigTask();
-	static Task* Create();
+	AcquireConfigTask(u32 appId);
+	static Task* Create(u32 appId);
 protected:
 	virtual void doTask();
 private:

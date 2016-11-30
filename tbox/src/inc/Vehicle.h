@@ -70,6 +70,8 @@ public:
 	Apparatus& getApparatus() { return apparatus; }
 	void setGpsInfo(Vehicle::RawGps& info);
 	bool getGpsInfo(Vehicle::RawGps& info);
+	bool hasDoorOpened();
+	bool isCtrlLockOpened();
 	bool isParkState();
 	bool isReadyToIgnit();
 	bool isAuthed();
@@ -77,8 +79,11 @@ public:
 	bool isDriving();
 	void setIsGpsValid(bool b);
 	bool isGpsValid();
+	bool isShaking() { return shaking; }
 	bool isMovingInAbnormal();
 	void setMovingInAbnormal(bool b);
+	void setAbnormalShaking(bool s);
+	u64  getTBoxSequenceId();
 	State getState() { return state; }
 	const char* getStateString() {
 		const char* desc[] = {
@@ -96,6 +101,9 @@ private:
 	void onEvent(u32 param1, u32 param2, void* data);
 	bool changeState(State next);
 private:
+	u64  seqId;
+	bool shaking;		
+	bool isVKey;
 	bool driving;
 	bool movingInAbnormal;
 	bool gpsValid;

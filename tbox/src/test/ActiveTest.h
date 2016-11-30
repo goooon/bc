@@ -8,7 +8,7 @@ class ActiveTest : public Task
 {
 	u64 seqId;
 public:
-	const static int AppId = APPID_TEST;
+	const static int AppId = APPID_ACTIVE_TEST;
 	ActiveTest():loop(true),Task(APPID_VKEY_ACTIVITION,false){
 
 	}

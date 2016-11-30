@@ -94,20 +94,6 @@ public:
 	}
 	bool appendIdentity() {
 		Identity identity;
-//#if BC_TARGET_LINUX == BC_TARGET
-//		//350262672
-//		token.token[0] = 0x90;
-//		token.token[1] = 0x95;
-//		token.token[2] = 0xe0;
-//		token.token[3] = 0x14;
-//#else //-1869225964
-//		token.token[0] = 0x90;
-//		token.token[1] = 0x95;
-//		token.token[2] = 0xe0;
-//		token.token[3] = 0x14;
-//#endif
-		//token.token.dw = 0x9095E014;
-		//
 #if BC_TARGET == BC_TARGET_WIN
 #pragma pack(push, 1)
 #endif
@@ -119,8 +105,7 @@ public:
 #pragma pack(pop)
 #endif
 		IDS ids;
-		//AuthToken = CRC32(Vehicle Descriptor(见4.4.1)(VIN + TBox Serial + IMEI + ICCID) +
-			//	Authentication(见4.4.5)(PID))
+		//AuthToken = CRC32(Vehicle Descriptor(见4.4.1)(VIN + TBox Serial + IMEI + ICCID) + Authentication(见4.4.5)(PID))
 		UByte4 dw; 
 		dw.dw = calc_crc32((u8*)&ids,sizeof(ids));
 		
@@ -165,6 +150,12 @@ public:
 			bcp_element_t *e = bcp_element_create((u8*)pts, sizeof(TimeStamp));
 			bcp_element_append(msg, e);
 		}
+		return true;
+	}
+	//1:异常开始   2:异常停止
+	bool appendAutoAlarm(u8 type) {
+		bcp_element_t *e = bcp_element_create((u8*)&type, sizeof(type));
+		bcp_element_append(msg, e);
 		return true;
 	}
 	bool appendGPSData(AutoLocation& gps) {

@@ -22,8 +22,17 @@
 #if BC_TARGET == BC_TARGET_WIN
 #pragma pack(push, 1)
 #endif
-
+struct TriState {
+	enum {
+		Invalid_Mask = 1,
+		Valid_Off = 2,
+		Valid_On = 3,
+		Valid_Opened = 2,
+		Valid_Closed = 3
+	};
+};
 struct Apparatus {
+	
 	struct Lamp //total 2 bytes
 	{//车灯状态
 		DEF_BIT4(channel);				//灯光当前档位0-16共16个档位
@@ -51,14 +60,14 @@ struct Apparatus {
 			u32 doors;
 		}DECL_GNU_PACKED;
 		Door() {
-			lh_front = 2;
-			rh_front = 2;
-			lh_rear = 2;
-			rh_rear = 2;
-			ctl_lock = 2;
-			hood = 2;
-			luggage_door = 2;
-			fuellid = 2;
+			lh_front = TriState::Valid_Closed;
+			rh_front = TriState::Valid_Closed;
+			lh_rear = TriState::Valid_Closed;
+			rh_rear = TriState::Valid_Closed;
+			ctl_lock = TriState::Valid_Closed;
+			hood = TriState::Valid_Closed;
+			luggage_door = TriState::Valid_Closed;
+			fuellid = TriState::Valid_Closed;
 			LOG_A(sizeof(Door) == 4, "size wrong for Door %d",sizeof(Door));
 		}
 	}DECL_GNU_PACKED;
@@ -78,11 +87,11 @@ struct Apparatus {
 			u32 winds;
 		};
 		Window() {
-			lh_front = 2;
-			rh_front = 2;
-			lh_rear = 2;
-			rh_rear = 2;
-			sun_roof = 2;
+			lh_front = TriState::Valid_Closed;
+			rh_front = TriState::Valid_Closed;
+			lh_rear = TriState::Valid_Closed;
+			rh_rear = TriState::Valid_Closed;
+			sun_roof = TriState::Valid_Closed;
 			LOG_A(sizeof(Window) == 4, "size wrong for Window %d",sizeof(Window));
 		}
 	}DECL_GNU_PACKED;
@@ -99,8 +108,8 @@ struct Apparatus {
 		DEF_BIT2(ingnition);		//引擎状态
 		DEF_BIT6(reserved2);        //保留以后使用
 		Pedal() {
-			parking_break = 3;
-			ingnition = 2;
+			parking_break = TriState::Valid_On;
+			ingnition = TriState::Valid_Off;
 			shift_level = 1;
 			LOG_A(sizeof(Pedal) == 4, "size wrong for Pedal %d",sizeof(Pedal));
 		}

@@ -20,6 +20,7 @@ protected:
 private:
 	bool getGps(void* p,void* s, void *ch, GPSDataQueue::GPSInfo& data,Vehicle::RawGps& rawGps);
 	bool ntfGps(GPSDataQueue::GPSInfo& info);
+	bool ntfEnterAbnormal();
 	bool ntfExitAbnormal();
 	bool needSendAbnormalGps(Vehicle::RawGps& rawGps);
 	double calcDistance(double long1, double lat1, Vehicle::RawGps& rawGps);

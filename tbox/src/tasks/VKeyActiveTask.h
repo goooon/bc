@@ -13,8 +13,6 @@
 
 class VKeyActiveTask : public Task {
 public:
-	const static int AppId = APPID_VKEY_ACTIVITION;
-public:
 	static Task* Create(u32 appId);
 	VKeyActiveTask(u32 appId);
 private:

@@ -31,7 +31,8 @@ public:
 	Task(u16 appId,bool async);
 	virtual ~Task();
 	u16  getApplicationId() { return appID; }
-	u64  getSequenceId() { return seqID; }
+	u64  getTspSequenceId() { return seqID; }
+	
 public:
 	virtual bool handlePackage(bcp_packet_t* pkg);
 	virtual bool handlePackage(base_package_t* pkg) { return true; }

@@ -53,7 +53,7 @@ void VKeyReadyToIgnitionTask::doTask()
 						}
 					}
 					else {
-						LOG_W("Unhandled Vehicle Event %d", args.param1);
+						LOG_W("Unhandled Vehicle::Event %d", args.param1);
 					}
 				}
 				else if (args.e == AppEvent::AbortTasks) {
