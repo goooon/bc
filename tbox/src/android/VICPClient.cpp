@@ -56,6 +56,7 @@ class GPSListener:
 	void data_arrived(int32_t app_id, uint8_t *buf, int32_t len)
 	{
 		LOG_I("%s gps, len: %d", __FUNCTION__, len);
+		free(buf);
 	}
 };
 
