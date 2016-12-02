@@ -250,7 +250,7 @@ void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 		}
 		else {
 			getApparatus().vehiState.pedal.ingnition = 2;
-			changeState(ReadyToIgnit);
+			changeState(NotReady);
 		}
 		break;
 	case ShiftType:

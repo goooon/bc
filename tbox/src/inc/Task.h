@@ -4,6 +4,7 @@
 //#include "./Message.h"
 #include "./Event.h"
 #include "./Operation.h"
+#include "../tasks/TaskTable.h"
 class MessageQueue
 {
 private:
@@ -43,7 +44,7 @@ protected:
 	//the function should be OVERRIDE by its subclass
 	virtual void doTask(){return;}
 	void ntfTimeOut();
-	void rspAck();
+	void rspAck(u32 stepId = ACK_STEP_ID);
 	void ntfError(Operation::Result ret);
 private:
 	//called by Application

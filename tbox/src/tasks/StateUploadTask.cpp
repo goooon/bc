@@ -102,7 +102,7 @@ Task* IgnitStateUploadTask_NTF::Create(u32 appId)
 void IgnitStateUploadTask_NTF::doTask()
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, NTF_STEP_ID, seqID);
+	BCMessage msg = pkg.appendMessage(appID, 2, seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	//msg.appendVehicleState(Vehicle::getInstance().getApparatus().vehiState);

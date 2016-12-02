@@ -1,8 +1,8 @@
 #include "./AcquireConfigTask.h"
-
+#include "../inc/Vehicle.h"
 AcquireConfigTask::AcquireConfigTask(u32 appId) :Task(appId, true)
 {
-
+	tryTimes = 0;
 }
 
 Task* AcquireConfigTask::Create(u32 appId)
@@ -12,14 +12,15 @@ Task* AcquireConfigTask::Create(u32 appId)
 
 void AcquireConfigTask::doTask()
 {
-	
-	expire.update();
+	expire.update(500);
 	for (;;) {
 		ThreadEvent::WaitResult wr = msgQueue.wait(500);
 		if (wr == ThreadEvent::TimeOut) {
 			Timestamp now;
 			if (expire < now) {
+				if (tryTimes >= 3)return;
 				reqConfig();
+				tryTimes++;
 				expire.update(Config::getInstance().getAuthRetryInterval());
 			}
 		}
@@ -50,7 +51,7 @@ void AcquireConfigTask::doTask()
 						BCMessage m = pkg.nextMessage(msg);
 						if (m.getApplicationId() == APPID_ACQUIRE_CONFIG)
 						{
-							rspAck();
+							rspAck(8);
 							if (m.msg) {
 
 								BCMessage::Index idx;
@@ -84,6 +85,7 @@ void AcquireConfigTask::doTask()
 								ConfigElement ce;
 								if (idx = m.getNextElement(&ce, idx)){
 									parseConfig(ce);
+									return;
 								}
 								else {
 									LOG_E("GetConfig failed with imcomplete data");
@@ -108,7 +110,7 @@ void AcquireConfigTask::doTask()
 void AcquireConfigTask::reqConfig()
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, 0, 0);
+	BCMessage msg = pkg.appendMessage(appID, 2, Vehicle::getInstance().getTBoxSequenceId());
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 
@@ -129,6 +131,7 @@ void AcquireConfigTask::parseConfig(ConfigElement& ce)
 			if (n->arglen == 2) {
 				u16 freq = Endian::toU16(&n->arg[0]);
 				Config::getInstance().setGpsIntervalInDriving(freq * 1000);
+				LOG_I("Location Run Frequency %d", freq);
 			}
 			else {
 				LOG_E("Location Run Frequency length wrong %d", n->arglen);
@@ -138,6 +141,7 @@ void AcquireConfigTask::parseConfig(ConfigElement& ce)
 			if (n->arglen == 2) {
 				u16 freq = Endian::toU16(&n->arg[0]);
 				Config::getInstance().setIgntActivationTimeOut(freq * 1000);
+				LOG_I("Location Stopped Frequency %d", freq);
 			}
 			else {
 				LOG_E("Location Stopped Frequency length wrong %d", n->arglen);
@@ -147,6 +151,7 @@ void AcquireConfigTask::parseConfig(ConfigElement& ce)
 			if (n->arglen == 2) {
 				u16 freq = Endian::toU16(&n->arg[0]);
 				Config::getInstance().setAbnormalMovingDuration(freq * 1000);
+				LOG_I("Abnormal Moving Video Duration %d", freq);
 			}
 			else {
 				LOG_E("Abnormal Moving Video Duration length wrong %d", n->arglen);
@@ -156,6 +161,7 @@ void AcquireConfigTask::parseConfig(ConfigElement& ce)
 			if (n->arglen == 1) {
 				u8 s = n->arg[0];
 				Config::getInstance().setAbnormalMovingDuration(s * 1000);
+				LOG_I("Abnormal Moving StartTimeLimit %d", s);
 			}
 			else {
 				LOG_E("Abnormal Moving StartTimeLimit length wrong %d", n->arglen);
@@ -165,6 +171,7 @@ void AcquireConfigTask::parseConfig(ConfigElement& ce)
 			if (n->arglen == 1) {
 				u8 s = n->arg[0];
 				Config::getInstance().setAbnormalMovingStartDistanceLimit(s);
+				LOG_I("Abnormal Moving StartDistanceLimit %d", s);
 			}
 			else {
 				LOG_E("Abnormal Moving StartDistanceLimit length wrong %d", n->arglen);
@@ -174,6 +181,7 @@ void AcquireConfigTask::parseConfig(ConfigElement& ce)
 			if (n->arglen == 1) {
 				u8 s = n->arg[0];
 				Config::getInstance().setAbnormalMovingStopTimeLimit(s * 1000);
+				LOG_I("Abnormal Moving StopTimeLimit %d", s);
 			}
 			else {
 				LOG_E("Abnormal Moving StartDistanceLimit length wrong %d", n->arglen);
@@ -183,6 +191,7 @@ void AcquireConfigTask::parseConfig(ConfigElement& ce)
 			if (n->arglen == 1) {
 				u8 s = n->arg[0];//durationEnterNormal
 				Config::getInstance().setAbnormalMovingStopDistanceLimit(s);
+				LOG_I("Abnormal Moving StopDistanceLimit %d", s);
 			}
 			else {
 				LOG_E("Abnormal Moving StartDistanceLimit length wrong %d", n->arglen);

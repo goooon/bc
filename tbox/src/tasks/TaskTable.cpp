@@ -1,4 +1,5 @@
 #include "./TaskTable.h"
+#include "../inc/Task.h"
 #include "./VKeyActiveTask.h"
 #include "./VKeyDeactiveTask.h"
 #include "./VehicleAuthTask.h"
@@ -26,7 +27,7 @@ static TaskTable tt[] = {
 	{ APPID_STATE_UNIGNITION_NTF,"APPID_STATE_UNIGNITION_NTF",UnIgnitStateUploadTask_NTF::Create},
 	{ APPID_STATE_UNIGNITION_DELAY_NTF,"APPID_STATE_UNIGNITION_DELAY_NTF" ,UnIgnitStateUploadTask_Delay_NTF::Create},
 	{ APPID_GPS_UPLOADING,"APPID_GPS_UPLOADING",GpsUploadTask::Create},
-	{ APPID_ACQUIRE_CONFIG,"APPID_ACQUIRE_CONFIG",0},
+	{ APPID_ACQUIRE_CONFIG,"APPID_ACQUIRE_CONFIG",AcquireConfigTask::Create},
 	{ APPID_STATE_IGNITION ,"APPID_STATE_IGNITION",IgnitStateUploadTask_NTF::Create },
 	{ APPID_PACKAGE_QUEUE,"APPID_PACKAGE_QUEUE" ,PackageQueueTask::Create},
 	{ APPID_STATE_UNIGNITION_VK,"APPID_STATE_UNIGNITION_VK",StateUploadTask::Create },

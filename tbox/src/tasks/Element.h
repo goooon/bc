@@ -50,6 +50,9 @@ struct ConfigElement
 		if (n == 0)return &node;
 		return (Node*)(n->arglen + &n->arg[0]);
 	}
+	ConfigElement() {
+		LOG_A(sizeof(ConfigElement) == 4, "size not right");
+	}
 }DECL_GNU_PACKED;
 
 struct TimeStamp

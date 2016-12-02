@@ -16,5 +16,6 @@ private:
 	void parseConfig(ConfigElement& ce);
 private:
 	Timestamp expire;
+	int tryTimes;
 };
 #endif // GUARD_AcquireConfigTask_h__
