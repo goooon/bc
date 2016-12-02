@@ -27,8 +27,8 @@ struct TriState {
 		Invalid_Mask = 1,
 		Valid_Off = 2,
 		Valid_On = 3,
-		Valid_Opened = 2,
-		Valid_Closed = 3
+		Valid_Closed = 2,
+		Valid_Opened = 3
 	};
 };
 struct Apparatus {

@@ -403,7 +403,7 @@ void Application::onAutoStateChanged(u32 param1, u32 param2, void* data)
 	if (prev == Vehicle::Authing && next == Vehicle::Authed) {
 		
 	}
-	else if (prev == Vehicle::Ignited && next == Vehicle::ReadyToIgnit){
+	else if (prev == Vehicle::Ignited && next == Vehicle::NotReady){
 		Timestamp ts;
 		ts.update(Config::getInstance().getStateUploadExpireTime());
 		schedule.replace(ts, TaskCreate(APPID_STATE_UNIGNITION_DELAY_NTF,0));

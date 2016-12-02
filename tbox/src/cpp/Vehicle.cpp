@@ -78,10 +78,10 @@ Operation::Result Vehicle::reqDeactiveDoor()
 
 bool Vehicle::hasDoorOpened()
 {
-	if (apparatus.vehiState.door.lh_front == TriState::Valid_Closed ||
-		apparatus.vehiState.door.rh_front == TriState::Valid_Closed ||
-		apparatus.vehiState.door.lh_rear == TriState::Valid_Closed ||
-		apparatus.vehiState.door.rh_rear == TriState::Valid_Closed) {
+	if (apparatus.vehiState.door.lh_front == TriState::Valid_Opened ||
+		apparatus.vehiState.door.rh_front == TriState::Valid_Opened ||
+		apparatus.vehiState.door.lh_rear == TriState::Valid_Opened ||
+		apparatus.vehiState.door.rh_rear == TriState::Valid_Opened) {
 		return true;
 	}
 	return false;
@@ -110,6 +110,13 @@ bool Vehicle::getGpsInfo(Vehicle::RawGps& info)
 
 bool Vehicle::isParkState()
 {
+	if (apparatus.vehiState.pedal.shift_type) {
+		if (apparatus.vehiState.pedal.shift_level != 1)return false;
+	}
+	else {
+		if (apparatus.vehiState.pedal.shift_level != 7)return false;
+	}
+
 	if (apparatus.vehiState.door.lh_front == TriState::Valid_Closed &&
 		apparatus.vehiState.door.rh_front == TriState::Valid_Closed &&
 		apparatus.vehiState.door.lh_rear == TriState::Valid_Closed &&
@@ -126,12 +133,7 @@ bool Vehicle::isParkState()
 		apparatus.vehiState.pedal.parking_break == TriState::Valid_On) {
 		return true;
 	}
-	if (apparatus.vehiState.pedal.shift_type) {
-		if (apparatus.vehiState.pedal.shift_level == 1)return true;
-	}
-	else {
-		if (apparatus.vehiState.pedal.shift_level == 7)return true;
-	}
+	
 	return false;
 }
 

@@ -65,6 +65,8 @@ public:
 		bcp_element_t *e = bcp_next_element(msg, (bcp_element_t*)idx);
 		if (e) {
 			if (ce) {
+				if (e->len == 0)return 0;
+				if (e->data == 0)return 0;
 				ce->count = e->data[0];
 				ce->node.index = e->data[1];
 				ce->node.arglen = e->data[2];
