@@ -278,6 +278,7 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 		broadcastEvent(e, param1, param2, data);
 		if (param1 == Vehicle::AuthIdentity && param2 == Vehicle::Authed) {
 			PostEvent(AppEvent::InsertTask, APPID_PACKAGE_QUEUE, 0, 0);
+			PostEvent(AppEvent::InsertTask, APPID_ACQUIRE_CONFIG, 0,0);
 		}
 		else if (param1 == Vehicle::DeactiveDoorResult) {
 			if (!Vehicle::getInstance().isIgnited()) {
@@ -400,7 +401,7 @@ void Application::onAutoStateChanged(u32 param1, u32 param2, void* data)
 	Vehicle::State prev = (Vehicle::State)param1;
 	Vehicle::State next = (Vehicle::State)param2;
 	if (prev == Vehicle::Authing && next == Vehicle::Authed) {
-		startTask(TaskCreate(APPID_ACQUIRE_CONFIG, 0), true);
+		
 	}
 	else if (prev == Vehicle::Ignited && next == Vehicle::ReadyToIgnit){
 		Timestamp ts;

@@ -2,6 +2,7 @@
 #define GUARD_PackageQueueTask_h__
 
 #include "./TaskTable.h"
+#include "../inc/Task.h"
 class PackageQueueTask : public Task {
 public:
 	static Task* Create(u32 appId);

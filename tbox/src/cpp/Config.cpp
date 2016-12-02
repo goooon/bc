@@ -36,7 +36,7 @@ bool Config::parse(int argc, char** argv)
 	doorActivationTimeOut = 5000;
 	igntActivationTimeOut = 5000;
 	mqttReConnInterval = 50000;
-	authRetryInterval = 5000;
+	authRetryInterval = 30000;
 
 	gpsIntervalStation = 1000 * 5;
 	gpsIntervalDriving = 1000 * 3;

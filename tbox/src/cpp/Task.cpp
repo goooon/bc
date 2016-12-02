@@ -111,10 +111,10 @@ ThreadEvent::WaitResult MessageQueue::wait(u32 millSecond)
 	return event.wait(millSecond);
 }
 
-void Task::rspAck()
+void Task::rspAck(u32 stepid)
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, ACK_STEP_ID, seqID);
+	BCMessage msg = pkg.appendMessage(appID, stepid, seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(0);
@@ -122,7 +122,7 @@ void Task::rspAck()
 		LOG_E("rspAck failed");
 	}
 	else {
-		LOG_I("rspAck(%d,%d,%lld) ---> TSP",appID,ACK_STEP_ID,seqID);
+		LOG_I("rspAck(%d,%d,0x%llx) ---> TSP",appID,ACK_STEP_ID,seqID);
 	}
 }
 

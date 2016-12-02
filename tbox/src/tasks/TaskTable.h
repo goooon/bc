@@ -1,7 +1,9 @@
 #ifndef GUARD_TaskTable_h__
 #define GUARD_TaskTable_h__
-#include "../inc/Task.h"
 
+#include "../inc/dep.h"
+class Task;
+typedef struct bcp_packet_s bcp_packet_t;
 #define APPID_TEST 0xffffffff
 #define APPID_AUTHENTICATION     0
 #define APPID_ACQUIRE_CONFIG     7
