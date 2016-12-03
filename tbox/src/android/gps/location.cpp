@@ -241,6 +241,7 @@ static void gps_notify_thread(void *arg)
 		Thread_unlock_mutex(mutex);
 		Thread_wait_sem(sem, 2000);
 		notify();
+		Thread_lock_mutex(mutex);
 	}
 	to_stop = 2;
 	Thread_unlock_mutex(mutex);
