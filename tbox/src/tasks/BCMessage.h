@@ -65,6 +65,8 @@ public:
 		bcp_element_t *e = bcp_next_element(msg, (bcp_element_t*)idx);
 		if (e) {
 			if (ce) {
+				if (e->len == 0)return 0;
+				if (e->data == 0)return 0;
 				ce->count = e->data[0];
 				ce->node.index = e->data[1];
 				ce->node.arglen = e->data[2];
@@ -88,7 +90,9 @@ public:
 		if (sizeof(state) != sizeof(state.door) + sizeof(state.pedal) + sizeof(state.window)) {
 			LOG_E("struct not right for VehicleState");
 		}
-		bcp_element_t *e = bcp_element_create((u8*)&state, sizeof(Apparatus::VehicleState));
+		Apparatus::VehicleState sending;
+		state.toPackage(sending);
+		bcp_element_t *e = bcp_element_create((u8*)&sending, sizeof(Apparatus::VehicleState));
 		bcp_element_append(msg, e);
 		return true;
 	}

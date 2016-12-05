@@ -2157,7 +2157,7 @@ struct ExampleAppConsole : public me::Tracer
 		ImGui::Text("Door Valid:"); ImGui::SameLine();
 		s = vs.door.lh_front & 2 ? true : false;
 		if (ImGui::Checkbox("lfd", &s)) {
-			s ? vs.door.lh_front |= 2 : vs.door.lh_front &= ~2;
+			vs.door.lh_front_valid = s;
 		}
 		ImGui::SameLine();
 		s = vs.door.rh_front & 2 ? true : false;
@@ -2648,74 +2648,86 @@ struct VehicleConsole : public me::Tracer
 		Apparatus::VehicleState& vs = Vehicle::getInstance().getApparatus().vehiState;
 		ImGui::Text("Door :"); ImGui::SameLine();
 		s = vs.door.lh_front & 1;
+		s = !s;
 		if (ImGui::Checkbox("lfd", &s)) {
-			s ? vs.door.lh_front |= 1 : vs.door.lh_front &= ~1;
+			!s ? vs.door.lh_front |= 1 : vs.door.lh_front &= ~1;
 		}
 		ImGui::SameLine();
 		s = vs.door.rh_front & 1;
+		s = !s;
 		if (ImGui::Checkbox("rfd", &s)) {
 			//vs.door.rh_front = s;
-			s ? vs.door.rh_front |= 1 : vs.door.rh_front &= ~1;
+			!s ? vs.door.rh_front |= 1 : vs.door.rh_front &= ~1;
 		}
 		ImGui::SameLine();
 		s = vs.door.lh_rear & 1;
+		s = !s;
 		if (ImGui::Checkbox("lrd", &s)) {
 			//vs.door.lh_rear = s;
-			s ? vs.door.lh_rear |= 1 : vs.door.lh_rear &= ~1;
+			!s ? vs.door.lh_rear |= 1 : vs.door.lh_rear &= ~1;
 		}
 		ImGui::SameLine();
 		s = vs.door.rh_rear & 1;
+		s = !s;
 		if (ImGui::Checkbox("rrd", &s)) {
 			//vs.door.rh_rear = s;
-			s ? vs.door.rh_rear |= 1 : vs.door.rh_rear &= ~1;
+			!s ? vs.door.rh_rear |= 1 : vs.door.rh_rear &= ~1;
 		}
 		ImGui::SameLine();
 		s = vs.door.ctl_lock & 1;
+		s = !s;
 		if (ImGui::Checkbox("ctrl", &s)) {
 			//vs.door.ctl_lock = s;
-			s ? vs.door.ctl_lock |= 1 : vs.door.ctl_lock &= ~1;
+			!s ? vs.door.ctl_lock |= 1 : vs.door.ctl_lock &= ~1;
 		}
 		ImGui::SameLine();
 		s = vs.door.hood & 1;
+		s = !s;
 		if (ImGui::Checkbox("hood", &s)) {
 			//vs.door.hood = s;
-			s ? vs.door.hood |= 1 : vs.door.hood &= ~1;
+			!s ? vs.door.hood |= 1 : vs.door.hood &= ~1;
 		}
 		ImGui::SameLine();
 		s = vs.door.luggage_door & 1;
+		s = !s;
 		if (ImGui::Checkbox("lugd", &s)) {
 			//vs.door.luggage_door = s;
-			s ? vs.door.luggage_door |= 1 : vs.door.luggage_door &= ~1;
+			!s ? vs.door.luggage_door |= 1 : vs.door.luggage_door &= ~1;
 		}
 		ImGui::SameLine();
 		s = vs.door.fuellid & 1;
+		s = !s;
 		if (ImGui::Checkbox("pd", &s)) {
 			//vs.door.fuellid = s;
-			s ? vs.door.fuellid |= 1 : vs.door.fuellid &= ~1;
+			!s ? vs.door.fuellid |= 1 : vs.door.fuellid &= ~1;
 		}
 		ImGui::Text("Wind :"); ImGui::SameLine();
 		s = vs.window.lh_front & 1;
+		s = !s;
 		if (ImGui::Checkbox("lfw", &s)) {
 			//vs.window.lh_front = s;
-			s ? vs.window.lh_front |= 1 : vs.window.lh_front &= ~1;
+			!s ? vs.window.lh_front |= 1 : vs.window.lh_front &= ~1;
 		}
 		ImGui::SameLine();
 		s = vs.window.rh_front & 1;
+		s = !s;
 		if (ImGui::Checkbox("rfw", &s)) {
 			//vs.window.rh_front = s;
-			s ? vs.window.rh_front |= 1 : vs.window.rh_front &= ~1;
+			!s ? vs.window.rh_front |= 1 : vs.window.rh_front &= ~1;
 		}
 		ImGui::SameLine();
 		s = vs.window.lh_rear & 1;
+		s = !s;
 		if (ImGui::Checkbox("lrw", &s)) {
 			//vs.window.lh_rear = s;
-			s ? vs.window.lh_rear |= 1 : vs.window.lh_rear &= ~1;
+			!s ? vs.window.lh_rear |= 1 : vs.window.lh_rear &= ~1;
 		}
 		ImGui::SameLine();
 		s = vs.window.rh_rear & 1;
+		s = !s;
 		if (ImGui::Checkbox("rrw", &s)) {
 			//vs.window.rh_rear = s;
-			s ? vs.window.rh_rear |= 1 : vs.window.rh_rear &= ~1;
+			!s ? vs.window.rh_rear |= 1 : vs.window.rh_rear &= ~1;
 		}
 
 		int g = vs.pedal.shift_level;

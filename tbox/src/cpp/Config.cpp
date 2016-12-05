@@ -165,9 +165,10 @@ bool Config::parse(int argc, char** argv)
 	isServer = false;
 #endif
 	char topic[256];
+	char prev[] = { "mqtt/vehicle/" };
 	memset(topic, 0, 256);
-	strncpy(topic, "mqtt/vehicle/", sizeof(topic));
-	strcat(topic, vin);
+	strncpy(topic,prev , sizeof(topic));
+	memcpy(topic + sizeof(prev) - 1, vin,sizeof(vin));
 	if (isServer) {
 		strncpy(pub_topic, topic, sizeof(pub_topic));
 		strncpy(sub_topic, "mqtt/server", sizeof(sub_topic));
