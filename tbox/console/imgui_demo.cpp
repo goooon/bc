@@ -2157,7 +2157,7 @@ struct ExampleAppConsole : public me::Tracer
 		ImGui::Text("Door Valid:"); ImGui::SameLine();
 		s = vs.door.lh_front & 2 ? true : false;
 		if (ImGui::Checkbox("lfd", &s)) {
-			s ? vs.door.lh_front |= 2 : vs.door.lh_front &= ~2;
+			vs.door.lh_front_valid = s;
 		}
 		ImGui::SameLine();
 		s = vs.door.rh_front & 2 ? true : false;

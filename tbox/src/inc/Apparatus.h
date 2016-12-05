@@ -24,7 +24,7 @@
 #endif
 struct TriState {
 	enum {
-		Invalid_Mask = 1,
+		Invalid_Mask = 0,
 		Valid_Off = 2,
 		Valid_On = 3,
 		Valid_Closed = 2,
@@ -46,6 +46,27 @@ struct Apparatus {
 	{//各个车门打开的状态
 		union {
 			struct {
+				DEF_BIT1(lh_front_opened);     //左前门 on/off
+				DEF_BIT1(lh_front_valid);     //左前门 on/off
+				DEF_BIT1(rh_front_opened);	    //右前门 on/off
+				DEF_BIT1(rh_front_valid);	    //右前门 on/off
+				DEF_BIT1(lh_rear_opened);      //左后门 on/off
+				DEF_BIT1(lh_rear_valid);      //左后门 on/off
+				DEF_BIT1(rh_rear_opened);      //右后门 on/off
+				DEF_BIT1(rh_rear_valid);       //右后门 on/off
+
+				DEF_BIT1(ctl_lock_opened);	   //中控锁 on/off
+				DEF_BIT1(ctl_lock_valid);	   //中控锁 on/off
+				DEF_BIT1(hood_opened);		   //引擎盖 on/off
+				DEF_BIT1(hood_valid);		   //引擎盖 on/off
+				DEF_BIT1(luggage_door_opened); //后备箱 on/off
+				DEF_BIT1(luggage_door_valid);   //后备箱 on/off
+				DEF_BIT1(fuellid_opened);	    //充电口 on/off
+				DEF_BIT1(fuellid_valid);	    //充电口 on/off
+				DEF_BIT8(reserved1);            //保留以后使用
+				DEF_BIT8(reserved2);            //保留以后使用
+			}DECL_GNU_PACKED;
+			struct {
 				DEF_BIT2(lh_front);     //左前门 on/off
 				DEF_BIT2(rh_front);	    //右前门 on/off
 				DEF_BIT2(lh_rear);      //左后门 on/off
@@ -54,9 +75,7 @@ struct Apparatus {
 				DEF_BIT2(hood);		    //引擎盖 on/off
 				DEF_BIT2(luggage_door); //后备箱 on/off
 				DEF_BIT2(fuellid);	    //充电口 on/off
-				DEF_BIT8(reserved1);    //保留以后使用
-				DEF_BIT8(reserved2);    //保留以后使用
-			}DECL_GNU_PACKED;
+			};
 			u32 doors;
 		}DECL_GNU_PACKED;
 		Door() {
@@ -75,14 +94,24 @@ struct Apparatus {
 	{//车窗状态
 		union {
 			struct {
-				DEF_BIT2(lh_front); 	//左前车窗 on/off
-				DEF_BIT2(rh_front); 	//右前车窗 on/off
-				DEF_BIT2(lh_rear); 		//左后车窗 on/off
-				DEF_BIT2(rh_rear); 		//右后车窗 on/off
+				DEF_BIT1(lh_front_opened); 	//左前车窗 on/off
+				DEF_BIT1(lh_front_valid); 	//左前车窗 on/off
+				DEF_BIT1(rh_front_opened); 	//右前车窗 on/off
+				DEF_BIT1(rh_front_valid); 	//右前车窗 on/off
+				DEF_BIT1(lh_rear_opened); 		//左后车窗 on/off
+				DEF_BIT1(lh_rear_valid); 		//左后车窗 on/off
+				DEF_BIT1(rh_rear_opened); 		//右后车窗 on/off
+				DEF_BIT1(rh_rear_valid); 		//右后车窗 on/off
 				DEF_BIT4(sun_roof); 	//车顶车窗 档位 0-15 共16个档位
 				DEF_BIT4(reserved);		//保留以后使用
 				DEF_BIT8(reserved1);    //保留以后使用
 				DEF_BIT8(reserved2);    //保留以后使用
+			}DECL_GNU_PACKED;
+			struct {
+				DEF_BIT2(lh_front); 	//左前车窗 on/off
+				DEF_BIT2(rh_front); 	//右前车窗 on/off
+				DEF_BIT2(lh_rear); 		//左后车窗 on/off
+				DEF_BIT2(rh_rear); 		//右后车窗 on/off
 			}DECL_GNU_PACKED;
 			u32 winds;
 		};
@@ -140,6 +169,23 @@ struct Apparatus {
 		Pedal pedal;				//驾驶操作状态
 		VehicleState() {
 			LOG_A(sizeof(VehicleState) == sizeof(Door) + sizeof(Window) + sizeof(Pedal), "size wrong for VehicleState %d", sizeof(VehicleState));
+		}
+		void toPackage(VehicleState& s) {
+			s = *this;
+			s.door.lh_front = door.lh_front_valid ? door.lh_front : TriState::Invalid_Mask;
+			s.door.rh_front = door.rh_front_valid ? door.rh_front : TriState::Invalid_Mask;
+			s.door.lh_rear = door.lh_rear_valid ? door.lh_rear : TriState::Invalid_Mask;
+			s.door.rh_rear = door.rh_rear_valid ? door.rh_rear : TriState::Invalid_Mask;
+
+			s.door.ctl_lock = door.ctl_lock_valid ? door.ctl_lock : TriState::Invalid_Mask;
+			s.door.hood = door.hood_valid ? door.hood : TriState::Invalid_Mask;
+			s.door.luggage_door = door.luggage_door_valid ? door.luggage_door : TriState::Invalid_Mask;
+			s.door.fuellid = door.fuellid_valid ? door.fuellid : TriState::Invalid_Mask;
+
+			s.window.lh_front = window.lh_front_valid ? window.lh_front : TriState::Invalid_Mask;
+			s.window.rh_front = window.rh_front_valid ? window.rh_front : TriState::Invalid_Mask;
+			s.window.lh_rear = window.lh_rear_valid ? window.lh_rear : TriState::Invalid_Mask;
+			s.window.rh_rear = window.rh_rear_valid ? window.rh_rear : TriState::Invalid_Mask;
 		}
 	}DECL_GNU_PACKED;
 	struct AirCondition
