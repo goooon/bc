@@ -447,7 +447,7 @@ bool MqttClient::onRecvPackage(void* data, int len)
 					//ignore ack from tsp
 				}
 				else {
-					task = TaskCreate(applicationID, p);
+					task = TaskCreate(applicationID,stepId,p);
 					if (task) {
 						::PostEvent(AppEvent::InsertTask, applicationID, 0, task);
 						package_handled = true;

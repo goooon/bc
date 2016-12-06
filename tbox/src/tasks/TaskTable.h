@@ -21,6 +21,22 @@ typedef struct bcp_packet_s bcp_packet_t;
 #define APPID_SHAKE_NTF             13
 #define APPID_STATE_UPLOADING_HK    16
 
+
+#define STEPID_VKEY_IGNITION 2
+#define STEPID_STATE_UNIGNITION_NTF 5
+#define STEPID_STATE_UNIGNITION_DELAY_NTF 5
+#define STEPID_AUTHENTICATION 0
+#define STEPID_VKEY_ACTIVITION 2
+#define STEPID_VKEY_DEACTIVITION 2
+#define STEPID_SHAKE_NTF 2
+#define STEPID_GPS_UPLOADING 2
+#define STEPID_ACQUIRE_CONFIG 2
+#define STEPID_STATE_IGNITION 2
+#define STEPID_STATE_UNIGNITION_VK 2
+#define STEPID_PACKAGE_QUEUE 0
+#define STEPID_GPS_UPLOADING_NTF_CONST 5
+#define STEPID_VIS_GPS 0
+
 /*
  * vechile inter-connect system
  */
@@ -33,5 +49,5 @@ typedef struct bcp_packet_s bcp_packet_t;
 #define ACK_STEP_ID    3
 #define NTF_STEP_ID    5
 #define TSP_ACK_STEP_ID    8
-Task* TaskCreate(u32 appId, bcp_packet_t* pkg);
+Task* TaskCreate(u32 appId,u32 stepId, bcp_packet_t* pkg);
 #endif // GUARD_TaskTable_h__

@@ -39,10 +39,10 @@ bool Application::init(int argc, char** argv)
 	Thread::startThread(this);
 	mqtt.onDebugCommand("PROTOCOL");
 	
-	PostEvent(AppEvent::InsertTask, 0, 0, TaskCreate(APPID_SHAKE_NTF, 0));
+	PostEvent(AppEvent::InsertTask, 0, 0, TaskCreate(APPID_SHAKE_NTF, STEPID_SHAKE_NTF, 0));
 	if (config.isGpsTaskAtStartup()) {
 		LOG_I("start GPS task.");
-		PostEvent(AppEvent::InsertTask, 0, 0, TaskCreate(APPID_GPS_UPLOADING_NTF_CONST,0));
+		PostEvent(AppEvent::InsertTask, 0, 0, TaskCreate(APPID_GPS_UPLOADING_NTF_CONST, STEPID_GPS_UPLOADING_NTF_CONST,0));
 	}
 	if (config.isStartChannels()) {
 		channels_init();
@@ -136,19 +136,19 @@ bool Application::onDebugCommand(const char* cmd)
 		return true;
 	}
 	if (!strcmp(cmd, "reqDeact")) {
-		Task* p = TaskCreate(APPID_VKEY_DEACTIVITION, 0);// bc_new VKeyDeavtiveTask();
+		Task* p = TaskCreate(APPID_VKEY_DEACTIVITION, STEPID_VKEY_DEACTIVITION, 0);// bc_new VKeyDeavtiveTask();
 		p->handleDebug();
 		PostEvent(AppEvent::InsertTask, 0, 0, p);
 		return true;
 	}
 	if (!strcmp(cmd, "reqActive")) {
-		Task* p = TaskCreate(APPID_VKEY_ACTIVITION,0); //bc_new VKeyActiveTask();
+		Task* p = TaskCreate(APPID_VKEY_ACTIVITION, STEPID_VKEY_ACTIVITION,0); //bc_new VKeyActiveTask();
 		p->handleDebug();
 		PostEvent(AppEvent::InsertTask, 0, 0, p);
 		return true;
 	}
 	if (!strcmp(cmd, "reqReady")) {
-		Task* p = TaskCreate(APPID_VKEY_IGNITION, 0); //bc_new VKeyReadyToIgnitionTask();
+		Task* p = TaskCreate(APPID_VKEY_IGNITION, STEPID_VKEY_IGNITION, 0); //bc_new VKeyReadyToIgnitionTask();
 		p->handleDebug();
 		PostEvent(AppEvent::InsertTask, 0, 0, p);
 		return true;
@@ -243,7 +243,7 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 			startTask((Task*)data, true);
 		}
 		else {
-			startTask(TaskCreate(param1, 0), true);
+			startTask(TaskCreate(param1, param2,0), true);
 		}
 		break;
 	case AppEvent::AbortTasks:
@@ -277,8 +277,8 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 		Vehicle::getInstance().onEvent(param1, param2, 0);
 		broadcastEvent(e, param1, param2, data);
 		if (param1 == Vehicle::AuthIdentity && param2 == Vehicle::Authed) {
-			PostEvent(AppEvent::InsertTask, APPID_PACKAGE_QUEUE, 0, 0);
-			PostEvent(AppEvent::InsertTask, APPID_ACQUIRE_CONFIG, 0,0);
+			PostEvent(AppEvent::InsertTask, APPID_PACKAGE_QUEUE, STEPID_PACKAGE_QUEUE, 0);
+			PostEvent(AppEvent::InsertTask, APPID_ACQUIRE_CONFIG, STEPID_ACQUIRE_CONFIG,0);
 		}
 		else if (param1 == Vehicle::DeactiveDoorResult) {
 			if (!Vehicle::getInstance().isIgnited()) {
@@ -293,7 +293,7 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 			schedule.remove(APPID_STATE_UNIGNITION_DELAY_NTF);
 		}
 		else if (param1 == Vehicle::UnIgnt) {
-			startTask(TaskCreate(APPID_STATE_UNIGNITION_NTF, 0), true);
+			startTask(TaskCreate(APPID_STATE_UNIGNITION_NTF, STEPID_STATE_UNIGNITION_NTF, 0), true);
 		}
 		break;
 	case AppEvent::InsertSchedule:
@@ -375,7 +375,7 @@ void Application::onMqttStateChanged(u32 param1, u32 param2, void* data)
 	LOG_I("onMqttStateChanged(%d,%d,0x%p)",param1,param2,data);
 	if (param2 == MqttClient::Subscribed) {
 		if (!config.isServer) { 
-			startTask(TaskCreate(APPID_AUTHENTICATION,0), false);
+			startTask(TaskCreate(APPID_AUTHENTICATION, STEPID_AUTHENTICATION,0), false);
 		}
 	}
 	else if (param2 == MqttClient::Disconnected) {
@@ -406,11 +406,11 @@ void Application::onAutoStateChanged(u32 param1, u32 param2, void* data)
 	else if (prev == Vehicle::Ignited && next == Vehicle::NotReady){
 		Timestamp ts;
 		ts.update(Config::getInstance().getStateUploadExpireTime());
-		schedule.replace(ts, TaskCreate(APPID_STATE_UNIGNITION_DELAY_NTF,0));
+		schedule.replace(ts, TaskCreate(APPID_STATE_UNIGNITION_DELAY_NTF, STEPID_STATE_UNIGNITION_DELAY_NTF,0));
 //		startTask(TaskCreate(APPID_VKEY_UNIGNITION, 0), true);
 	}
 	else if (prev == Vehicle::ReadyToIgnit && next == Vehicle::Ignited) {
-		startTask(TaskCreate(APPID_STATE_IGNITION, 0), true);
+		startTask(TaskCreate(APPID_STATE_IGNITION, STEPID_STATE_IGNITION,0), true);
 	}
 }
 

@@ -386,7 +386,7 @@ bool GpsUploadTask_NTF::ntfGps(GPSDataQueue::GPSInfo& info)
 bool GpsUploadTask_NTF::ntfEnterAbnormal()
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(APPID_GPS_ABNORMAL_MOVE, 1, seqID);
+	BCMessage msg = pkg.appendMessage(APPID_GPS_ABNORMAL_MOVE, 1, Vehicle::getInstance().getTBoxSequenceId());
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendAutoAlarm(1);//start
@@ -403,7 +403,7 @@ bool GpsUploadTask_NTF::ntfEnterAbnormal()
 bool GpsUploadTask_NTF::ntfExitAbnormal()
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(APPID_GPS_ABNORMAL_MOVE, NTF_STEP_ID, seqID);
+	BCMessage msg = pkg.appendMessage(APPID_GPS_ABNORMAL_MOVE, NTF_STEP_ID, Vehicle::getInstance().getTBoxSequenceId());
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendAutoAlarm(2);//stop

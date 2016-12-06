@@ -110,7 +110,7 @@ void AcquireConfigTask::doTask()
 void AcquireConfigTask::reqConfig()
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, 2, Vehicle::getInstance().getTBoxSequenceId());
+	BCMessage msg = pkg.appendMessage(appID, STEPID_ACQUIRE_CONFIG, Vehicle::getInstance().getTBoxSequenceId());
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 

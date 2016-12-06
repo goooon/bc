@@ -16,8 +16,8 @@ VehicleShakeTask_NTF::VehicleShakeTask_NTF(u32 appId):Task(appId,true)
 bool VehicleShakeTask_NTF::ntfShaked()
 {
 	BCPackage pkg;
-	BCMessage msg = pkg.appendMessage(appID, 2, Vehicle::getInstance().getTBoxSequenceId());
-	LOG_I("ntfShaked(appId:%d,setpId:%d,seqId:%lld)", appID, 2, seqID);
+	BCMessage msg = pkg.appendMessage(appID, STEPID_SHAKE_NTF, Vehicle::getInstance().getTBoxSequenceId());
+	LOG_I("ntfShaked(appId:%d,setpId:%d,seqId:%lld)", appID, STEPID_SHAKE_NTF, seqID);
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	if (!pkg.post(Config::getInstance().pub_topic, Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut(), true)) {
@@ -92,7 +92,7 @@ void VehicleShakeTask_NTF::doTask()
 
 bool VehicleShakeTask_NTF::isShakingOk()
 {
-	if (Vehicle::getInstance().isDriving())return false;
-	if (Vehicle::getInstance().hasDoorOpened())return false;
-	return true;
+	if (Vehicle::getInstance().isDriving())return true;
+	if (Vehicle::getInstance().hasDoorOpened())return true;
+	return false;
 }

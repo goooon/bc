@@ -17,11 +17,11 @@ unsigned int last_error(void)
 
 bool onClientTest(char* cmd) {
 	if (!strcmp("auth", cmd)) {
-		PostEvent(AppEvent::InsertTask, 0, 0, TaskCreate(APPID_AUTHENTICATION, 0));
+		PostEvent(AppEvent::InsertTask, 0, 0, TaskCreate(APPID_AUTHENTICATION, STEPID_AUTHENTICATION, 0));
 		return true;
 	}
 	if (!strcmp(cmd, "ntfState")) {
-		::PostEvent(AppEvent::InsertTask, APPID_STATE_UNIGNITION_DELAY_NTF, 0, 0);
+		::PostEvent(AppEvent::InsertTask, APPID_STATE_UNIGNITION_DELAY_NTF, STEPID_STATE_UNIGNITION_DELAY_NTF, 0);
 		return true;
 	}
 	if (!strcmp(cmd, "ActiveTest")) {

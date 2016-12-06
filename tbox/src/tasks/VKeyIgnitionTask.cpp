@@ -29,7 +29,7 @@ void VKeyReadyToIgnitionTask::doTask()
 		}
 		else if (wr == ThreadEvent::EventOk) {
 			MessageQueue::Args args;
-			if (msgQueue.out(args)) {
+			while (msgQueue.out(args)) {
 				if (args.e == AppEvent::AutoEvent) {
 					if (args.param1 == Vehicle::ActiveDoorResult) {
 						if (!args.param2) {
@@ -61,6 +61,7 @@ void VKeyReadyToIgnitionTask::doTask()
 					return;
 				}
 				else if (args.e == AppEvent::PackageArrived) {
+					LOG_I("MQTT PACKAGE ARRIVED %d %d",args.param1,args.param2);
 					if (args.param1 == Package::Mqtt) {
 						//check stepid first
 						BCPackage pkg(args.data);
