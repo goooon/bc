@@ -16,6 +16,7 @@ Vehicle::Vehicle() :authed(Unauthed),state(Disabled),movingInAbnormal(false)
 	gpsValid = false;
 	isVKey = false;
 	seqId = (u64)(1ULL << 63) + 1;
+	driving = false;
 }
 
 Operation::Result Vehicle::prepareVKeyIgnition(bool ready)

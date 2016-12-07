@@ -105,9 +105,6 @@
     <ClInclude Include="..\src\tasks\ErrorCode.h">
       <Filter>src\tasks</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\tasks\Element.h">
-      <Filter>src\tasks</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\tasks\BCMessage.h">
       <Filter>src\tasks</Filter>
     </ClInclude>
@@ -176,6 +173,9 @@
     </ClInclude>
     <ClInclude Include="..\src\tasks\VehicleShakeTask.h">
       <Filter>src\tasks\a11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\Element.h">
+      <Filter>src\tasks</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

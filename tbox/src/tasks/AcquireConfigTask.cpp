@@ -82,7 +82,7 @@ void AcquireConfigTask::doTask()
 									LOG_E("GetConfig failed with imcomplete data");
 									return;
 								}
-								ConfigElement ce;
+								ConfigElement* ce;
 								if (idx = m.getNextElement(&ce, idx)){
 									parseConfig(ce);
 									return;
@@ -120,9 +120,10 @@ void AcquireConfigTask::reqConfig()
 	}
 }
 
-void AcquireConfigTask::parseConfig(ConfigElement& ce)
+void AcquireConfigTask::parseConfig(ConfigElement* cee)
 {
 	ConfigElement::Node* n = 0;
+	ConfigElement& ce = *cee;
 	for (int i = 0; i < ce.count; ++i) {
 		n = ce.getNextNode(n);
 		switch (n->index)
@@ -198,6 +199,7 @@ void AcquireConfigTask::parseConfig(ConfigElement& ce)
 			}
 			break;
 		default:
+			LOG_E("unknow index command %d", n->index);
 			break;
 		}
 	}

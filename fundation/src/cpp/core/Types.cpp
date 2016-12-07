@@ -49,7 +49,7 @@ u16 Endian::toU16(u8 v[2])
 #else
 	u16 ret = v[0] | v[1] << 8;
 #endif
-	return 0;
+	return ret;
 }
 
 f32 Endian::toF32(u8 v[4])

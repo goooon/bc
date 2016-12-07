@@ -376,6 +376,8 @@ void Application::onMqttStateChanged(u32 param1, u32 param2, void* data)
 	if (param2 == MqttClient::Subscribed) {
 		if (!config.isServer) { 
 			startTask(TaskCreate(APPID_AUTHENTICATION, STEPID_AUTHENTICATION,0), false);
+
+			PostEvent(AppEvent::InsertTask, APPID_ACQUIRE_CONFIG, STEPID_ACQUIRE_CONFIG, 0);
 		}
 	}
 	else if (param2 == MqttClient::Disconnected) {

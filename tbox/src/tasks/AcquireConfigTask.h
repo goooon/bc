@@ -13,7 +13,7 @@ protected:
 	virtual void doTask();
 private:
 	void reqConfig();
-	void parseConfig(ConfigElement& ce);
+	void parseConfig(ConfigElement* ce);
 private:
 	Timestamp expire;
 	int tryTimes;

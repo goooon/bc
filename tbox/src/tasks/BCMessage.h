@@ -60,17 +60,14 @@ public:
 		}
 		return 0;
 	}
-	Index getNextElement(ConfigElement* ce, Index idx) {
+	Index getNextElement(ConfigElement** ce, Index idx) {
 		if (idx == 0)return 0;
 		bcp_element_t *e = bcp_next_element(msg, (bcp_element_t*)idx);
 		if (e) {
 			if (ce) {
 				if (e->len == 0)return 0;
 				if (e->data == 0)return 0;
-				ce->count = e->data[0];
-				ce->node.index = e->data[1];
-				ce->node.arglen = e->data[2];
-				ce->node.arg[0] = e->data[3];
+				*ce = (ConfigElement*)&e->data[0];
 			}
 			return e;
 		}
@@ -96,36 +93,7 @@ public:
 		bcp_element_append(msg, e);
 		return true;
 	}
-	bool appendIdentity() {
-		Identity identity;
-#if BC_TARGET == BC_TARGET_WIN
-#pragma pack(push, 1)
-#endif
-		struct IDS {
-			VehicleDesc desc;
-			Authentication ath;
-		}DECL_GNU_PACKED;
-#if BC_TARGET == BC_TARGET_WIN
-#pragma pack(pop)
-#endif
-		IDS ids;
-		//AuthToken = CRC32(Vehicle Descriptor(见4.4.1)(VIN + TBox Serial + IMEI + ICCID) + Authentication(见4.4.5)(PID))
-		UByte4 dw; 
-		dw.dw = calc_crc32((u8*)&ids,sizeof(ids));
-		
-		identity.token.b0 = dw.b3;
-		identity.token.b1 = dw.b2;
-		identity.token.b2 = dw.b1;
-		identity.token.b3 = dw.b0;
-		
-		u32 tmp = Config::getInstance().getAuthToken();
-		//LOG_I("TBOX Identity authToken calced 0x%x(%u) Recevied is 0x%x", identity.token.dw, identity.token.dw,tmp);
-
-		identity.token.dw = tmp;
-		bcp_element_t *e = bcp_element_create((u8*)&identity, sizeof(Identity));
-		bcp_element_append(msg, e);
-		return true;
-	}
+	bool appendIdentity();
 	//
 	//ec 0:succ else ref 云蜂通信协议
 	bool appendErrorElement(u8 ec) {

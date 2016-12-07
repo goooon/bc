@@ -128,7 +128,7 @@ public:
 	//u32 getAbnormalMovingInterval() {
 	//	return abnormalMovingInterval;
 	//}
-	u32 getGpsInterval();
+	u32  getGpsInterval();
 	u32  getAuthToken() { return authToken; }
 	void setAuthToken(u32 t) { authToken = t; }
 	bool isStartChannels() { return startChannel; }

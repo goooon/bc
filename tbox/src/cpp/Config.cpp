@@ -199,6 +199,27 @@ bool Config::parse(int argc, char** argv)
 	memcpy(tmps, iccid, sizeof(iccid));
 	tmps[sizeof(iccid)] = 0;
 	LOG_I("tmps: %s", tmps);
+
+#if BC_TARGET == BC_TARGET_WIN
+#pragma pack(push, 1)
+#endif
+	struct IDS {
+		VehicleDesc desc;
+		Authentication ath;
+	}DECL_GNU_PACKED;
+#if BC_TARGET == BC_TARGET_WIN
+#pragma pack(pop)
+#endif
+	IDS ids;
+	UByte4 dw;
+	dw.dw = calc_crc32((u8*)&ids, sizeof(ids));
+	UByte4 token;
+	token.b0 = dw.b3;
+	token.b1 = dw.b2;
+	token.b2 = dw.b1;
+	token.b3 = dw.b0;
+
+	authToken = token.dw;
 	return true;
 }
 
