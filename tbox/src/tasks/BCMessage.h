@@ -77,6 +77,10 @@ public:
 		if (msg == 0)return -1;
 		return msg->hdr.id;
 	}
+	u32 getStepId() {
+		if (msg == 0)return -1;
+		return msg->hdr.step_id;
+	}
 	bool appendVehicleDesc() {
 		VehicleDesc desc;
 		bcp_element_t *e = bcp_element_create((u8*)&desc, sizeof(VehicleDesc));

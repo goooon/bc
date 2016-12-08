@@ -59,7 +59,6 @@ void VehicleAuthTask::doTask()
 								BCMessage::Index idx;
 								Identity at;
 								if (idx = m.getFirstElement(&at)) {
-									//Config::getInstance().setAuthToken(at.token.dw);
 									u32 code = Config::getInstance().getAuthToken();
 									if (code != at.token.dw) {
 										LOG_E("Auth failed with error token 0x%x != calected 0x%x",code);

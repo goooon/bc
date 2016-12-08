@@ -49,7 +49,7 @@ void AcquireConfigTask::doTask()
 						BCPackage pkg((BCPackage*)data);
 						BCMessage msg(0);
 						BCMessage m = pkg.nextMessage(msg);
-						if (m.getApplicationId() == APPID_ACQUIRE_CONFIG)
+						if (m.getApplicationId() == APPID_ACQUIRE_CONFIG && m.getStepId() == 5)
 						{
 							rspAck(8);
 							if (m.msg) {
@@ -124,6 +124,10 @@ void AcquireConfigTask::parseConfig(ConfigElement* cee)
 {
 	ConfigElement::Node* n = 0;
 	ConfigElement& ce = *cee;
+	if (ce.count == 0) {
+		LOG_I("Config got 0 configs");
+		return;
+	}
 	for (int i = 0; i < ce.count; ++i) {
 		n = ce.getNextNode(n);
 		switch (n->index)
