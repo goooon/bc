@@ -38,6 +38,8 @@ public:
 		SensorEvent,			//sensor event,param1 is Sensor::Event
 
 		PackageArrived,			//param1 is Package::Type,data should be refferred to Package::Type,
+		//ReqCheckState,			//param1 is itemcount,data is itemlist
+		//RspCheckState,			//param
 		TestEvent				//for only debug test
 	};
 };

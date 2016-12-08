@@ -15,14 +15,16 @@ typedef signed int s32;
 
 typedef enum
 {
-	sharpspeedup_event,
+	sharpspeedup_event = 1,
 	sharpslowdown_event,
 	sharpbrake_event,
 	sharpturnleft_event,
 	sharpturnright_event,
 	bumpup_event,
 	bumpdown_event,
-	shake_event
+	shake_event,
+	collide_event,
+	action_event_count
 }action_event;
 
 typedef void (*process)(action_event);

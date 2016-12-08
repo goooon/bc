@@ -55,6 +55,12 @@
     <Filter Include="dep\mpu6050">
       <UniqueIdentifier>{27b5c04b-c191-4610-8644-6ad574455760}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\tasks\remotestate">
+      <UniqueIdentifier>{14f860ca-cf28-4def-864c-fc8174153d5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\tasks\remotecontrol">
+      <UniqueIdentifier>{39fb435b-e9e5-4be9-b8fb-e11a5107115b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\inc\Message.h">
@@ -177,6 +183,15 @@
     <ClInclude Include="..\src\tasks\Element.h">
       <Filter>src\tasks</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\inc\RunTime.h" />
+    <ClInclude Include="..\src\tasks\CollideNotify.h" />
+    <ClInclude Include="..\src\tasks\RemoteDiagnose.h" />
+    <ClInclude Include="..\src\tasks\RequestState.h">
+      <Filter>src\tasks\remotestate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\RemoteControl.h">
+      <Filter>src\tasks\remotecontrol</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -277,6 +292,15 @@
     </ClCompile>
     <ClCompile Include="..\dep\mpu6050\main6050.cpp">
       <Filter>dep\mpu6050</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cpp\RunTime.cpp" />
+    <ClCompile Include="..\src\tasks\CollideNotify.cpp" />
+    <ClCompile Include="..\src\tasks\RemoteDiagnose.cpp" />
+    <ClCompile Include="..\src\tasks\RequestState.cpp">
+      <Filter>src\tasks\remotestate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\RemoteControl.cpp">
+      <Filter>src\tasks\remotecontrol</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -2286,7 +2286,12 @@ struct ExampleAppConsole : public me::Tracer
 		s = Vehicle::getInstance().isShaking();
 		if (ImGui::Checkbox("Shaking", &s)) {
 			Vehicle::getInstance().setAbnormalShaking(s);
-			Sensor6050Callback(7);
+			Sensor6050Callback(8);
+		}ImGui::SameLine();
+
+		s = false;
+		if (ImGui::Checkbox("Collide", &s)) {
+			Sensor6050Callback(9);
 		}
 		
 		//////////GPS////////////////////////////////////////////////////////////////
@@ -2324,6 +2329,15 @@ struct ExampleAppConsole : public me::Tracer
 			VEHICLE_FSEC("ispeed", gpsData.speed, 0.0f, 180.0f);
 		}
 
+		//////////////////////////////////////////////////////////////////////////
+		/*s = RunTime::getInstance().debugState;
+		if (ImGui::Checkbox("RequestState:", &RunTime::getInstance().debugState)) {
+			if (RunTime::getInstance().debugState) {
+				for (int i = 0; i < RunTime::getInstance().stateItemCount; ++i) {
+
+				}
+			}
+		}*/
 
         //static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddLog("Spam %f", t); }
 

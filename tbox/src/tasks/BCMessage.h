@@ -20,6 +20,30 @@ public:
 		appendErrorElement(ec);
 		return true;
 	}
+	Index checkIdentity(u32 identity) {
+		Identity at;
+		Index idx;
+		if (idx = getFirstElement(&at)) {
+			if (Config::getInstance().getAuthToken() != at.token.dw){
+				LOG_W("authtoke wrong 0x%x", at.token.dw);
+				return 0;
+			}
+			return idx;
+		}
+		else {
+			return 0;
+		}
+	}
+	Index checkTimestamp(Index idx) {
+		TimeStamp ts;
+		if (idx = getNextElement(&ts, idx)) {}
+		else {
+			LOG_E("GetConfig failed with imcomplete data");
+			return 0;
+		}
+		return idx;
+	}
+
 	Index getFirstElement(Identity* token) {
 		bcp_element_t *e = bcp_next_element(msg, 0);
 		if (e && e->len == 4) {
@@ -73,6 +97,17 @@ public:
 		}
 		return 0;
 	}
+	Index getNextElement(void** out, Index idx) {
+		if (idx == 0)return 0;
+		bcp_element_t *e = bcp_next_element(msg, (bcp_element_t*)idx);
+		if (e) {
+			if (out) {
+				*out = (void*)&e->data[0];
+			}
+			return e;
+		}
+		return 0;
+	}
 	u32 getApplicationId() {
 		if (msg == 0)return -1;
 		return msg->hdr.id;
@@ -104,6 +139,11 @@ public:
 		ErrorElement ele;
 		ele.errorcode = ec;
 		bcp_element_t *e = bcp_element_create((u8*)&ele, sizeof(ErrorElement));
+		bcp_element_append(msg, e);
+		return true;
+	}
+	bool appendRawData(u32 size, u8* data) {
+		bcp_element_t *e = bcp_element_create(data, size);
 		bcp_element_append(msg, e);
 		return true;
 	}

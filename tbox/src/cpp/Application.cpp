@@ -9,6 +9,7 @@
 #include "../tasks/TaskTable.h"
 #include "../tasks/GpsUploadTask.h"
 #include "../inc/channels.h"
+#include "../inc/RunTime.h"
 
 #if BC_TARGET == BC_TARGET_ANDROID
 #include "../android/android_vicp.h"

@@ -430,6 +430,20 @@ bool MqttClient::onRecvPackage(void* data, int len)
 		u32 stepId = m->hdr.step_id;
 		LOG_I("Mqtt received appid:%d,stepId:%d", applicationID,stepId);
 
+		Identity token;
+		bcp_element_t *e = bcp_next_element(m, 0);
+		if (e && e->len == 4) {
+			token.token.b0 = e->data[0];
+			token.token.b1 = e->data[1];
+			token.token.b2 = e->data[2];
+			token.token.b3 = e->data[3];
+			if (token.token.dw != Config::getInstance().getAuthToken()) {
+				LOG_E("Auth Token is Wrong!!!");
+				bcp_packet_destroy(p);
+				continue;
+			}
+		}
+
 		task = Application::getInstance().findTask(applicationID);
 		if (task != NULL) {
 			bool done = task->handlePackage(p);

@@ -22,3 +22,11 @@ Operation::Result CanBus::reqEnterReadyToIgnite(bool ready)
 	LOG_I("Blocking by can bus command(%d) ...", ready);
 	return Operation::S_Blocking;
 }
+
+bool CanBus::getStateBlocked(u32 idx,u8 size, u8* data)
+{
+	*data = 1;
+	u32 skip = 0;
+
+	return true;
+}

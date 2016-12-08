@@ -310,7 +310,7 @@ void GpsUploadTask_NTF::sendGpsData(GPSDataQueue::GPSInfo info)
 	}
 }
 
-static void RawGps2AutoLocation(Vehicle::RawGps& rawGps, AutoLocation& loc) {
+void RawGps2AutoLocation(Vehicle::RawGps& rawGps, AutoLocation& loc) {
 	u32 Longitude =  (180.f + rawGps.longitude) * 1000000;
 	u32 Latitude =  (90.0f + rawGps.latitude) * 1000000;
 	u32 Altitude = (rawGps.altitude * 10) + 100000;

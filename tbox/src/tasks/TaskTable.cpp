@@ -11,6 +11,7 @@
 #include "./vis/visGpsTask.h"
 #include "./AcquireConfigTask.h"
 #include "./VehicleShakeTask.h"
+#include "./RequestState.h"
 #include "../inc/dep.h"
 struct TaskTable
 {
@@ -35,6 +36,8 @@ static TaskTable tt[] = {
 	{ APPID_VIS_GPS,STEPID_VIS_GPS,"APPID_VIS_GPS", visGpsTask::Create },
 	{ APPID_GPS_UPLOADING_NTF_CONST,STEPID_GPS_UPLOADING_NTF_CONST,"APPID_GPS_UPLOADING_NTF_CONST",GpsUploadTask_NTF::Create},
 	{ APPID_SHAKE_NTF,STEPID_SHAKE_NTF,"APPID_SHAKE_NTF",VehicleShakeTask_NTF::Create},
+	{ APPID_COLLIDE_NTF ,STEPID_COLLIDE_NTF,"APPID_COLLIDE_NTF",VehicleShakeTask_NTF::Create},
+	{ APPID_REQUEST_STATE_UPLOADING ,STEPID_REQUEST_STATE_UPLOADING,"APPID_REQUEST_STATE_UPLOADING",RequestState::Create},
 	{ APPID_TEST,0,0,0}
 };
 
