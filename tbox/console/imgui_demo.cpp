@@ -2291,8 +2291,10 @@ struct ExampleAppConsole : public me::Tracer
 
 		s = false;
 		if (ImGui::Checkbox("Collide", &s)) {
-			Sensor6050Callback(9);
+			Sensor6050Callback(RunTime::getInstance().debugCollide);
 		}
+		
+		ImGui::SliderInt("CollideType", (int*)&RunTime::getInstance().debugCollide, 1, 8);
 		
 		//////////GPS////////////////////////////////////////////////////////////////
 		s = Config::getInstance().getIsGpsDataValid();
@@ -2330,14 +2332,18 @@ struct ExampleAppConsole : public me::Tracer
 		}
 
 		//////////////////////////////////////////////////////////////////////////
-		/*s = RunTime::getInstance().debugState;
 		if (ImGui::Checkbox("RequestState:", &RunTime::getInstance().debugState)) {
-			if (RunTime::getInstance().debugState) {
-				for (int i = 0; i < RunTime::getInstance().stateItemCount; ++i) {
-
-				}
+			//RunTime::getInstance().debugState = s;
+		}
+		if (RunTime::getInstance().debugState) {
+			for (int i = 0; i < RunTime::getInstance().stateItemCount; ++i) {
+				int d = RunTime::getInstance().stateItems[i];
+				char name[10];
+				sprintf(name, "id%d", i);
+				ImGui::SliderInt(name, &d, 0, 255);
+				RunTime::getInstance().stateItems[i] = d;
 			}
-		}*/
+		}
 
         //static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddLog("Spam %f", t); }
 

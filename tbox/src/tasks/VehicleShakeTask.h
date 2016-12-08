@@ -15,7 +15,7 @@ public:
 	static Task* Create(u32 appId);
 	VehicleShakeTask_NTF(u32 appId);
 	bool ntfShaked();
-	bool ntfCollided();
+	bool ntfCollided(u8 coltype, u8 level);
 	void checkShaked();
 	void checkCollide();
 private:

@@ -23,7 +23,6 @@ typedef enum
 	bumpup_event,
 	bumpdown_event,
 	shake_event,
-	collide_event,
 	action_event_count
 }action_event;
 

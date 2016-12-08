@@ -34,7 +34,7 @@ bool VehicleShakeTask_NTF::ntfShaked()
 }
 
 extern void RawGps2AutoLocation(Vehicle::RawGps& rawGps, AutoLocation& loc);
-bool VehicleShakeTask_NTF::ntfCollided()
+bool VehicleShakeTask_NTF::ntfCollided(u8 coltype,u8 level)
 {
 	BCPackage pkg;
 	u64 seq = Vehicle::getInstance().getTBoxSequenceId();
@@ -48,8 +48,8 @@ bool VehicleShakeTask_NTF::ntfCollided()
 	Vehicle::getInstance().getGpsInfo(gps);
 	msg.appendGPSData(loc);
 	u8 type[2];
-	type[0] = 1;
-	type[1] = 1;
+	type[0] = coltype;
+	type[1] = level;
 	msg.appendRawData(2, type);
 	if (!pkg.post(Config::getInstance().pub_topic, Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut(), true)) {
 		LOG_E("ntfShaked failed");
@@ -144,9 +144,12 @@ void VehicleShakeTask_NTF::checkShaked()
 void VehicleShakeTask_NTF::checkCollide()
 {
 	if (Vehicle::getInstance().isIgnited()) {
-		if (g_flag[collide_event]) {
-			g_flag[collide_event] = 0;
-			ntfCollided();
+		for(int i = 0; i < action_event_count; ++ i){
+			if(i == shake_event)continue;
+			if (g_flag[i]) {
+				g_flag[i] = 0;
+				ntfCollided(i,0);
+			}
 		}
 	}
 }

@@ -5,6 +5,7 @@
 #include "../tasks/TaskTable.h"
 #include "../test/ActiveTest.h"
 #include "../tasks/StateUploadTask.h"
+#include "../inc/RunTime.h"
 #include <errno.h>
 unsigned int last_error(void)
 {

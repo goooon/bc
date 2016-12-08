@@ -1,5 +1,6 @@
 #include "../inc/CanBus.h"
 #include "../inc/Application.h"
+#include "../inc/RunTime.h"
 CanBus& CanBus::getInstance()
 {
 	return Application::getInstance().getCanBus();
@@ -23,10 +24,8 @@ Operation::Result CanBus::reqEnterReadyToIgnite(bool ready)
 	return Operation::S_Blocking;
 }
 
-bool CanBus::getStateBlocked(u32 idx,u8 size, u8* data)
+bool CanBus::getStateBlocked(u8 idx,u8 size, u8* data)
 {
-	*data = 1;
-	u32 skip = 0;
-
+	*data = RunTime::getInstance().stateItems[idx];
 	return true;
 }

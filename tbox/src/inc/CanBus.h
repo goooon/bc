@@ -12,6 +12,6 @@ public:
 	Operation::Result reqActiveDoor(bool active);
 	Operation::Result reqEnterReadyToIgnite(bool ready);
 public:
-	bool getStateBlocked(u32 idx,u8 size,u8* data);
+	bool getStateBlocked(u8 idx,u8 size,u8* data);
 };
 #endif // GUARD_CanBus_h__
