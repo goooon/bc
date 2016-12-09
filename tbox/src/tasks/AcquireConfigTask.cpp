@@ -12,7 +12,7 @@ Task* AcquireConfigTask::Create(u32 appId)
 
 void AcquireConfigTask::doTask()
 {
-	expire.update(500);
+	expire.update(5000);
 	for (;;) {
 		ThreadEvent::WaitResult wr = msgQueue.wait(500);
 		if (wr == ThreadEvent::TimeOut) {
@@ -20,6 +20,7 @@ void AcquireConfigTask::doTask()
 			if (expire < now) {
 				if (tryTimes >= 3)return;
 				reqConfig();
+				expire.update(5000);
 				tryTimes++;
 				expire.update(Config::getInstance().getAuthRetryInterval());
 			}
@@ -136,6 +137,7 @@ void AcquireConfigTask::parseConfig(ConfigElement* cee)
 			if (n->arglen == 2) {
 				u16 freq = Endian::toU16(&n->arg[0]);
 				Config::getInstance().setGpsIntervalInDriving(freq * 1000);
+				Config::getInstance().setAbnormalMovingDuration(freq * 1000);
 				LOG_I("Location Run Frequency %d", freq);
 			}
 			else {
@@ -145,7 +147,7 @@ void AcquireConfigTask::parseConfig(ConfigElement* cee)
 		case 2://Location Stopped Frequency
 			if (n->arglen == 2) {
 				u16 freq = Endian::toU16(&n->arg[0]);
-				Config::getInstance().setIgntActivationTimeOut(freq * 1000);
+				Config::getInstance().setGpsIntervalInStation(freq * 1000);
 				LOG_I("Location Stopped Frequency %d", freq);
 			}
 			else {
@@ -155,7 +157,7 @@ void AcquireConfigTask::parseConfig(ConfigElement* cee)
 		case 3://Abnormal Moving Video Duration
 			if (n->arglen == 2) {
 				u16 freq = Endian::toU16(&n->arg[0]);
-				Config::getInstance().setAbnormalMovingDuration(freq * 1000);
+				//Config::getInstance().setAbnormalMovingDuration(freq * 1000);
 				LOG_I("Abnormal Moving Video Duration %d", freq);
 			}
 			else {
@@ -165,7 +167,7 @@ void AcquireConfigTask::parseConfig(ConfigElement* cee)
 		case 4://Abnormal Moving StartTimeLimit	4	1	车辆异动开始的时间判断标准 单位：秒
 			if (n->arglen == 1) {
 				u8 s = n->arg[0];
-				Config::getInstance().setAbnormalMovingDuration(s * 1000);
+				Config::getInstance().setAbnormalMovingStartTimeLimit(s * 1000);
 				LOG_I("Abnormal Moving StartTimeLimit %d", s);
 			}
 			else {

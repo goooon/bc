@@ -290,6 +290,39 @@ void Application::onEvent(AppEvent::Type e, u32 param1, u32 param2, void* data)
 				}
 			}
 		}
+		else if (param1 == Vehicle::DoorOpened ||
+			param1 == Vehicle::DoorClosed ||
+			param1 == Vehicle::WindClosed ||
+			param1 == Vehicle::WindClosed ||
+			param1 == Vehicle::ShiftLevel ||
+			param1 == Vehicle::ShiftType) {
+			if (!Vehicle::getInstance().isIgnited()) {
+				Timestamp ts;
+				ts.update(Config::getInstance().getStateUploadExpireTime());
+				schedule.update(ts, APPID_STATE_UNIGNITION_DELAY_NTF);
+			}
+		}
+		/*else if (param1 == Vehicle::DoorClosed) {
+			if (!Vehicle::getInstance().isIgnited()) {
+				Timestamp ts;
+				ts.update(Config::getInstance().getStateUploadExpireTime());
+				schedule.update(ts, APPID_STATE_UNIGNITION_DELAY_NTF);
+			}
+		}
+		else if (param1 == Vehicle::WindClosed) {
+			if (!Vehicle::getInstance().isIgnited()) {
+				Timestamp ts;
+				ts.update(Config::getInstance().getStateUploadExpireTime());
+				schedule.update(ts, APPID_STATE_UNIGNITION_DELAY_NTF);
+			}
+		}*/
+		else if (param1 == Vehicle::WindClosed) {
+			if (!Vehicle::getInstance().isIgnited()) {
+				Timestamp ts;
+				ts.update(Config::getInstance().getStateUploadExpireTime());
+				schedule.update(ts, APPID_STATE_UNIGNITION_DELAY_NTF);
+			}
+		}
 		else if (param1 == Vehicle::ActiveDoorResult && param1) {
 			schedule.remove(APPID_STATE_UNIGNITION_DELAY_NTF);
 		}
