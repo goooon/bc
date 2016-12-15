@@ -2295,6 +2295,7 @@ struct ExampleAppConsole : public me::Tracer
 		}
 		
 		ImGui::SliderInt("CollideType", (int*)&RunTime::getInstance().debugCollide, 1, 8);
+		ImGui::SliderInt("CollideLevel", (int*)&RunTime::getInstance().collideLevel[RunTime::getInstance().debugCollide] , 0, 9);
 		
 		//////////GPS////////////////////////////////////////////////////////////////
 		s = Config::getInstance().getIsGpsDataValid();
@@ -2344,7 +2345,24 @@ struct ExampleAppConsole : public me::Tracer
 				RunTime::getInstance().stateItems[i] = d;
 			}
 		}
-
+		//////////////////////////////////////////////////////////////////////////
+		int d = RunTime::getInstance().diagEcuCount;
+		ImGui::SliderInt("ECUCount", &d, 0, 255);
+		RunTime::getInstance().diagEcuCount = d;
+		if (RunTime::getInstance().diagEcuCount) {
+			for (int i = 0; i < RunTime::getInstance().diagEcuCount; ++i){
+				//ImGui::Text("Ecu[%d]", RunTime::getInstance().diagEcuIndex[i]);
+				char name[20];
+				sprintf(name, " Ecu[%d]Count", i);
+				ImGui::SliderInt(name, &RunTime::getInstance().diagDTCCount[i], 0, 256);
+				for (int j = 0; j < RunTime::getInstance().diagDTCCount[i]; ++j) {
+					sprintf(name, "  [%d:%d]", i,j);
+					int d = RunTime::getInstance().diagDTCCode[i][j];
+					ImGui::SliderInt(name, &d, 0, 256 * 256 - 1);
+					RunTime::getInstance().diagDTCCode[i][j] = d;
+				}
+			}
+		}
         //static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddLog("Spam %f", t); }
 
         ImGui::Separator();

@@ -61,6 +61,9 @@
     <Filter Include="src\tasks\remotecontrol">
       <UniqueIdentifier>{39fb435b-e9e5-4be9-b8fb-e11a5107115b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\tasks\remotediag">
+      <UniqueIdentifier>{e506bc15-a2db-452c-832c-68fc33ec6a26}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\inc\Message.h">
@@ -185,12 +188,14 @@
     </ClInclude>
     <ClInclude Include="..\src\inc\RunTime.h" />
     <ClInclude Include="..\src\tasks\CollideNotify.h" />
-    <ClInclude Include="..\src\tasks\RemoteDiagnose.h" />
     <ClInclude Include="..\src\tasks\RequestState.h">
       <Filter>src\tasks\remotestate</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tasks\RemoteControl.h">
       <Filter>src\tasks\remotecontrol</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tasks\RemoteDiagnose.h">
+      <Filter>src\tasks\remotediag</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -295,12 +300,14 @@
     </ClCompile>
     <ClCompile Include="..\src\cpp\RunTime.cpp" />
     <ClCompile Include="..\src\tasks\CollideNotify.cpp" />
-    <ClCompile Include="..\src\tasks\RemoteDiagnose.cpp" />
     <ClCompile Include="..\src\tasks\RequestState.cpp">
       <Filter>src\tasks\remotestate</Filter>
     </ClCompile>
     <ClCompile Include="..\src\tasks\RemoteControl.cpp">
       <Filter>src\tasks\remotecontrol</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tasks\RemoteDiagnose.cpp">
+      <Filter>src\tasks\remotediag</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -24,7 +24,12 @@ Operation::Result CanBus::reqEnterReadyToIgnite(bool ready)
 	return Operation::S_Blocking;
 }
 
-bool CanBus::getStateBlocked(u8 idx,u8 size, u8* data)
+Operation::Result CanBus::reqOpenWindow(u8 idx, bool open)
+{
+	return Operation::Succ;
+}
+
+bool CanBus::getStateBlocked(u8 idx, u8 size, u8* data)
 {
 	*data = RunTime::getInstance().stateItems[idx];
 	return true;

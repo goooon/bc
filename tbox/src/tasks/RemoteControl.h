@@ -12,6 +12,7 @@ public:
 	static Task* Create(u32 appId);
 protected:
 	virtual void doTask();
+	void parsePackage(MessageQueue::Args& args);
 private:
 	Timestamp fire;
 };

@@ -36,6 +36,12 @@ struct ErrorElement
 	u8 errorcode;	//ref errorcode.h
 }DECL_GNU_PACKED;
 
+struct RemoteRawData
+{
+	u8 CmdSource;
+	u8 rawData[1];
+}DECL_GNU_PACKED;
+
 struct ConfigElement
 {
 	struct Node

@@ -12,6 +12,8 @@
 #include "./AcquireConfigTask.h"
 #include "./VehicleShakeTask.h"
 #include "./RequestState.h"
+#include "./RemoteControl.h"
+#include "./RemoteDiagnose.h"
 #include "../inc/dep.h"
 struct TaskTable
 {
@@ -38,6 +40,8 @@ static TaskTable tt[] = {
 	{ APPID_SHAKE_NTF,STEPID_SHAKE_NTF,"APPID_SHAKE_NTF",VehicleShakeTask_NTF::Create},
 	{ APPID_COLLIDE_NTF ,STEPID_COLLIDE_NTF,"APPID_COLLIDE_NTF",VehicleShakeTask_NTF::Create},
 	{ APPID_REQUEST_STATE_UPLOADING ,STEPID_REQUEST_STATE_UPLOADING,"APPID_REQUEST_STATE_UPLOADING",RequestState::Create},
+	{ APPID_REMOTE_CONTROL,STEPID_REMOTE_CONTROL,"APPID_REMOTE_CONTROL",RemoteControlTask::Create},
+	{ APPID_REMOTE_DIAG,STEPID_REMOTE_DIAG ,"APPID_REMOTE_DIAG",RemoteDiagnose::Create},
 	{ APPID_TEST,0,0,0}
 };
 

@@ -97,6 +97,9 @@ public:
 		};
 		return desc[state];
 	}
+public:
+	void control(u8 id, u8 arg);
+	bool getControlResult(u8 id, u8& result);
 private:
 	void onEvent(u32 param1, u32 param2, void* data);
 	bool changeState(State next);

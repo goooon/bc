@@ -97,6 +97,17 @@ public:
 		}
 		return 0;
 	}
+	Index getNextElement(RemoteRawData** out, Index idx) {
+		if (idx == 0)return 0;
+		bcp_element_t *e = bcp_next_element(msg, (bcp_element_t*)idx);
+		if (e) {
+			if (out) {
+				*out = (RemoteRawData*)&e->data[0];
+			}
+			return e;
+		}
+		return 0;
+	}
 	Index getNextElement(void** out, Index idx) {
 		if (idx == 0)return 0;
 		bcp_element_t *e = bcp_next_element(msg, (bcp_element_t*)idx);

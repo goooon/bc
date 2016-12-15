@@ -3,6 +3,7 @@
 #include "../inc/Event.h"
 #include "../tasks/Element.h"
 #include "../inc/CanBus.h"
+#include "../inc/RunTime.h"
 #undef TAG
 #define TAG "Vehicle"
 
@@ -189,6 +190,16 @@ u64 Vehicle::getTBoxSequenceId()
 	return seqId++;
 }
 
+void Vehicle::control(u8 id, u8 arg)
+{
+	RunTime::getInstance().control(id, arg);
+}
+
+bool Vehicle::getControlResult(u8 id, u8& result)
+{
+	return RunTime::getInstance().getControlResult(id, result);
+}
+
 //Operation::Result Vehicle::reqLockDoor()
 //{
 //	LOG_I("do reqLockDoor()");
@@ -229,10 +240,20 @@ void Vehicle::onEvent(u32 param1, u32 param2, void* data)
 		apparatus.vehiState.door.doors &= ~(1 << (param2 * 2));
 		break;
 	case WindOpened:
-		apparatus.vehiState.window.winds |= 1 << (param2 * 2);
+		if (param2 < 4) {
+			apparatus.vehiState.window.winds |= 1 << (param2 * 2);
+		}
+		else if (param2 == 4) {
+			apparatus.vehiState.window.sun_roof = 15;
+		}
 		break;
 	case WindClosed:
-		apparatus.vehiState.window.winds &= ~(1 << (param2 * 2));
+		if (param2 < 4) {
+			apparatus.vehiState.window.winds &= ~(1 << (param2 * 2));
+		}
+		else if (param2 == 4) {
+			apparatus.vehiState.window.sun_roof = 1;
+		}
 		break;
 	case Ignite:
 		if (state != ReadyToIgnit) {

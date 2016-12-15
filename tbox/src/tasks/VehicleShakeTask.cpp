@@ -1,7 +1,7 @@
 
 #include "./VehicleShakeTask.h"
-
 #include "../inc/Application.h"
+#include "../inc/RunTime.h"
 
 
 Task* VehicleShakeTask_NTF::Create(u32 appId)
@@ -145,10 +145,9 @@ void VehicleShakeTask_NTF::checkCollide()
 {
 	if (Vehicle::getInstance().isIgnited()) {
 		for(int i = 0; i < action_event_count; ++ i){
-			if(i == shake_event)continue;
 			if (g_flag[i]) {
 				g_flag[i] = 0;
-				ntfCollided(i,0);
+				ntfCollided(i,RunTime::getInstance().collideLevel[i]);
 			}
 		}
 	}
@@ -157,6 +156,7 @@ void VehicleShakeTask_NTF::checkCollide()
 bool VehicleShakeTask_NTF::isShakingOk()
 {
 	if (Vehicle::getInstance().isDriving())return true;
+	if (Vehicle::getInstance().isIgnited())return true;
 	if (Vehicle::getInstance().hasDoorOpened())return true;
 	return false;
 }

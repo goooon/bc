@@ -146,6 +146,7 @@ void Task::ntfTimeOut()
 void Task::ntfError(Operation::Result ret)
 {
 	u8 ecode = 0;
+	u8 subCode = 0;
 	switch (ret)
 	{
 	case Operation::Succ:
@@ -177,6 +178,7 @@ void Task::ntfError(Operation::Result ret)
 		break;
 	case Operation::E_Ignited:
 		ecode = ERR_CONDITION;
+		subCode = 1;
 		break;
 	case Operation::E_State:
 		ecode = ERR_CONDITION;
@@ -190,12 +192,10 @@ void Task::ntfError(Operation::Result ret)
 	msg.appendIdentity();
 	msg.appendTimeStamp();
 	msg.appendErrorElement(ecode);
-	msg.appendFunctionStatus(0);
+	msg.appendFunctionStatus(subCode);
 	if (!pkg.post(Config::getInstance().pub_topic, Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut())) {
 		LOG_E("sendResponseError failed %d", ret);
 	}
-	else
-	{
-		//LOG_I("rspError(%d) ---> TSP", ret);
+	else{
 	}
 }

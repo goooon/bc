@@ -3,6 +3,8 @@
 #include "../inc/CanBus.h"
 #define GET_CONDITION_TIMEOUT 10000
 
+#undef TAG
+#define TAG "×´Ì¬»ñÈ¡"
 struct State
 {
 	u8 count;
@@ -19,18 +21,17 @@ Task* RequestState::Create(u32 appId)
 
 void RequestState::doTask()
 {
-	fire.update(GET_CONDITION_TIMEOUT);
 	for (;;) {
 		ThreadEvent::WaitResult wr = msgQueue.wait(500);
 		if (wr == ThreadEvent::TimeOut) {
 			Timestamp now;
 			if (fire < now) {
-				fire.update(Config::getInstance().getAuthRetryInterval());
 			}
 		}
 		else if (wr == ThreadEvent::EventOk) {
 			MessageQueue::Args args;
 			while (msgQueue.out(args)) {
+				parsePackage(args);
 			}
 		}
 	}

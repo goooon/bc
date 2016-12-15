@@ -438,8 +438,7 @@ bool MqttClient::onRecvPackage(void* data, int len)
 			token.token.b2 = e->data[2];
 			token.token.b3 = e->data[3];
 			if (token.token.dw != Config::getInstance().getAuthToken()) {
-				LOG_E("Auth Token is Wrong!!!");
-				bcp_packet_destroy(p);
+				LOG_E("Identity Code is Wrong!!!");
 				continue;
 			}
 		}

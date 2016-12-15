@@ -99,6 +99,7 @@ struct Endian
 	static f32 toF32(u8 v[4]);
 	static void toByte(u8* v, u32 u);
 	static void toByte(u8* v, u16 u);
+	static void toByte3(u8* v,u32 u);
 };
 
 #if BC_TARGET == BC_TARGET_WIN

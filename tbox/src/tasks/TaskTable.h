@@ -39,6 +39,7 @@ typedef struct bcp_packet_s bcp_packet_t;
 #define STEPID_COLLIDE_NTF 2
 #define STEPID_REMOTE_DIAG 2
 #define STEPID_REMOTE_CONTROL 2
+#define STEPid_REMOTE_DIAG 2
 #define STEPID_REQUEST_STATE_UPLOADING 2
 #define STEPID_PACKAGE_QUEUE 0
 #define STEPID_GPS_UPLOADING_NTF_CONST 5
