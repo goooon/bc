@@ -35,9 +35,10 @@ void RunTime::control(u8 id, u8 arg)
 		break;
 	}
 }
-
+#include <math.h>
 bool RunTime::getControlResult(u8 id, u8& result)
 {
+	result = me::math::random(1000) % 3;
 	return true;
 }
 

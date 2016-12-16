@@ -44,6 +44,7 @@ void controlItems(u8 len, Item* items)
 	int i = len;
 	for (int i = 0; i < len; i ++) {
 		Vehicle::getInstance().control(items->index, items->args);
+		items++;
 	}
 };
 
@@ -51,6 +52,7 @@ void ntfControlResult(u8 len, Item* items) {
 	int i = len;
 	for (int i = 0; i < len; i++) {
 		Vehicle::getInstance().getControlResult(items->index, items->args);
+		items++;
 	}
 }
 
@@ -64,7 +66,7 @@ void RemoteControlTask::parsePackage(MessageQueue::Args& args)
 			BCMessage msg(0);
 			BCMessage m = pkg.nextMessage(msg);
 
-			if (m.getApplicationId() == APPID_REMOTE_CONTROL && m.getStepId() == 3)
+			if (m.getApplicationId() == APPID_REMOTE_CONTROL && m.getStepId() == 2)
 			{
 				RspAck();
 				if (m.msg) {
@@ -73,17 +75,20 @@ void RemoteControlTask::parsePackage(MessageQueue::Args& args)
 					idx = m.checkTimestamp(idx);
 					if (!idx) { LOG_E("check timestamp failed"); return; }
 
+					RemoteRawData* rawData;
 					ControlItems* items;
-					if (idx = m.getNextElement((void**)&items, idx)) {
+					if (idx = m.getNextElement((void**)&rawData, idx)) {
+						items = (ControlItems*)&rawData->rawData[0];
 						controlItems(items->count, items->item);
 						ntfControlResult(items->count, items->item);
 						BCPackage pkg;
+						rawData->CmdSource = 1;
 						BCMessage msg = pkg.appendMessage(appID, 5, seqID);
 						LOG_I("rspStateList(appId:%d,setpId:%d,seqId:%lld)", appID, 5, seqID);
 						msg.appendIdentity();
 						msg.appendTimeStamp();
 						msg.appendErrorElement(0);
-						msg.appendRawData(items->count * 2 + 1, (u8*)items);
+						msg.appendRawData(items->count * 2 + 2, (u8*)rawData);
 						if (!pkg.post(Config::getInstance().pub_topic, Config::getInstance().getMqttDefaultQos(), Config::getInstance().getMqttSendTimeOut(), true)) {
 							LOG_E("rspControl failed");
 							return;

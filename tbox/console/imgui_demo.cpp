@@ -2354,6 +2354,7 @@ struct ExampleAppConsole : public me::Tracer
 				//ImGui::Text("Ecu[%d]", RunTime::getInstance().diagEcuIndex[i]);
 				char name[20];
 				sprintf(name, " Ecu[%d]Count", i);
+				//&RunTime::getInstance().diagEcuValid[i];
 				ImGui::SliderInt(name, &RunTime::getInstance().diagDTCCount[i], 0, 256);
 				for (int j = 0; j < RunTime::getInstance().diagDTCCount[i]; ++j) {
 					sprintf(name, "  [%d:%d]", i,j);
@@ -2861,7 +2862,13 @@ struct VehicleConsole : public me::Tracer
 			}
 			idx++;
 		}
-
+		//////////////////////////////////////////////////////////////////////////
+		for (int i = 0; i < 18; ++i) {
+			int v = RunTime::getInstance().controlarg[i];
+			char name[256];
+			sprintf(name, "code:%d", i);
+			ImGui::SliderInt(name, &v, 0, 255);
+		}
 		//static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddLog("Spam %f", t); }
 
 		ImGui::Separator();
