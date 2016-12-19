@@ -38,7 +38,7 @@ void RunTime::control(u8 id, u8 arg)
 #include <math.h>
 bool RunTime::getControlResult(u8 id, u8& result)
 {
-	result = me::math::random(1000) % 3;
+	result = RunTime::getInstance().controlarg[id];
 	return true;
 }
 

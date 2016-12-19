@@ -51,6 +51,7 @@ void controlItems(u8 len, Item* items)
 void ntfControlResult(u8 len, Item* items) {
 	int i = len;
 	for (int i = 0; i < len; i++) {
+		LOG_I("%d,%d", items->index, items->args);
 		Vehicle::getInstance().getControlResult(items->index, items->args);
 		items++;
 	}

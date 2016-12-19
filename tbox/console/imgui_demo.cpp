@@ -2351,16 +2351,22 @@ struct ExampleAppConsole : public me::Tracer
 		RunTime::getInstance().diagEcuCount = d;
 		if (RunTime::getInstance().diagEcuCount) {
 			for (int i = 0; i < RunTime::getInstance().diagEcuCount; ++i){
-				//ImGui::Text("Ecu[%d]", RunTime::getInstance().diagEcuIndex[i]);
 				char name[20];
-				sprintf(name, " Ecu[%d]Count", i);
-				//&RunTime::getInstance().diagEcuValid[i];
-				ImGui::SliderInt(name, &RunTime::getInstance().diagDTCCount[i], 0, 256);
-				for (int j = 0; j < RunTime::getInstance().diagDTCCount[i]; ++j) {
-					sprintf(name, "  [%d:%d]", i,j);
-					int d = RunTime::getInstance().diagDTCCode[i][j];
-					ImGui::SliderInt(name, &d, 0, 256 * 256 - 1);
-					RunTime::getInstance().diagDTCCode[i][j] = d;
+				
+				sprintf(name, "v[%d]", i);
+				bool valid = RunTime::getInstance().diagEcuValid[i];
+				ImGui::Checkbox(name, &valid); if(valid)ImGui::SameLine();
+				RunTime::getInstance().diagEcuValid[i] = valid;
+
+				if (valid) {
+					sprintf(name, " Ecu[%d]Count", i);
+					ImGui::SliderInt(name, &RunTime::getInstance().diagDTCCount[i], 0, 256);
+					for (int j = 0; j < RunTime::getInstance().diagDTCCount[i]; ++j) {
+						sprintf(name, "      [%d:%d]", i, j);
+						int d = RunTime::getInstance().diagDTCCode[i][j];
+						ImGui::SliderInt(name, &d, 0, 256 * 256 - 1);
+						RunTime::getInstance().diagDTCCode[i][j] = d;
+					}
 				}
 			}
 		}
