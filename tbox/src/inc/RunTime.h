@@ -40,6 +40,7 @@ public:
 
 	u8 diagEcuCount;
 	u8 diagEcuValid[256];
+	u8 diagEcuError[256];
 	u8 diagEcuIndex[256];
 	int diagDTCCount[256];
 	u16 diagDTCCode[256][256 * 256];

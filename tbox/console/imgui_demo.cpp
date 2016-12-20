@@ -2359,13 +2359,20 @@ struct ExampleAppConsole : public me::Tracer
 				RunTime::getInstance().diagEcuValid[i] = valid;
 
 				if (valid) {
-					sprintf(name, " Ecu[%d]Count", i);
-					ImGui::SliderInt(name, &RunTime::getInstance().diagDTCCount[i], 0, 256);
-					for (int j = 0; j < RunTime::getInstance().diagDTCCount[i]; ++j) {
-						sprintf(name, "      [%d:%d]", i, j);
-						int d = RunTime::getInstance().diagDTCCode[i][j];
-						ImGui::SliderInt(name, &d, 0, 256 * 256 - 1);
-						RunTime::getInstance().diagDTCCode[i][j] = d;
+					bool error = RunTime::getInstance().diagEcuError[i];
+					sprintf(name, "e[%d]", i);
+					ImGui::Checkbox(name, &error); if (error)ImGui::SameLine();
+					RunTime::getInstance().diagEcuError[i] = error;
+
+					if (error) {
+						sprintf(name, " Ecu[%d]Count", i);
+						ImGui::SliderInt(name, &RunTime::getInstance().diagDTCCount[i], 0, 256);
+						for (int j = 0; j < RunTime::getInstance().diagDTCCount[i]; ++j) {
+							sprintf(name, "      [%d:%d]", i, j);
+							int d = RunTime::getInstance().diagDTCCode[i][j];
+							ImGui::SliderInt(name, &d, 0, 256 * 256 - 1);
+							RunTime::getInstance().diagDTCCode[i][j] = d;
+						}
 					}
 				}
 			}

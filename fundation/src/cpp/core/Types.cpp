@@ -92,9 +92,9 @@ void Endian::toByte(u8* v, u16 u)
 void Endian::toByte3(u8* v, u32 u)
 {
 #if BC_ENDIAN== BC_ENDIAN_LITTLE
-	v[2] = u >> 8;
-	v[1] = u >> 16;
-	v[0] = u >> 24;
+	v[2] = u ;
+	v[1] = u >> 8;
+	v[0] = u >> 16;
 #else
 	v[0] = u;
 	v[1] = u >> 8;
